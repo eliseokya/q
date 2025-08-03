@@ -60,9 +60,9 @@ pub struct LeanParser {
 impl LeanParser {
     pub fn new() -> Self {
         Self {
-            theorem_regex: Regex::new(r"theorem\s+(\w+).*?:=").unwrap(),
-            lemma_regex: Regex::new(r"lemma\s+(\w+).*?:=").unwrap(),
-            def_regex: Regex::new(r"def\s+(\w+).*?:=").unwrap(),
+            theorem_regex: Regex::new(r"theorem\s+(\w+).*?:").unwrap(),
+            lemma_regex: Regex::new(r"lemma\s+(\w+).*?:").unwrap(),
+            def_regex: Regex::new(r"def\s+(\w+).*?:").unwrap(),
             atomicity_keywords: vec![
                 "IsAtomic".to_string(),
                 "atomic".to_string(),

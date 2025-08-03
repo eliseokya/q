@@ -115,6 +115,7 @@ impl FiniteAutomaton {
 
     /// Process an input token and transition states
     pub fn process(&mut self, input: &str) -> Option<String> {
+
         // Find applicable transitions from current state
         let applicable_transitions: Vec<_> = self.transitions.iter()
             .filter(|t| t.from_state == self.current_state && self.matches_condition(&t.condition, input))
@@ -127,6 +128,19 @@ impl FiniteAutomaton {
         // Take the first matching transition
         let transition = &applicable_transitions[0];
         self.current_state = transition.to_state;
+        
+        // Process epsilon transitions automatically
+        loop {
+            let epsilon_transitions: Vec<_> = self.transitions.iter()
+                .filter(|t| t.from_state == self.current_state && matches!(&t.condition, TransitionCondition::Epsilon))
+                .collect();
+            
+            if epsilon_transitions.is_empty() {
+                break;
+            }
+            
+            self.current_state = epsilon_transitions[0].to_state;
+        }
         
         // Check if we reached a final state
         if let Some(state) = self.states.get(&self.current_state) {
@@ -142,7 +156,10 @@ impl FiniteAutomaton {
     fn matches_condition(&self, condition: &TransitionCondition, input: &str) -> bool {
         match condition {
             TransitionCondition::Action(action) => input.contains(action),
-            TransitionCondition::AnyAction => true,
+            TransitionCondition::AnyAction => {
+                // Check if it's an action token (contains colon)
+                input.contains(':') && !input.starts_with("onChain:")
+            },
             TransitionCondition::Sequence => input == "seq",
             TransitionCondition::Parallel => input == "parallel",
             TransitionCondition::Token(token) => input.contains(token),
@@ -195,8 +212,9 @@ impl AutomataGenerator {
         automaton.add_transition(0, s1, TransitionCondition::Sequence);
         automaton.add_transition(s1, s2, TransitionCondition::Action("borrow".to_string()));
         automaton.add_transition(s2, s3, TransitionCondition::Sequence);
-        automaton.add_transition(s3, s3, TransitionCondition::AnyAction); // Loop for operations
+        // Add specific action transition before generic one
         automaton.add_transition(s3, s4, TransitionCondition::Action("repay".to_string()));
+        automaton.add_transition(s3, s3, TransitionCondition::AnyAction); // Loop for operations
         automaton.add_transition(s4, s5, TransitionCondition::Epsilon);
         
         automaton
@@ -334,8 +352,10 @@ mod tests {
         assert!(automaton.process("borrow").is_none());
         assert!(automaton.process("seq").is_none());
         assert!(automaton.process("swap").is_none()); // Some operation
-        assert!(automaton.process("repay").is_some());
+        let result = automaton.process("repay");
+        // After repay, we should be in final state due to epsilon transition
         assert!(automaton.is_in_final_state());
+        assert_eq!(automaton.get_matched_pattern(), Some("flash_loan_1".to_string()));
     }
 
     #[test]
