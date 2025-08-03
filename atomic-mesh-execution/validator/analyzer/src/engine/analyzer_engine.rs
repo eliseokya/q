@@ -4,10 +4,13 @@
 //! ensuring mathematical correctness and atomicity guarantees.
 
 use crate::common::{
-    Bundle, AnalysisResult, ProvenPattern, PatternMatch, SafetyProperty,
+    Bundle, AnalysisResult, ProvenPattern, PatternCandidate, 
     ValidationError, RiskProfile, BundleAnalysis, ComplexityEstimate,
-    VariableBinding, PatternCandidate
 };
+use crate::engine::{StaticPatternLibrary, DynamicPatternCache};
+use crate::matching::{StructuralMatcher, AutomataMatchEngine};
+use crate::validation::{ConstraintChecker, ConstraintValidationResult};
+use crate::pattern_compiler::AutomataGenerator;
 use std::collections::HashMap;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
@@ -51,39 +54,53 @@ pub struct PerformanceMetrics {
 /// Main analyzer engine that orchestrates pattern matching
 pub struct AnalyzerEngine {
     config: AnalyzerConfig,
-    proven_patterns: Vec<ProvenPattern>,
-    pattern_cache: HashMap<String, PatternMatch>,
+    pattern_library: StaticPatternLibrary,
+    pattern_cache: DynamicPatternCache,
+    structural_matcher: StructuralMatcher,
+    automata_engine: AutomataMatchEngine,
+    constraint_checker: ConstraintChecker,
     performance_metrics: PerformanceMetrics,
 }
 
 impl AnalyzerEngine {
-    /// Create a new analyzer engine with configuration
-    pub fn new(config: AnalyzerConfig) -> Self {
-        Self {
-            config,
-            proven_patterns: Vec::new(),
-            pattern_cache: HashMap::new(),
-            performance_metrics: PerformanceMetrics {
-                total_analysis_time_us: 0,
-                pattern_matching_time_us: 0,
-                constraint_validation_time_us: 0,
-                semantic_validation_time_us: 0,
-                patterns_checked: 0,
-                cache_hits: 0,
-                cache_misses: 0,
-            },
-        }
+    /// Create a new analyzer engine with default configuration
+    pub fn new() -> Result<Self, ValidationError> {
+        Self::with_config(AnalyzerConfig::default())
     }
 
-    /// Load proven patterns from the mathematical library
-    pub fn load_patterns(&mut self, patterns: Vec<ProvenPattern>) -> Result<(), ValidationError> {
-        // Validate patterns before loading
-        for pattern in &patterns {
-            self.validate_pattern(pattern)?;
-        }
+    /// Create analyzer with custom configuration
+    pub fn with_config(config: AnalyzerConfig) -> Result<Self, ValidationError> {
+        let mut structural_matcher = StructuralMatcher::new();
+        let mut automata_engine = AutomataMatchEngine::new();
+        let constraint_checker = ConstraintChecker::new();
         
-        self.proven_patterns = patterns;
-        log::info!("Loaded {} proven patterns", self.proven_patterns.len());
+        Ok(Self {
+            config,
+            pattern_library: StaticPatternLibrary::load()
+                .map_err(|e| ValidationError::PatternLoadError { 
+                    details: format!("Failed to load pattern library: {}", e) 
+                })?,
+            pattern_cache: DynamicPatternCache::new(1000),
+            structural_matcher,
+            automata_engine,
+            constraint_checker,
+            performance_metrics: PerformanceMetrics::default(),
+        })
+    }
+
+    /// Load patterns into the engine
+    pub fn load_patterns(&mut self, patterns: Vec<ProvenPattern>) -> Result<(), ValidationError> {
+        // Load patterns into automata engine
+        self.automata_engine.load_patterns(&patterns)
+            .map_err(|e| ValidationError::PatternLoadError { details: e })?;
+        
+        // Get all automata and load into structural matcher
+        let automata = self.automata_engine.get_all_automata();
+        self.structural_matcher.load_automata(automata);
+        
+        // Load patterns into pattern library
+        self.pattern_library.load_patterns(patterns)?;
+        
         Ok(())
     }
 
@@ -132,7 +149,7 @@ impl AnalyzerEngine {
         
         // Phase 1: Fast structural matching (200μs budget)
         let pattern_start = Instant::now();
-        let pattern_candidates = self.find_pattern_candidates(bundle);
+        let pattern_candidates = self.structural_pattern_match(bundle);
         let pattern_time = pattern_start.elapsed();
         
         // Check timeout
@@ -145,7 +162,7 @@ impl AnalyzerEngine {
         
         // Phase 2: Constraint validation (100μs budget)
         let constraint_start = Instant::now();
-        let validated_candidates = self.validate_constraints(&pattern_candidates, bundle);
+        let validated_candidates = self.filter_by_constraints(pattern_candidates, bundle);
         let constraint_time = constraint_start.elapsed();
         
         // Check timeout
@@ -166,42 +183,50 @@ impl AnalyzerEngine {
         self.generate_final_result(final_matches, bundle_analysis, bundle)
     }
 
-    /// Find candidate patterns using structural matching
-    fn find_pattern_candidates(&self, bundle: &Bundle) -> Vec<PatternCandidate> {
-        let mut candidates = Vec::new();
+    /// Phase 1: Structural pattern matching
+    fn structural_pattern_match(&mut self, bundle: &Bundle) -> Vec<PatternCandidate> {
+        let start_time = Instant::now();
         
-        for pattern in &self.proven_patterns {
-            if let Some(confidence) = self.structural_match_score(&bundle.expr, pattern) {
-                if confidence >= self.config.min_confidence_threshold {
-                    candidates.push(PatternCandidate {
-                        pattern: pattern.clone(),
-                        preliminary_confidence: confidence,
-                        partial_bindings: HashMap::new(), // TODO: Extract bindings
-                        potential_properties: pattern.safety_properties.clone(),
-                    });
-                }
-            }
-        }
+        // Use the real structural matcher
+        let match_results = self.structural_matcher.match_bundle(bundle);
         
-        // Sort by confidence (best first)
-        candidates.sort_by(|a, b| b.preliminary_confidence.partial_cmp(&a.preliminary_confidence).unwrap());
+        // Convert match results to pattern candidates
+        let patterns = self.pattern_library.get_all_patterns();
+        let candidates = self.structural_matcher.results_to_candidates(match_results, &patterns);
         
-        // Limit candidates to avoid timeout
-        candidates.truncate(self.config.max_patterns_to_check);
+        self.performance_metrics.structural_match_time_us = start_time.elapsed().as_micros() as u64;
         
         candidates
     }
 
-    /// Validate constraints for pattern candidates
-    fn validate_constraints(
-        &self, 
-        candidates: &[PatternCandidate], 
-        bundle: &Bundle
-    ) -> Vec<PatternCandidate> {
-        candidates.iter()
-            .filter(|candidate| self.check_bundle_constraints(bundle))
-            .cloned()
-            .collect()
+    /// Phase 2: Constraint validation (100μs budget)
+    fn filter_by_constraints(&mut self, candidates: Vec<PatternCandidate>, bundle: &Bundle) -> Vec<PatternCandidate> {
+        let start_time = Instant::now();
+        
+        // Use the real constraint checker
+        let validation_result = self.constraint_checker.validate_bundle(bundle);
+        
+        let mut validated_candidates = candidates;
+        
+        // If constraints are violated, filter out candidates or adjust confidence
+        if !validation_result.is_valid {
+            for candidate in &mut validated_candidates {
+                // Reduce confidence based on constraint violations
+                let severity_penalty = validation_result.violated_constraints.iter()
+                    .map(|v| match v.severity {
+                        crate::validation::ConstraintSeverity::Critical => 0.5,
+                        crate::validation::ConstraintSeverity::Warning => 0.2,
+                        crate::validation::ConstraintSeverity::Info => 0.1,
+                    })
+                    .fold(1.0, |acc, penalty| acc * (1.0 - penalty));
+                
+                candidate.confidence_score *= severity_penalty;
+            }
+        }
+        
+        self.performance_metrics.constraint_validation_time_us = start_time.elapsed().as_micros() as u64;
+        
+        validated_candidates
     }
 
     /// Apply semantic validation using mathematical theorems
@@ -247,14 +272,13 @@ impl AnalyzerEngine {
 
     /// Placeholder: Structural matching score calculation
     fn structural_match_score(&self, _expr: &common::Expr, _pattern: &ProvenPattern) -> Option<f64> {
-        // TODO: Implement finite automata matching
-        // For now, return a placeholder confidence
-        Some(0.8)
+        // Now delegated to StructuralMatcher
+        None
     }
 
     /// Placeholder: Bundle constraint validation
     fn check_bundle_constraints(&self, _bundle: &Bundle) -> bool {
-        // TODO: Implement constraint validation
+        // Now delegated to ConstraintChecker
         true
     }
 

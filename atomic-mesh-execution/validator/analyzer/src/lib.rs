@@ -1,15 +1,31 @@
-//! Analyzer library for pattern matching against mathematical theorems
+//! Analyzer module for the Atomic Mesh VM Validator
+//!
+//! This module performs pattern matching against mathematical theorems
+//! to validate arbitrage opportunities.
 
 pub mod common;
 pub mod engine;
+pub mod pattern_scanner;
+pub mod pattern_compiler;
+pub mod matching;
+pub mod validation;
 
-// Re-export main types for external use
+// Re-export main types and functions
 pub use common::{
-    Bundle, AnalysisResult, ProvenPattern, PatternMatch, SafetyProperty,
-    ValidationError, RiskProfile, VariableBinding,
+    AnalysisResult, ValidationRecommendation, RiskProfile, RiskFactor,
+    RiskRecommendation, ValidationError, BundleAnalysis, ComplexityEstimate,
+    ProvenPattern, PatternCandidate, SafetyProperty, PatternTemplate,
+    Bundle, Expr, Action, Token, Chain, Protocol, Constraint, VariableBinding,
 };
 
-pub use engine::{AnalyzerEngine, AnalyzerConfig};
+pub use engine::{
+    AnalyzerEngine, AnalyzerConfig, StaticPatternLibrary, DynamicPatternCache,
+};
+
+pub use pattern_scanner::{LeanParser, TheoremDatabase, Theorem};
+pub use pattern_compiler::{LeanToPatternCompiler, AutomataGenerator, FiniteAutomaton};
+pub use matching::{StructuralMatcher, AutomataMatchEngine, MatchResult};
+pub use validation::{ConstraintChecker, ConstraintValidationResult};
 
 // Re-export dependencies for use in main.rs
 pub use serde_json;

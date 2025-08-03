@@ -2,121 +2,104 @@
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use uuid::Uuid;
+use std::path::PathBuf;
 
+/// A mathematically proven pattern from the Lean 4 formalization
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProvenPattern {
-    pub id: String,
-    pub name: String,
-    pub lean_theorem: String,
+    /// Unique identifier for the pattern
+    pub pattern_id: String,
+    
+    /// Pattern template type
+    pub pattern_template: PatternTemplate,
+    
+    /// Reference to the Lean theorem
+    pub theorem_reference: String,
+    
+    /// File containing the theorem
+    pub theorem_file: PathBuf,
+    
+    /// Line number in the theorem file
+    pub theorem_line: usize,
+    
+    /// Safety properties guaranteed by this pattern
     pub safety_properties: Vec<SafetyProperty>,
-    pub confidence: f64,
+    
+    /// Preconditions that must be satisfied
+    pub preconditions: Vec<String>,
+    
+    /// Regular expression for structural matching
+    pub structure_regex: String,
+    
+    /// Minimum confidence threshold for this pattern
+    pub confidence_threshold: f64,
+    
+    /// Whether this pattern enables gas optimization
+    pub gas_optimization_potential: bool,
 }
 
+/// Template types for patterns
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum PatternTemplate {
     FlashLoan,
     CrossChainArbitrage,
-    Sequential,
-    Parallel,
-    Action,
-    OnChain,
-    Wildcard,
+    TriangularArbitrage,
+    LiquidityMigration,
+    ProtocolSpecific,
+    GeneralAtomic,
+    GasOptimization,
+    BridgeOperation,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ActionPattern {
-    Borrow, Repay, Swap, Bridge, Deposit, Withdraw, Any,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum TokenPattern {
-    Specific(common::Token),
-    Variable(String),
-    Any,
-    SameAs(String),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum AmountPattern {
-    Exact(common::Rational),
-    Variable(String),
-    Any,
-    SameAs(String),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ProtocolPattern {
-    Specific(common::Protocol),
-    Variable(String),
-    Any,
-    SameAs(String),
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ChainPattern {
-    Specific(common::Chain),
-    Variable(String),
-    Any,
-    SameAs(String),
-}
-
+/// Safety properties that patterns can guarantee
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
 pub enum SafetyProperty {
-    Atomic,
-    BalancePreserving,
-    GasBounded,
-    DeadlineRespecting,
-    CrossChainSafe,
-    InvariantPreserving,
+    Atomicity,
+    BalancePreservation,
+    NoReentrancy,
+    CrossChainConsistency,
+    BridgeSafety,
+    ProtocolInvariant,
+    StateConsistency,
+    SemanticEquivalence,
+    GasReduction,
+    TimelockSafety,
+    AllOrNothing,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum ComplexityClass {
-    Constant,
-    Linear,
-    Quadratic,
-    Exponential,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct PatternMatch {
-    pub pattern: ProvenPattern,
-    pub confidence: f64,
-    pub variable_bindings: HashMap<String, VariableBinding>,
-    pub verified_properties: Vec<SafetyProperty>,
-    pub match_id: Uuid,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub enum VariableBinding {
-    Token(common::Token),
-    Amount(common::Rational),
-    Protocol(common::Protocol),
-    Chain(common::Chain),
-}
-
+/// A candidate pattern match during analysis
 #[derive(Debug, Clone)]
 pub struct PatternCandidate {
+    /// The matched pattern
     pub pattern: ProvenPattern,
-    pub preliminary_confidence: f64,
-    pub partial_bindings: HashMap<String, VariableBinding>,
-    pub potential_properties: Vec<SafetyProperty>,
+    
+    /// Confidence score for this match
+    pub confidence_score: f64,
+    
+    /// Whether structural matching succeeded
+    pub structural_match: bool,
+    
+    /// Whether semantic validation succeeded
+    pub semantic_match: bool,
+    
+    /// Details about the match
+    pub match_details: String,
 }
 
-impl PatternMatch {
-    pub fn new(
-        pattern: ProvenPattern,
-        confidence: f64,
-        variable_bindings: HashMap<String, VariableBinding>,
-        verified_properties: Vec<SafetyProperty>,
-    ) -> Self {
-        Self {
-            pattern,
-            confidence,
-            variable_bindings,
-            verified_properties,
-            match_id: Uuid::new_v4(),
-        }
-    }
+/// Variable bindings extracted during pattern matching
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VariableBinding {
+    pub name: String,
+    pub value: String,
+    pub binding_type: BindingType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum BindingType {
+    Token,
+    Amount,
+    Protocol,
+    Chain,
+    Address,
+    Generic,
 }

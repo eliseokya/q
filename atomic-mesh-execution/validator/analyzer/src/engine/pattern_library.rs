@@ -4,7 +4,10 @@
 //! mathematical theorems in the maths/ directory.
 
 use crate::common::{ProvenPattern, SafetyProperty, PatternTemplate};
+use crate::pattern_scanner::{LeanParser, TheoremDatabase};
+use crate::pattern_compiler::LeanToPatternCompiler;
 use std::collections::HashMap;
+use std::path::Path;
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -58,6 +61,64 @@ impl StaticPatternLibrary {
             patterns_by_template: HashMap::new(),
             pattern_metadata: HashMap::new(),
         }
+    }
+
+    /// Load patterns from the maths/ directory
+    pub fn load() -> Result<Self, PatternLibraryError> {
+        let mut library = Self::new();
+        
+        // Path to maths directory (relative to workspace root)
+        let maths_path = Path::new("../../../maths");
+        
+        if !maths_path.exists() {
+            log::warn!("Maths directory not found at {:?}, using empty pattern library", maths_path);
+            return Ok(library);
+        }
+        
+        log::info!("Scanning maths directory for theorems...");
+        
+        // Scan for theorems
+        let parser = LeanParser::new();
+        let theorems = parser.scan_directory(maths_path)
+            .map_err(|e| PatternLibraryError::CompilationFailed {
+                details: format!("Failed to scan maths directory: {}", e),
+            })?;
+        
+        log::info!("Found {} theorems in maths directory", theorems.len());
+        
+        // Build theorem database
+        let mut database = TheoremDatabase::new();
+        for theorem in theorems {
+            database.add_theorem(theorem)
+                .map_err(|e| PatternLibraryError::CompilationFailed {
+                    details: format!("Failed to add theorem to database: {}", e),
+                })?;
+        }
+        
+        let stats = database.get_statistics();
+        log::info!("Theorem statistics: {} flash loan patterns, {} cross-chain patterns, {} protocol invariants",
+            stats.flash_loan_patterns, stats.cross_chain_patterns, stats.protocol_invariants);
+        
+        // Compile theorems to patterns
+        let compiler = LeanToPatternCompiler::new();
+        let all_theorems: Vec<_> = database.get_flash_loan_patterns().into_iter()
+            .chain(database.get_cross_chain_patterns())
+            .collect();
+        
+        for theorem in all_theorems {
+            match compiler.compile_theorem(theorem) {
+                Ok(pattern) => {
+                    library.add_pattern(pattern)?;
+                }
+                Err(e) => {
+                    log::warn!("Failed to compile theorem {}: {}", theorem.name, e);
+                }
+            }
+        }
+        
+        log::info!("Successfully loaded {} patterns", library.patterns.len());
+        
+        Ok(library)
     }
 
     /// Create a pattern library with default proven patterns
