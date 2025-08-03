@@ -1,0 +1,27 @@
+[build]
+# Increase the number of parallel jobs
+jobs = 8
+
+[target.x86_64-unknown-linux-gnu]
+# Enable debug symbols in release builds for better profiling
+debug = true
+
+[profile.dev]
+# Faster builds with less optimization
+opt-level = 0
+
+[profile.release]
+# Maximum optimization
+opt-level = 3
+lto = true
+codegen-units = 1
+
+# Useful cargo aliases
+[alias]
+b = "build"
+c = "check"
+t = "test"
+r = "run"
+d = "doc --open"
+fmt = "fmt --all"
+lint = "clippy -- -D warnings"
