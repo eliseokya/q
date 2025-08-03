@@ -34,6 +34,8 @@ pub struct Theorem {
     pub dependencies: Vec<String>,
 }
 
+
+
 /// Database for storing and querying mathematical theorems
 #[derive(Debug)]
 pub struct TheoremDatabase {

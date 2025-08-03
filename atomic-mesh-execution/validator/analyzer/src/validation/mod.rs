@@ -2,4 +2,4 @@
 
 pub mod constraint_checker;
 
-pub use constraint_checker::{ConstraintChecker, ConstraintValidationResult};
+pub use constraint_checker::{ConstraintChecker, ConstraintValidationResult, ConstraintSeverity};

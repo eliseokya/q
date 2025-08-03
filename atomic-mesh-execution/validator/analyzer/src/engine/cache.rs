@@ -3,7 +3,7 @@
 //! This module provides caching functionality to avoid re-analyzing
 //! identical or similar bundles.
 
-use crate::common::{PatternMatch, Bundle};
+use crate::common::{PatternCandidate, Bundle};
 use lru::LruCache;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -13,7 +13,7 @@ use std::time::{Duration, Instant};
 /// Cache entry with metadata
 #[derive(Debug, Clone)]
 pub struct CacheEntry {
-    pub pattern_match: PatternMatch,
+    pub pattern_match: PatternCandidate,
     pub created_at: Instant,
     pub access_count: u64,
     pub bundle_hash: String,
@@ -52,19 +52,22 @@ impl DynamicPatternCache {
     }
 
     /// Get a cached pattern match
-    pub fn get(&mut self, bundle_hash: &str) -> Option<PatternMatch> {
+    pub fn get(&mut self, bundle_hash: &str) -> Option<CacheEntry> {
+        // First check if expired
+        let expired = self.cache.peek(bundle_hash)
+            .map(|entry| entry.created_at.elapsed() > self.ttl)
+            .unwrap_or(false);
+        
+        if expired {
+            self.cache.pop(bundle_hash);
+            self.miss_count += 1;
+            return None;
+        }
+        
+        // Now get and clone the entry
         if let Some(entry) = self.cache.get(bundle_hash) {
-            // Check if entry has expired
-            if entry.created_at.elapsed() > self.ttl {
-                self.cache.pop(bundle_hash);
-                self.miss_count += 1;
-                return None;
-            }
-
-            // Update access count
-            // Note: We can't modify the entry directly, so we'll handle this in a different way
             self.hit_count += 1;
-            Some(entry.pattern_match.clone())
+            Some(entry.clone())
         } else {
             self.miss_count += 1;
             None
@@ -72,7 +75,7 @@ impl DynamicPatternCache {
     }
 
     /// Store a pattern match in the cache
-    pub fn put(&mut self, bundle_hash: String, pattern_match: PatternMatch) {
+    pub fn put(&mut self, bundle_hash: String, pattern_match: PatternCandidate) {
         let entry = CacheEntry {
             pattern_match,
             created_at: Instant::now(),

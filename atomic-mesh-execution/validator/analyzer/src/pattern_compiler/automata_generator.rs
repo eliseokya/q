@@ -51,7 +51,7 @@ pub enum TransitionCondition {
 }
 
 /// Finite automaton for pattern matching
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FiniteAutomaton {
     states: HashMap<usize, State>,
     transitions: Vec<Transition>,

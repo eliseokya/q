@@ -31,7 +31,7 @@ pub struct ExtractedTheorem {
     pub metadata: TheoremMetadata,
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum TheoremType {
     FlashLoanPattern,
     CrossChainAtomicity,

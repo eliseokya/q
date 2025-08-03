@@ -53,19 +53,13 @@ impl ConstraintChecker {
             .as_secs();
 
         // Initialize with current timestamps
-        chain_timestamps.insert(Chain::Ethereum, current_time);
         chain_timestamps.insert(Chain::Arbitrum, current_time);
         chain_timestamps.insert(Chain::Polygon, current_time);
-        chain_timestamps.insert(Chain::Base, current_time);
-        chain_timestamps.insert(Chain::Optimism, current_time);
 
         let mut gas_prices = HashMap::new();
         // Initialize with default gas prices (in gwei)
-        gas_prices.insert(Chain::Ethereum, 30);
         gas_prices.insert(Chain::Arbitrum, 1);
         gas_prices.insert(Chain::Polygon, 100);
-        gas_prices.insert(Chain::Base, 1);
-        gas_prices.insert(Chain::Optimism, 1);
 
         Self {
             chain_timestamps,
@@ -102,23 +96,23 @@ impl ConstraintChecker {
             checked_constraints += 1;
             
             match constraint {
-                Constraint::Deadline(blocks) => {
+                Constraint::Deadline { blocks } => {
                     if let Some(violation) = self.check_deadline(bundle, *blocks) {
                         violated_constraints.push(violation);
                     }
                 }
-                Constraint::MaxGas(limit) => {
-                    if let Some(violation) = self.check_gas_limit(bundle, *limit) {
+                Constraint::MaxGas { amount } => {
+                    if let Some(violation) = self.check_gas_limit(bundle, *amount) {
                         violated_constraints.push(violation);
                     }
                 }
-                Constraint::MinBalance(token, amount) => {
-                    if let Some(violation) = self.check_min_balance(&bundle.start_chain, token, *amount) {
+                Constraint::MinBalance { token, amount } => {
+                    if let Some(violation) = self.check_min_balance(&bundle.start_chain, token, amount.num) {
                         violated_constraints.push(violation);
                     }
                 }
-                Constraint::Invariant(invariant_type) => {
-                    if let Some(violation) = self.check_invariant(bundle, invariant_type) {
+                Constraint::Invariant { invariant } => {
+                    if let Some(violation) = self.check_invariant(bundle, invariant) {
                         violated_constraints.push(violation);
                     }
                 }
@@ -181,15 +175,15 @@ impl ConstraintChecker {
 
     fn check_min_balance(&self, chain: &Chain, token: &Token, required: u64) -> Option<ViolatedConstraint> {
         let balance = self.token_balances
-            .get(&(*chain, *token))
+            .get(&(chain.clone(), token.clone()))
             .copied()
             .unwrap_or(0);
         
         if balance < required {
             Some(ViolatedConstraint {
                 constraint_type: "MinBalance".to_string(),
-                expected: format!("{} {} on {}", required, token, chain),
-                actual: format!("{} {}", balance, token),
+                expected: format!("{} {:?} on {:?}", required, token, chain),
+                actual: format!("{} {:?}", balance, token),
                 severity: ConstraintSeverity::Critical,
             })
         } else {
@@ -197,24 +191,16 @@ impl ConstraintChecker {
         }
     }
 
-    fn check_invariant(&self, _bundle: &Bundle, invariant_type: &str) -> Option<ViolatedConstraint> {
+    fn check_invariant(&self, _bundle: &Bundle, invariant: &common::Invariant) -> Option<ViolatedConstraint> {
         // Check specific invariants based on type
-        match invariant_type {
-            "constant_product" => {
+        match invariant {
+            common::Invariant::ConstantProduct => {
                 // Would check Uniswap-style x*y=k invariant
                 None // Assume valid for now
             }
-            "collateral_ratio" => {
-                // Would check lending protocol collateral requirements
+            common::Invariant::NoNegativeBalance => {
+                // Would check no negative balances
                 None // Assume valid for now
-            }
-            _ => {
-                Some(ViolatedConstraint {
-                    constraint_type: "Invariant".to_string(),
-                    expected: format!("Valid {}", invariant_type),
-                    actual: "Unknown invariant type".to_string(),
-                    severity: ConstraintSeverity::Warning,
-                })
             }
         }
     }
@@ -227,8 +213,8 @@ impl ConstraintChecker {
             if change < 0 {
                 return Some(ViolatedConstraint {
                     constraint_type: "BalancePreservation".to_string(),
-                    expected: format!("Non-negative {} balance", token),
-                    actual: format!("{} {} deficit", -change, token),
+                    expected: format!("Non-negative {:?} balance", token),
+                    actual: format!("{} {:?} deficit", -change, token),
                     severity: ConstraintSeverity::Critical,
                 });
             }
@@ -251,39 +237,39 @@ impl ConstraintChecker {
 
     fn estimate_execution_blocks(&self, expr: &Expr) -> u64 {
         match expr {
-            Expr::Action(action) => {
+            Expr::Action { action } => {
                 match action {
                     Action::Bridge { .. } => 20, // Bridge operations take time
                     _ => 1, // Most actions complete in 1 block
                 }
             }
-            Expr::Seq(e1, e2) => {
-                self.estimate_execution_blocks(e1) + self.estimate_execution_blocks(e2)
+            Expr::Seq { first, second } => {
+                self.estimate_execution_blocks(first) + self.estimate_execution_blocks(second)
             }
-            Expr::Parallel(exprs) => {
+            Expr::Parallel { exprs } => {
                 // Parallel execution takes as long as the longest branch
                 exprs.iter()
                     .map(|e| self.estimate_execution_blocks(e))
                     .max()
                     .unwrap_or(0)
             }
-            Expr::OnChain(_, e) => self.estimate_execution_blocks(e),
+            Expr::OnChain { expr, .. } => self.estimate_execution_blocks(expr),
         }
     }
 
     fn estimate_gas_usage(&self, expr: &Expr, chain: &Chain) -> u64 {
         let base_gas = match expr {
-            Expr::Action(action) => self.estimate_action_gas(action, chain),
-            Expr::Seq(e1, e2) => {
-                self.estimate_gas_usage(e1, chain) + self.estimate_gas_usage(e2, chain)
+            Expr::Action { action } => self.estimate_action_gas(action, chain),
+            Expr::Seq { first, second } => {
+                self.estimate_gas_usage(first, chain) + self.estimate_gas_usage(second, chain)
             }
-            Expr::Parallel(exprs) => {
+            Expr::Parallel { exprs } => {
                 // Parallel operations still consume total gas
                 exprs.iter()
                     .map(|e| self.estimate_gas_usage(e, chain))
                     .sum()
             }
-            Expr::OnChain(target_chain, e) => {
+            Expr::OnChain { chain: target_chain, expr: e } => {
                 if target_chain == chain {
                     self.estimate_gas_usage(e, chain)
                 } else {
@@ -294,7 +280,7 @@ impl ConstraintChecker {
 
         // Apply chain-specific multipliers
         match chain {
-            Chain::Ethereum => base_gas * 120 / 100, // 20% higher on mainnet
+            Chain::Polygon => base_gas * 110 / 100, // 10% higher on Polygon
             _ => base_gas,
         }
     }
@@ -307,9 +293,7 @@ impl ConstraintChecker {
             Action::Bridge { .. } => 300_000,
             Action::Deposit { .. } => 100_000,
             Action::Withdraw { .. } => 120_000,
-            Action::Stake { .. } => 150_000,
-            Action::Unstake { .. } => 150_000,
-            Action::ClaimRewards { .. } => 80_000,
+
         }
     }
 
@@ -321,48 +305,53 @@ impl ConstraintChecker {
 
     fn analyze_balance_recursive(&self, expr: &Expr, changes: &mut HashMap<Token, i64>) {
         match expr {
-            Expr::Action(action) => {
+            Expr::Action { action } => {
                 match action {
-                    Action::Swap { amount_in, token_in, token_out, min_amount_out, .. } => {
-                        *changes.entry(*token_in).or_insert(0) -= *amount_in as i64;
-                        *changes.entry(*token_out).or_insert(0) += *min_amount_out as i64;
+                    Action::Swap { amount_in, token_in, token_out, min_out, .. } => {
+                        // Convert Rational to i64 for balance tracking
+                        let amount_in_i64 = amount_in.num as i64;
+                        let min_out_i64 = min_out.num as i64;
+                        *changes.entry(token_in.clone()).or_insert(0) -= amount_in_i64;
+                        *changes.entry(token_out.clone()).or_insert(0) += min_out_i64;
                     }
                     Action::Borrow { amount, token, .. } => {
-                        *changes.entry(*token).or_insert(0) += *amount as i64;
+                        let amount_i64 = amount.num as i64;
+                        *changes.entry(token.clone()).or_insert(0) += amount_i64;
                     }
                     Action::Repay { amount, token, .. } => {
-                        *changes.entry(*token).or_insert(0) -= *amount as i64;
+                        let amount_i64 = amount.num as i64;
+                        *changes.entry(token.clone()).or_insert(0) -= amount_i64;
                     }
                     _ => {} // Other actions don't directly affect token balances
                 }
             }
-            Expr::Seq(e1, e2) => {
-                self.analyze_balance_recursive(e1, changes);
-                self.analyze_balance_recursive(e2, changes);
+            Expr::Seq { first, second } => {
+                self.analyze_balance_recursive(first, changes);
+                self.analyze_balance_recursive(second, changes);
             }
-            Expr::Parallel(exprs) => {
+            Expr::Parallel { exprs } => {
                 for e in exprs {
                     self.analyze_balance_recursive(e, changes);
                 }
             }
-            Expr::OnChain(_, e) => {
-                self.analyze_balance_recursive(e, changes);
+            Expr::OnChain { expr, .. } => {
+                self.analyze_balance_recursive(expr, changes);
             }
         }
     }
 
     fn find_invalid_action(&self, expr: &Expr) -> Option<String> {
         match expr {
-            Expr::Action(action) => {
+            Expr::Action { action } => {
                 // Check for invalid action patterns
                 match action {
-                    Action::Swap { amount_in, min_amount_out, .. } => {
-                        if *amount_in == 0 || *min_amount_out == 0 {
+                    Action::Swap { amount_in, min_out, .. } => {
+                        if amount_in.num == 0 || min_out.num == 0 {
                             return Some("Swap with zero amount".to_string());
                         }
                     }
                     Action::Borrow { amount, .. } | Action::Repay { amount, .. } => {
-                        if *amount == 0 {
+                        if amount.num == 0 {
                             return Some("Borrow/Repay with zero amount".to_string());
                         }
                     }
@@ -370,10 +359,10 @@ impl ConstraintChecker {
                 }
                 None
             }
-            Expr::Seq(e1, e2) => {
-                self.find_invalid_action(e1).or_else(|| self.find_invalid_action(e2))
+            Expr::Seq { first, second } => {
+                self.find_invalid_action(first).or_else(|| self.find_invalid_action(second))
             }
-            Expr::Parallel(exprs) => {
+            Expr::Parallel { exprs } => {
                 for e in exprs {
                     if let Some(invalid) = self.find_invalid_action(e) {
                         return Some(invalid);
@@ -381,7 +370,7 @@ impl ConstraintChecker {
                 }
                 None
             }
-            Expr::OnChain(_, e) => self.find_invalid_action(e),
+            Expr::OnChain { expr, .. } => self.find_invalid_action(expr),
         }
     }
 
@@ -416,19 +405,23 @@ mod tests {
         let bundle = Bundle {
             name: "test".to_string(),
             start_chain: Chain::Polygon,
-            expr: Expr::Seq(
-                Box::new(Expr::Action(Action::Borrow {
-                    amount: 1000,
-                    token: Token::WETH,
-                    protocol: Protocol::Aave,
-                })),
-                Box::new(Expr::Action(Action::Bridge {
-                    to_chain: Chain::Arbitrum,
-                    token: Token::WETH,
-                    amount: 1000,
-                })),
-            ),
-            constraints: vec![Constraint::Deadline(10)], // Only 10 blocks allowed
+            expr: Expr::Seq {
+                first: Box::new(Expr::Action {
+                    action: Action::Borrow {
+                        amount: Rational::new(1000, 1),
+                        token: Token::WETH,
+                        protocol: Protocol::Aave,
+                    }
+                }),
+                second: Box::new(Expr::Action {
+                    action: Action::Bridge {
+                        chain: Chain::Arbitrum,
+                        token: Token::WETH,
+                        amount: Rational::new(1000, 1),
+                    }
+                }),
+            },
+            constraints: vec![Constraint::Deadline { blocks: 10 }], // Only 10 blocks allowed
         };
 
         let result = checker.validate_bundle(&bundle);
@@ -444,22 +437,26 @@ mod tests {
         let bundle = Bundle {
             name: "test".to_string(),
             start_chain: Chain::Polygon,
-            expr: Expr::Seq(
-                Box::new(Expr::Action(Action::Swap {
-                    amount_in: 1000,
-                    token_in: Token::WETH,
-                    token_out: Token::USDC,
-                    min_amount_out: 1500,
-                    protocol: Protocol::UniswapV2,
-                })),
-                Box::new(Expr::Action(Action::Swap {
-                    amount_in: 1000,
-                    token_in: Token::WETH,
-                    token_out: Token::USDC,
-                    min_amount_out: 1500,
-                    protocol: Protocol::UniswapV2,
-                })),
-            ),
+            expr: Expr::Seq {
+                first: Box::new(Expr::Action {
+                    action: Action::Swap {
+                        amount_in: Rational::new(1000, 1),
+                        token_in: Token::WETH,
+                        token_out: Token::USDC,
+                        min_out: Rational::new(1500, 1),
+                        protocol: Protocol::UniswapV2,
+                    }
+                }),
+                second: Box::new(Expr::Action {
+                    action: Action::Swap {
+                        amount_in: Rational::new(1000, 1),
+                        token_in: Token::WETH,
+                        token_out: Token::USDC,
+                        min_out: Rational::new(1500, 1),
+                        protocol: Protocol::UniswapV2,
+                    }
+                }),
+            },
             constraints: vec![],
         };
 

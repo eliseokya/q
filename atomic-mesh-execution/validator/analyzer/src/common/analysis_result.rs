@@ -2,24 +2,23 @@
 
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
-use super::pattern_types::{PatternMatch, SafetyProperty};
+use super::pattern_types::SafetyProperty;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AnalysisResult {
     FullMatch {
-        pattern_match: PatternMatch,
         theorem_reference: String,
         confidence: f64,
         safety_guarantees: Vec<SafetyProperty>,
-        analysis_id: Uuid,
+        gas_optimization_available: bool,
+        execution_plan: String,
     },
     PartialMatch {
-        pattern_match: PatternMatch,
+        theorem_reference: String,
         confidence: f64,
         validated_properties: Vec<SafetyProperty>,
         missing_guarantees: Vec<SafetyProperty>,
         recommendation: ValidationRecommendation,
-        analysis_id: Uuid,
     },
     Heuristic {
         risk_assessment: RiskProfile,
@@ -90,6 +89,8 @@ pub enum ValidationError {
     CrossChainSafetyViolation { details: String },
     #[error("Internal analyzer error: {details}")]
     InternalError { details: String },
+    #[error("Pattern load error: {details}")]
+    PatternLoadError { details: String },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

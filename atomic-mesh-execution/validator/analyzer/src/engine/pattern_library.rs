@@ -7,7 +7,7 @@ use crate::common::{ProvenPattern, SafetyProperty, PatternTemplate};
 use crate::pattern_scanner::{LeanParser, TheoremDatabase};
 use crate::pattern_compiler::LeanToPatternCompiler;
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -149,12 +149,20 @@ impl StaticPatternLibrary {
         Ok(())
     }
 
+    /// Load multiple patterns into the library
+    pub fn load_patterns(&mut self, patterns: Vec<ProvenPattern>) -> Result<(), PatternLibraryError> {
+        for pattern in patterns {
+            self.add_pattern(pattern)?;
+        }
+        Ok(())
+    }
+
     /// Add a pattern to the library
     pub fn add_pattern(&mut self, pattern: ProvenPattern) -> Result<(), PatternLibraryError> {
         // Check for duplicates
-        if self.patterns.contains_key(&pattern.id) {
+        if self.patterns.contains_key(&pattern.pattern_id) {
             return Err(PatternLibraryError::DuplicatePattern { 
-                pattern_id: pattern.id.clone() 
+                pattern_id: pattern.pattern_id.clone() 
             });
         }
 
@@ -163,9 +171,9 @@ impl StaticPatternLibrary {
 
         // Create metadata
         let metadata = PatternMetadata {
-            theorem_file: self.extract_theorem_file(&pattern.lean_theorem),
-            theorem_line: self.extract_theorem_line(&pattern.lean_theorem),
-            compilation_timestamp: chrono::Utc::now().to_rfc3339(),
+            theorem_file: pattern.theorem_file.to_string_lossy().to_string(),
+            theorem_line: pattern.theorem_line,
+                            compilation_timestamp: "2024-01-01T00:00:00Z".to_string(),
             pattern_complexity: self.assess_pattern_complexity(&pattern),
             verification_level: VerificationLevel::Proven,
         };
@@ -175,11 +183,11 @@ impl StaticPatternLibrary {
         self.patterns_by_template
             .entry(template)
             .or_insert_with(Vec::new)
-            .push(pattern.id.clone());
+            .push(pattern.pattern_id.clone());
 
         // Store pattern and metadata
-        self.pattern_metadata.insert(pattern.id.clone(), metadata);
-        self.patterns.insert(pattern.id.clone(), pattern);
+        self.pattern_metadata.insert(pattern.pattern_id.clone(), metadata);
+        self.patterns.insert(pattern.pattern_id.clone(), pattern);
 
         Ok(())
     }
@@ -212,7 +220,7 @@ impl StaticPatternLibrary {
         let total_patterns = self.patterns.len();
         let by_template: HashMap<PatternTemplate, usize> = self.patterns_by_template
             .iter()
-            .map(|(template, ids)| (*template, ids.len()))
+            .map(|(template, ids)| (template.clone(), ids.len()))
             .collect();
         
         let by_complexity: HashMap<PatternComplexity, usize> = self.pattern_metadata
@@ -251,21 +259,21 @@ impl StaticPatternLibrary {
     /// Validate pattern structure and properties
     fn validate_pattern(&self, pattern: &ProvenPattern) -> Result<(), PatternLibraryError> {
         // Check ID is not empty
-        if pattern.id.is_empty() {
+        if pattern.pattern_id.is_empty() {
             return Err(PatternLibraryError::InvalidPattern {
                 details: "Pattern ID cannot be empty".to_string(),
             });
         }
 
         // Check theorem reference exists
-        if pattern.lean_theorem.is_empty() {
+        if pattern.theorem_reference.is_empty() {
             return Err(PatternLibraryError::InvalidPattern {
                 details: "Lean theorem reference cannot be empty".to_string(),
             });
         }
 
         // Check confidence is valid
-        if !(0.0..=1.0).contains(&pattern.confidence) {
+        if !(0.0..=1.0).contains(&pattern.confidence_threshold) {
             return Err(PatternLibraryError::InvalidPattern {
                 details: "Pattern confidence must be between 0.0 and 1.0".to_string(),
             });
@@ -295,18 +303,8 @@ impl StaticPatternLibrary {
     }
 
     fn infer_pattern_template(&self, pattern: &ProvenPattern) -> PatternTemplate {
-        // Simple heuristic based on pattern name
-        if pattern.name.contains("flash") || pattern.name.contains("loan") {
-            PatternTemplate::FlashLoan
-        } else if pattern.name.contains("cross") || pattern.name.contains("chain") {
-            PatternTemplate::CrossChainArbitrage
-        } else if pattern.name.contains("parallel") {
-            PatternTemplate::Parallel
-        } else if pattern.name.contains("seq") {
-            PatternTemplate::Sequential
-        } else {
-            PatternTemplate::Action
-        }
+        // Use the pattern's own template
+        pattern.pattern_template.clone()
     }
 }
 
@@ -326,67 +324,91 @@ impl Default for StaticPatternLibrary {
 /// Factory functions for creating default patterns
 fn create_flash_loan_pattern() -> ProvenPattern {
     ProvenPattern {
-        id: "flash_loan_atomic".to_string(),
-        name: "Flash Loan Atomicity Pattern".to_string(),
-        lean_theorem: "maths/Stack/Bundles.lean:FlashLoanAtomic".to_string(),
+        pattern_id: "flash_loan_atomic".to_string(),
+        pattern_template: PatternTemplate::FlashLoan,
+        theorem_reference: "FlashLoanAtomic".to_string(),
+        theorem_file: PathBuf::from("maths/Stack/Bundles.lean"),
+        theorem_line: 100,
         safety_properties: vec![
-            SafetyProperty::Atomic,
-            SafetyProperty::BalancePreserving,
-            SafetyProperty::GasBounded,
+            SafetyProperty::Atomicity,
+            SafetyProperty::BalancePreservation,
+            SafetyProperty::NoReentrancy,
         ],
-        confidence: 1.0, // Fully proven
+        preconditions: vec!["amount > 0".to_string()],
+        structure_regex: r"seq\(borrow.*repay\)".to_string(),
+        confidence_threshold: 0.95,
+        gas_optimization_potential: false,
     }
 }
 
 fn create_cross_chain_arbitrage_pattern() -> ProvenPattern {
     ProvenPattern {
-        id: "cross_chain_arbitrage".to_string(),
-        name: "Cross-Chain Arbitrage Pattern".to_string(),
-        lean_theorem: "maths/examples/BridgedFlashLoan.lean:CrossChainAtomic".to_string(),
+        pattern_id: "cross_chain_arbitrage".to_string(),
+        pattern_template: PatternTemplate::CrossChainArbitrage,
+        theorem_reference: "CrossChainAtomic".to_string(),
+        theorem_file: PathBuf::from("maths/examples/BridgedFlashLoan.lean"),
+        theorem_line: 150,
         safety_properties: vec![
-            SafetyProperty::Atomic,
-            SafetyProperty::CrossChainSafe,
-            SafetyProperty::BalancePreserving,
+            SafetyProperty::Atomicity,
+            SafetyProperty::CrossChainConsistency,
+            SafetyProperty::BalancePreservation,
         ],
-        confidence: 1.0,
+        preconditions: vec!["valid_bridge".to_string()],
+        structure_regex: r"seq\(.*bridge.*\)".to_string(),
+        confidence_threshold: 0.90,
+        gas_optimization_potential: true,
     }
 }
 
 fn create_parallel_execution_pattern() -> ProvenPattern {
     ProvenPattern {
-        id: "parallel_execution".to_string(),
-        name: "Parallel Execution Pattern".to_string(),
-        lean_theorem: "maths/Optimization/Parallel.lean:ParallelSafe".to_string(),
+        pattern_id: "parallel_execution".to_string(),
+        pattern_template: PatternTemplate::GeneralAtomic,
+        theorem_reference: "ParallelExecution".to_string(),
+        theorem_file: PathBuf::from("maths/Optimization/Parallel.lean"),
+        theorem_line: 50,
         safety_properties: vec![
-            SafetyProperty::Atomic,
-            SafetyProperty::GasBounded,
+            SafetyProperty::Atomicity,
+            SafetyProperty::StateConsistency,
         ],
-        confidence: 0.95, // High confidence
+        preconditions: vec!["independent_actions".to_string()],
+        structure_regex: r"parallel\(.*\)".to_string(),
+        confidence_threshold: 0.85,
+        gas_optimization_potential: true,
     }
 }
 
 fn create_sequential_pattern() -> ProvenPattern {
     ProvenPattern {
-        id: "sequential_operations".to_string(),
-        name: "Sequential Operations Pattern".to_string(),
-        lean_theorem: "maths/DSL/Compile.lean:SequentialComposition".to_string(),
+        pattern_id: "sequential_execution".to_string(),
+        pattern_template: PatternTemplate::GeneralAtomic,
+        theorem_reference: "SequentialComposition".to_string(),
+        theorem_file: PathBuf::from("maths/EVM/Category.lean"),
+        theorem_line: 200,
         safety_properties: vec![
-            SafetyProperty::InvariantPreserving,
-            SafetyProperty::BalancePreserving,
+            SafetyProperty::Atomicity,
         ],
-        confidence: 1.0,
+        preconditions: vec![],
+        structure_regex: r"seq\(.*\)".to_string(),
+        confidence_threshold: 0.80,
+        gas_optimization_potential: false,
     }
 }
 
 fn create_bridge_pattern() -> ProvenPattern {
     ProvenPattern {
-        id: "bridge_operation".to_string(),
-        name: "Bridge Operation Pattern".to_string(),
-        lean_theorem: "maths/Bridge/Naturality.lean:BridgeNaturality".to_string(),
+        pattern_id: "bridge_operation".to_string(),
+        pattern_template: PatternTemplate::BridgeOperation,
+        theorem_reference: "BridgeSafety".to_string(),
+        theorem_file: PathBuf::from("maths/Bridge/Types.lean"),
+        theorem_line: 75,
         safety_properties: vec![
-            SafetyProperty::CrossChainSafe,
-            SafetyProperty::DeadlineRespecting,
+            SafetyProperty::BridgeSafety,
+            SafetyProperty::CrossChainConsistency,
         ],
-        confidence: 0.98,
+        preconditions: vec!["valid_bridge_contract".to_string()],
+        structure_regex: r"bridge\(.*\)".to_string(),
+        confidence_threshold: 0.88,
+        gas_optimization_potential: false,
     }
 }

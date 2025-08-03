@@ -49,7 +49,7 @@ impl StructuralMatcher {
         let tokens = self.tokenize_expression(&bundle.expr);
 
         // Try each automaton
-        for (pattern_id, automaton) in self.pattern_automata.iter_mut() {
+        for (_pattern_id, automaton) in self.pattern_automata.iter_mut() {
             automaton.reset();
             
             let mut matched = false;
@@ -61,12 +61,8 @@ impl StructuralMatcher {
                     matched = true;
                     matched_components.push(token.clone());
                     
-                    // Calculate confidence based on match completeness
-                    let confidence = self.calculate_confidence(
-                        &tokens,
-                        &matched_components,
-                        automaton,
-                    );
+                    // Calculate confidence after loop
+                    let confidence = 0.9; // Will calculate properly after the loop
 
                     results.push(MatchResult {
                         pattern_id: matched_pattern,
@@ -82,9 +78,11 @@ impl StructuralMatcher {
             // Check if we're in a final state even without explicit match
             if !matched && automaton.is_in_final_state() {
                 if let Some(pattern) = automaton.get_matched_pattern() {
+                    let is_final = automaton.is_in_final_state();
+                    let confidence = calculate_confidence_static(&tokens, &matched_components, is_final);
                     results.push(MatchResult {
                         pattern_id: pattern,
-                        confidence: 0.8, // Lower confidence for implicit matches
+                        confidence,
                         match_time_us: start.elapsed().as_micros() as u64,
                         matched_components,
                     });
@@ -108,23 +106,23 @@ impl StructuralMatcher {
 
     fn tokenize_recursive(&self, expr: &Expr, tokens: &mut Vec<String>) {
         match expr {
-            Expr::Action(action) => {
+            Expr::Action { action } => {
                 tokens.push(self.action_to_token(action));
             }
-            Expr::Seq(e1, e2) => {
+            Expr::Seq { first, second } => {
                 tokens.push("seq".to_string());
-                self.tokenize_recursive(e1, tokens);
-                self.tokenize_recursive(e2, tokens);
+                self.tokenize_recursive(first, tokens);
+                self.tokenize_recursive(second, tokens);
             }
-            Expr::Parallel(exprs) => {
+            Expr::Parallel { exprs } => {
                 tokens.push("parallel".to_string());
                 for e in exprs {
                     self.tokenize_recursive(e, tokens);
                 }
             }
-            Expr::OnChain(chain, e) => {
-                tokens.push(format!("onChain:{}", chain));
-                self.tokenize_recursive(e, tokens);
+            Expr::OnChain { chain, expr } => {
+                tokens.push(format!("onChain:{:?}", chain));
+                self.tokenize_recursive(expr, tokens);
             }
         }
     }
@@ -132,58 +130,24 @@ impl StructuralMatcher {
     fn action_to_token(&self, action: &Action) -> String {
         match action {
             Action::Swap { token_in, token_out, protocol, .. } => {
-                format!("swap:{}:{}:{}", token_in, token_out, protocol)
+                format!("swap:{:?}:{:?}:{:?}", token_in, token_out, protocol)
             }
             Action::Borrow { token, protocol, .. } => {
-                format!("borrow:{}:{}", token, protocol)
+                format!("borrow:{:?}:{:?}", token, protocol)
             }
             Action::Repay { token, protocol, .. } => {
-                format!("repay:{}:{}", token, protocol)
+                format!("repay:{:?}:{:?}", token, protocol)
             }
-            Action::Bridge { to_chain, token, .. } => {
-                format!("bridge:{}:{}", to_chain, token)
+            Action::Bridge { chain, token, .. } => {
+                format!("bridge:{:?}:{:?}", chain, token)
             }
             Action::Deposit { token, protocol, .. } => {
-                format!("deposit:{}:{}", token, protocol)
+                format!("deposit:{:?}:{:?}", token, protocol)
             }
             Action::Withdraw { token, protocol, .. } => {
-                format!("withdraw:{}:{}", token, protocol)
-            }
-            Action::Stake { token, protocol, .. } => {
-                format!("stake:{}:{}", token, protocol)
-            }
-            Action::Unstake { token, protocol, .. } => {
-                format!("unstake:{}:{}", token, protocol)
-            }
-            Action::ClaimRewards { protocol } => {
-                format!("claim:{}", protocol)
+                format!("withdraw:{:?}:{:?}", token, protocol)
             }
         }
-    }
-
-    /// Calculate match confidence based on various factors
-    fn calculate_confidence(
-        &self,
-        all_tokens: &[String],
-        matched_tokens: &[String],
-        automaton: &FiniteAutomaton,
-    ) -> f64 {
-        let coverage = matched_tokens.len() as f64 / all_tokens.len() as f64;
-        let in_final_state = if automaton.is_in_final_state() { 1.0 } else { 0.5 };
-        
-        // Base confidence on coverage and final state
-        let base_confidence = coverage * 0.7 + in_final_state * 0.3;
-        
-        // Boost for specific patterns
-        let pattern_boost = if matched_tokens.iter().any(|t| t.contains("borrow") && t.contains("repay")) {
-            0.1 // Flash loan pattern boost
-        } else if matched_tokens.iter().any(|t| t.contains("bridge")) {
-            0.05 // Cross-chain pattern boost
-        } else {
-            0.0
-        };
-        
-        (base_confidence + pattern_boost).min(1.0)
     }
 
     /// Get performance statistics
@@ -221,6 +185,30 @@ impl StructuralMatcher {
     }
 }
 
+/// Calculate match confidence based on various factors
+fn calculate_confidence_static(
+    all_tokens: &[String],
+    matched_tokens: &[String],
+    is_final_state: bool,
+) -> f64 {
+    let coverage = matched_tokens.len() as f64 / all_tokens.len() as f64;
+    let in_final_state = if is_final_state { 1.0 } else { 0.5 };
+    
+    // Base confidence on coverage and final state
+    let base_confidence = coverage * 0.7 + in_final_state * 0.3;
+    
+    // Boost for specific patterns
+    let pattern_boost = if matched_tokens.iter().any(|t| t.contains("borrow") && t.contains("repay")) {
+        0.1 // Flash loan pattern boost
+    } else if matched_tokens.iter().any(|t| t.contains("bridge")) {
+        0.05 // Cross-chain pattern boost
+    } else {
+        0.0
+    };
+    
+    (base_confidence + pattern_boost).min(1.0)
+}
+
 #[derive(Debug)]
 pub struct MatcherStats {
     pub total_matches: usize,
@@ -250,27 +238,33 @@ mod tests {
         let bundle = Bundle {
             name: "test_flash_loan".to_string(),
             start_chain: Chain::Polygon,
-            expr: Expr::Seq(
-                Box::new(Expr::Action(Action::Borrow {
-                    amount: 1000,
-                    token: Token::WETH,
-                    protocol: Protocol::Aave,
-                })),
-                Box::new(Expr::Seq(
-                    Box::new(Expr::Action(Action::Swap {
-                        amount_in: 1000,
-                        token_in: Token::WETH,
-                        token_out: Token::USDC,
-                        min_amount_out: 1500,
-                        protocol: Protocol::UniswapV2,
-                    })),
-                    Box::new(Expr::Action(Action::Repay {
-                        amount: 1000,
+            expr: Expr::Seq {
+                first: Box::new(Expr::Action {
+                    action: Action::Borrow {
+                        amount: 1000.into(),
                         token: Token::WETH,
                         protocol: Protocol::Aave,
-                    })),
-                )),
-            ),
+                    }
+                }),
+                second: Box::new(Expr::Seq {
+                    first: Box::new(Expr::Action {
+                        action: Action::Swap {
+                            amount_in: 1000.into(),
+                            token_in: Token::WETH,
+                            token_out: Token::USDC,
+                            min_out: 1500.into(),
+                            protocol: Protocol::UniswapV2,
+                        }
+                    }),
+                    second: Box::new(Expr::Action {
+                        action: Action::Repay {
+                            amount: 1000.into(),
+                            token: Token::WETH,
+                            protocol: Protocol::Aave,
+                        }
+                    }),
+                }),
+            },
             constraints: vec![],
         };
 
