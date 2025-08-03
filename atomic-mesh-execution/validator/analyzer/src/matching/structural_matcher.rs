@@ -219,7 +219,7 @@ pub struct MatcherStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::common::{Token, Protocol, Chain};
+    use crate::common::{Token, Protocol, Chain, Rational};
     use crate::pattern_compiler::AutomataGenerator;
 
     #[test]
@@ -241,7 +241,7 @@ mod tests {
             expr: Expr::Seq {
                 first: Box::new(Expr::Action {
                     action: Action::Borrow {
-                        amount: 1000.into(),
+                        amount: Rational::from_integer(1000),
                         token: Token::WETH,
                         protocol: Protocol::Aave,
                     }
@@ -249,16 +249,16 @@ mod tests {
                 second: Box::new(Expr::Seq {
                     first: Box::new(Expr::Action {
                         action: Action::Swap {
-                            amount_in: 1000.into(),
+                            amount_in: Rational::from_integer(1000),
                             token_in: Token::WETH,
                             token_out: Token::USDC,
-                            min_out: 1500.into(),
+                            min_out: Rational::from_integer(1500),
                             protocol: Protocol::UniswapV2,
                         }
                     }),
                     second: Box::new(Expr::Action {
                         action: Action::Repay {
-                            amount: 1000.into(),
+                            amount: Rational::from_integer(1000),
                             token: Token::WETH,
                             protocol: Protocol::Aave,
                         }

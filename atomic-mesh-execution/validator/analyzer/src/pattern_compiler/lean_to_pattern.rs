@@ -261,7 +261,7 @@ impl LeanToPatternCompiler {
 mod tests {
     use super::*;
     use std::path::PathBuf;
-    use crate::pattern_scanner::TheoremMetadata;
+    use crate::pattern_scanner::lean_parser::TheoremMetadata;
 
     #[test]
     fn test_compile_flash_loan_theorem() {

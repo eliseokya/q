@@ -396,7 +396,7 @@ pub struct ConstraintCheckerStats {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::common::Protocol;
+    use crate::common::{Protocol, Rational};
 
     #[test]
     fn test_deadline_constraint() {
