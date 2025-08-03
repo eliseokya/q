@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+/**
+ * profitability-checker: Validates profitability in real-time
+ * 
+ * Final check before execution to ensure the arbitrage opportunity
+ * remains profitable after accounting for ALL costs.
+ * 
+ * Cost calculations:
+ * - Flash loan fees (0.09% Aave, 0.05% Uniswap, 0% Balancer)
+ * - Swap fees (0.3% UniV2, 0.05-1% UniV3, varies Curve)
+ * - Bridge fees (varies by bridge and amount)
+ * - Gas costs on source chain
+ * - Gas costs on destination chain
+ * - L1 data costs for L2 chains
+ * - Slippage estimates
+ * 
+ * Safety checks:
+ * - Minimum profit threshold (default: $50)
+ * - Maximum gas price limits
+ * - Liquidity depth validation
+ * - Price impact calculations
+ * - Time decay adjustments
+ * 
+ * Output:
+ * {
+ *   "profitable": true/false,
+ *   "expected_profit": "125.30",
+ *   "total_costs": "25.20",
+ *   "confidence": 0.92,
+ *   "risks": ["high_gas", "low_liquidity"]
+ * }
+ */
+
+// Implementation will be added later

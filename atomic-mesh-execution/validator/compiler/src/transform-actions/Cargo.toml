@@ -1,0 +1,14 @@
+[package]
+name = "transform-actions"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "transform-actions"
+path = "main.rs"
+
+[dependencies]
+common = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+lazy_static = { workspace = true }

@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+flash-recycler: Capital recycling via flash loans
+
+Recycles capital through multiple operations in a single transaction.
+
+Strategy:
+1. Flash loan initial capital
+2. Execute first operation
+3. Use proceeds for next
+4. Chain operations
+5. Repay and profit
+
+Features:
+- Operation chaining
+- Capital efficiency
+- Multi-protocol support
+- Gas batching
+- Failure recovery
+- Profit optimization
+
+Usage:
+  opportunity-chain | flash-recycler --max-ops=5
+  flash-recycler --capital-efficient --batch
+"""
+
+# Implementation will be added later

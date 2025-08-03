@@ -1,0 +1,21 @@
+# Optimism configuration
+
+[chain]
+id = 10
+name = "optimism"
+currency = "ETH"
+l1_chain = 1
+
+[node]
+type = "unified-reth-op"
+ipc_path = "/tmp/optimism.ipc"
+http_port = 8553
+ws_port = 8554
+
+[sequencer]
+endpoint = "https://mainnet.optimism.io"
+dangerous_allow_custom = false
+
+[sync]
+mode = "snap"
+l1_messages = true

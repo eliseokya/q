@@ -1,0 +1,45 @@
+# Node configuration for unified-reth infrastructure
+
+[ethereum]
+chain_id = 1
+rpc_port = 8545
+ws_port = 8546
+ipc_path = "/tmp/ethereum.ipc"
+data_dir = "/data/ethereum"
+peers = [
+  "enode://...",
+  "enode://..."
+]
+
+[arbitrum]
+chain_id = 42161
+rpc_port = 8547
+ws_port = 8548
+ipc_path = "/tmp/arbitrum.ipc"
+data_dir = "/data/arbitrum"
+sequencer_endpoint = "https://arb1.arbitrum.io/rpc"
+
+[polygon]
+chain_id = 137
+rpc_port = 8549
+ws_port = 8550
+ipc_path = "/tmp/polygon.ipc"
+data_dir = "/data/polygon"
+bor_peers = []
+heimdall_endpoint = "https://heimdall.polygon.technology"
+
+[base]
+chain_id = 8453
+rpc_port = 8551
+ws_port = 8552
+ipc_path = "/tmp/base.ipc"
+data_dir = "/data/base"
+l1_endpoint = "http://localhost:8545"
+
+[optimism]
+chain_id = 10
+rpc_port = 8553
+ws_port = 8554
+ipc_path = "/tmp/optimism.ipc"
+data_dir = "/data/optimism"
+l1_endpoint = "http://localhost:8545"

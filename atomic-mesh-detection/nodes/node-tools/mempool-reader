@@ -1,0 +1,48 @@
+#!/usr/bin/env node
+
+/**
+ * mempool-reader: Outputs mempool transactions from all chains
+ * 
+ * This tool connects directly to the unified node infrastructure and
+ * streams pending transactions from the mempool. It's the first step
+ * in many detection pipelines, providing raw transaction data.
+ * 
+ * Features:
+ * - Direct IPC connection to nodes (no JSON-RPC overhead)
+ * - Filters transactions by value, gas price, or contract
+ * - Supports all 5 chains simultaneously
+ * - Outputs in streaming JSON format
+ * - Can filter by specific protocols or tokens
+ * - Detects and prioritizes high-value transactions
+ * 
+ * Output format:
+ * {
+ *   "chain": "ethereum",
+ *   "txHash": "0x...",
+ *   "from": "0x...",
+ *   "to": "0x...",
+ *   "value": "1000000000000000000",
+ *   "gasPrice": "30000000000",
+ *   "data": "0x...",
+ *   "timestamp": 1234567890,
+ *   "protocol": "uniswap_v3",  // If detected
+ *   "pending_time": 150         // ms in mempool
+ * }
+ * 
+ * Usage:
+ *   mempool-reader --chain=all
+ *   mempool-reader --chain=ethereum --min-value=10eth
+ *   mempool-reader --filter=dex --output=json
+ *   mempool-reader --contracts=0x123,0x456 --realtime
+ * 
+ * Options:
+ *   --chain          Chain to monitor (ethereum|arbitrum|polygon|base|optimism|all)
+ *   --min-value      Minimum transaction value
+ *   --filter         Filter type (dex|lending|bridge|all)
+ *   --contracts      Specific contracts to monitor
+ *   --gas-price      Minimum gas price filter
+ *   --output         Output format (json|csv|binary)
+ *   --buffer-size    Internal buffer size for performance
+ */
+
+// Implementation will be added later

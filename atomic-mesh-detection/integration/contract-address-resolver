@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+contract-address-resolver: Resolves contract addresses
+
+Resolves protocol names to actual contract addresses per chain.
+
+Features:
+- Address resolution
+- Chain-specific lookup
+- Version handling
+- Validation
+- Cache management
+- Updates tracking
+
+Usage:
+  protocol-names | contract-address-resolver --all-chains
+  contract-address-resolver --validate --cache
+"""
+
+# Implementation will be added later

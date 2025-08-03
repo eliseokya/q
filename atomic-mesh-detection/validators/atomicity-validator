@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+atomicity-validator: Ensures atomic execution
+
+Validates that multi-step operations can execute atomically
+without partial failures.
+
+Features:
+- Atomicity checking
+- Rollback analysis
+- Dependency validation
+- Cross-chain atomicity
+- Failure modes
+- Recovery paths
+
+Input: Execution plan
+Output: Atomicity assessment
+
+Usage:
+  plan | atomicity-validator --strict
+  atomicity-validator --cross-chain --analyze-failures
+"""
+
+# Implementation will be added later

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+correlation-break-detector: Finds correlation breaks
+
+Detects when normally correlated assets diverge, creating arbitrage
+opportunities.
+
+Features:
+- Correlation monitoring
+- Break detection
+- Statistical significance
+- Reversion timing
+- Multi-asset tracking
+- Pair trading signals
+
+Input: Price feeds
+Output: Correlation breaks
+
+Usage:
+  price-feeds | correlation-break-detector --pairs=all
+  correlation-break-detector --threshold=2-sigma
+"""
+
+# Implementation will be added later

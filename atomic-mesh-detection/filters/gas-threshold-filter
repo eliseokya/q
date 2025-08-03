@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+gas-threshold-filter: Filters by gas cost limits
+
+Removes opportunities where gas costs exceed acceptable thresholds
+or profit margins.
+
+Features:
+- Gas limit checking
+- Profit ratio filtering
+- Dynamic thresholds
+- Chain-specific limits
+- Congestion awareness
+- Priority filtering
+
+Input: Opportunities with gas estimates
+Output: Gas-feasible opportunities
+
+Usage:
+  opportunities | gas-threshold-filter --max-gas=100
+  gas-threshold-filter --min-ratio=2.0 --dynamic
+"""
+
+# Implementation will be added later

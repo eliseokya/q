@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+/**
+ * block-reader: Outputs new blocks from all chains
+ * 
+ * Streams new blocks as they are produced, providing block headers
+ * and transaction summaries. Used for timing strategies and
+ * understanding block composition.
+ * 
+ * Features:
+ * - Real-time block streaming
+ * - Transaction count and gas usage
+ * - MEV bundle detection
+ * - Builder identification
+ * - Cross-chain block correlation
+ * - Timestamp synchronization
+ * 
+ * Output format:
+ * {
+ *   "chain": "ethereum",
+ *   "number": 18500000,
+ *   "hash": "0x...",
+ *   "timestamp": 1234567890,
+ *   "miner": "0x...",
+ *   "baseFeePerGas": "25000000000",
+ *   "gasUsed": 15000000,
+ *   "txCount": 250,
+ *   "mevBundle": true,
+ *   "builder": "flashbots"
+ * }
+ * 
+ * Usage:
+ *   block-reader --chain=all --full-transactions
+ *   block-reader --chain=ethereum --mev-only
+ *   block-reader --with-receipts --decode-logs
+ */
+
+// Implementation will be added later

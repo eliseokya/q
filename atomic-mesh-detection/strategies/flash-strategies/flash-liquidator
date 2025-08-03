@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+"""
+flash-liquidator: Capital-free liquidation execution
+
+Executes liquidations without capital by flash loaning the
+required assets, liquidating, and repaying in one transaction.
+
+Strategy:
+1. Identify liquidatable position
+2. Flash loan debt amount
+3. Liquidate position
+4. Receive collateral + bonus
+5. Swap to repay currency
+6. Repay flash loan + fee
+7. Keep profit
+
+Features:
+- Zero capital required
+- Multi-collateral support
+- Optimal liquidation amount
+- Gas war strategies
+- Flashbots integration
+- Profit maximization
+
+Input: Liquidation opportunities
+Output: Flash liquidation bundles
+
+{
+  "strategy": "flash-liquidation",
+  "protocol": "compound_v3",
+  "borrower": "0x...",
+  "repayAmount": "50000_USDC",
+  "receiveCollateral": "28.5_WETH",
+  "liquidationBonus": "1.425_WETH",
+  "flashLoanProtocol": "aave",
+  "estimatedProfit": "2600_USD"
+}
+
+Usage:
+  liquidation-finder | flash-liquidator --aggressive
+  flash-liquidator --protocol=aave --min-bonus=5%
+  flash-liquidator --gas-optimize --mev-protect
+"""
+
+# Implementation will be added later

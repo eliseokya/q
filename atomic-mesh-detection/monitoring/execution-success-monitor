@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+execution-success-monitor: Tracks execution success
+
+Monitors success rates of opportunities sent to execution.
+
+Features:
+- Success tracking
+- Failure analysis
+- Strategy correlation
+- Timing analysis
+- Improvement tracking
+- Feedback generation
+
+Usage:
+  execution-feedback | execution-success-monitor
+  execution-success-monitor --by-type --improve
+"""
+
+# Implementation will be added later

@@ -1,0 +1,163 @@
+{
+  "description": "Test cases based on maths/DSL/Syntax.lean examples",
+  "test_cases": [
+    {
+      "name": "simple_flash_loan_lean_format",
+      "description": "Matches exampleFlashLoan from Syntax.lean",
+      "input": {
+        "opportunity_id": "polygon-arbitrum-flash-loan",
+        "source_chain": "polygon",
+        "path": [
+          {
+            "action": "borrow",
+            "amount": "100",
+            "token": "WETH",
+            "protocol": "aave"
+          },
+          {
+            "action": "bridge",
+            "to": "arbitrum",
+            "token": "WETH",
+            "amount": "100"
+          },
+          {
+            "action": "swap",
+            "amount": "100",
+            "from": "WETH",
+            "to": "USDC",
+            "minOut": "50000",
+            "protocol": "uniswapv2"
+          },
+          {
+            "action": "bridge",
+            "to": "polygon",
+            "token": "WETH",
+            "amount": "100"
+          },
+          {
+            "action": "repay",
+            "amount": "100",
+            "token": "WETH",
+            "protocol": "aave"
+          }
+        ],
+        "constraints": {
+          "deadline": 20,
+          "invariants": ["constant-product"]
+        }
+      },
+      "expected_structure": {
+        "name": "bundle-polygon-arbitrum-flash-loan",
+        "startChain": "polygon",
+        "expr": {
+          "type": "onChain",
+          "chain": "polygon",
+          "expr": {
+            "type": "seq",
+            "e1": "action:borrow",
+            "e2": {
+              "type": "seq",
+              "e1": "action:bridge",
+              "e2": "continued_sequence"
+            }
+          }
+        },
+        "constraints": [
+          {"type": "deadline", "blocks": 20},
+          {"type": "invariant", "name": "constant-product"}
+        ]
+      }
+    },
+    {
+      "name": "all_action_types",
+      "description": "Tests all action types from Lean DSL",
+      "input": {
+        "opportunity_id": "comprehensive-test",
+        "source_chain": "polygon",
+        "path": [
+          {
+            "action": "borrow",
+            "amount": "1000",
+            "token": "USDC",
+            "protocol": "aave"
+          },
+          {
+            "action": "deposit",
+            "amount": "500",
+            "token": "USDC",
+            "protocol": "compound"
+          },
+          {
+            "action": "swap",
+            "amount": "500",
+            "from": "USDC",
+            "to": "WETH",
+            "minOut": "0.5",
+            "protocol": "uniswapv2"
+          },
+          {
+            "action": "withdraw",
+            "amount": "500",
+            "token": "USDC",
+            "protocol": "compound"
+          },
+          {
+            "action": "repay",
+            "amount": "1000",
+            "token": "USDC",
+            "protocol": "aave"
+          }
+        ]
+      }
+    },
+    {
+      "name": "custom_tokens_protocols",
+      "description": "Tests custom tokens and protocols like Lean DSL",
+      "input": {
+        "opportunity_id": "custom-test",
+        "source_chain": "polygon",
+        "path": [
+          {
+            "action": "swap",
+            "amount": "100",
+            "from": "0x1234567890abcdef",
+            "to": "USDC",
+            "minOut": "200",
+            "protocol": "custom-dex"
+          }
+        ]
+      },
+      "should_support": {
+        "custom_token": "0x1234567890abcdef",
+        "custom_protocol": "custom-dex"
+      }
+    },
+    {
+      "name": "all_constraint_types",
+      "description": "Tests all constraint types from Lean DSL",
+      "input": {
+        "opportunity_id": "constraint-test",
+        "source_chain": "polygon",
+        "path": [
+          {
+            "action": "swap",
+            "amount": "100",
+            "from": "USDC",
+            "to": "DAI",
+            "minOut": "100",
+            "protocol": "uniswapv2"
+          }
+        ],
+        "constraints": {
+          "deadline": 30,
+          "max_gas": 500000,
+          "min_balance": {
+            "token": "USDC",
+            "amount": "50"
+          },
+          "invariants": ["constant-product", "no-negative-balance"]
+        }
+      }
+    }
+  ]
+}

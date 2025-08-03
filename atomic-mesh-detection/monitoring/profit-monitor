@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+profit-monitor: Tracks actual profits
+
+Monitors realized profits and compares to predictions.
+
+Features:
+- Profit tracking
+- ROI calculation
+- Strategy performance
+- Cost analysis
+- Trend monitoring
+- Report generation
+
+Usage:
+  execution-results | profit-monitor --real-time
+  profit-monitor --by-strategy --report=daily
+"""
+
+# Implementation will be added later

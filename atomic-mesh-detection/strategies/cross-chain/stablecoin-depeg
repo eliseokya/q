@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+"""
+stablecoin-depeg: Stablecoin depeg arbitrage
+
+Specializes in profiting from stablecoin depegs across chains
+and protocols.
+
+Strategy:
+1. Monitor stablecoin prices
+2. Detect depeg events
+3. Route through optimal venues
+4. Use stable pools efficiently
+5. Manage risk carefully
+
+Features:
+- Depeg detection
+- Route optimization
+- Risk limits
+- Quick execution
+- Multi-stable support
+- Recovery trading
+
+Usage:
+  price-feed | stablecoin-depeg --threshold=0.2%
+  stablecoin-depeg --chains=all --aggressive
+"""
+
+# Implementation will be added later

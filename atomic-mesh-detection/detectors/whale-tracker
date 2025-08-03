@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+whale-tracker: Tracks large wallet movements
+
+Monitors whale wallets and large transactions that could impact
+prices and create opportunities.
+
+Features:
+- Whale identification
+- Movement tracking
+- Impact prediction
+- Pattern recognition
+- Alert system
+- Historical analysis
+
+Input: Blockchain transactions
+Output: Whale activity alerts
+
+Usage:
+  transaction-stream | whale-tracker --min-value=1M
+  whale-tracker --known-whales --predictive
+"""
+
+# Implementation will be added later

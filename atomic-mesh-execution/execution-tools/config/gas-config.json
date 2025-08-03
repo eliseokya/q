@@ -1,0 +1,57 @@
+{
+  "gasConfig": {
+    "description": "Gas limits and thresholds per chain",
+    "note": "All values in gwei unless specified",
+    
+    "arbitrum": {
+      "maxGasPrice": 10,
+      "targetGasPrice": 0.1,
+      "priorityFee": 0.01,
+      "l1CalldataGasPerByte": 16,
+      "estimateMultiplier": 1.2,
+      "notes": "L2 with L1 calldata costs"
+    },
+    
+    "ethereum": {
+      "maxGasPrice": 200,
+      "targetGasPrice": 30,
+      "priorityFee": 2,
+      "maxPriorityFee": 10,
+      "estimateMultiplier": 1.1,
+      "notes": "High gas, use EIP-1559"
+    },
+    
+    "polygon": {
+      "maxGasPrice": 500,
+      "targetGasPrice": 50,
+      "priorityFee": 30,
+      "estimateMultiplier": 1.3,
+      "notes": "Can spike during congestion"
+    },
+    
+    "base": {
+      "maxGasPrice": 5,
+      "targetGasPrice": 0.05,
+      "priorityFee": 0.001,
+      "l1CalldataGasPerByte": 16,
+      "estimateMultiplier": 1.2,
+      "notes": "Optimism Bedrock architecture"
+    },
+    
+    "optimism": {
+      "maxGasPrice": 5,
+      "targetGasPrice": 0.05,
+      "priorityFee": 0.001,
+      "l1CalldataGasPerByte": 16,
+      "estimateMultiplier": 1.2,
+      "notes": "Similar to Base"
+    },
+    
+    "profitability": {
+      "minProfitUSD": 50,
+      "minProfitPercentage": 0.5,
+      "safetyMarginPercentage": 20,
+      "maxSlippagePercentage": 0.5
+    }
+  }
+}

@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+protocol-usage-monitor: Monitors protocol performance
+
+Tracks which protocols perform best for different strategies.
+
+Features:
+- Usage tracking
+- Performance metrics
+- Success correlation
+- Cost analysis
+- Optimization suggestions
+- Protocol ranking
+
+Usage:
+  protocol-usage | protocol-usage-monitor --rank
+  protocol-usage-monitor --optimize --suggest
+"""
+
+# Implementation will be added later

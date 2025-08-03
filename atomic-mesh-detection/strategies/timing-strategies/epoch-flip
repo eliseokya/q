@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+epoch-flip: Epoch boundary arbitrage
+
+Exploits opportunities at epoch boundaries for rewards and rebalancing.
+
+Strategy:
+1. Track epoch timing
+2. Predict state changes
+3. Position before epoch
+4. Capture rewards
+5. Exit efficiently
+
+Features:
+- Epoch tracking
+- Reward calculation
+- State prediction
+- Multi-protocol support
+- Timing precision
+- Risk management
+
+Usage:
+  epoch-timer | epoch-flip --protocols=staking
+  epoch-flip --compound-rewards --optimize
+"""
+
+# Implementation will be added later

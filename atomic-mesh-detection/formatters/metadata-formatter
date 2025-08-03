@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+metadata-formatter: Adds execution metadata
+
+Enriches opportunities with additional metadata for better
+execution decisions.
+
+Features:
+- Metadata addition
+- Context enrichment
+- Historical data
+- Risk scores
+- Timing constraints
+- Success predictions
+
+Input: Opportunities
+Output: Enriched opportunities
+
+Usage:
+  opportunities | metadata-formatter --full
+  metadata-formatter --historical --predictions
+"""
+
+# Implementation will be added later

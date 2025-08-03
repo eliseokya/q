@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+
+/**
+ * bundle-composer: Composes atomic bundles from opportunities
+ * 
+ * Takes arbitrage opportunities from the detection system and converts
+ * them into executable bundles for the AtomicExecutor contract.
+ * 
+ * Input format (from detection system):
+ * {
+ *   "opportunity_id": "uuid",
+ *   "source_chain": "arbitrum",
+ *   "target_chain": "polygon",
+ *   "token_path": ["USDC", "WETH", "USDC"],
+ *   "protocols": ["aave", "uniswap", "curve"],
+ *   "expected_profit": "150.50",
+ *   "confidence": 0.95
+ * }
+ * 
+ * Output format (bundle for execution):
+ * {
+ *   "bundle_id": "uuid",
+ *   "flash_loan": {
+ *     "protocol": "aave",
+ *     "asset": "USDC",
+ *     "amount": "10000"
+ *   },
+ *   "operations": [
+ *     {"type": "swap", "protocol": "uniswap", ...},
+ *     {"type": "bridge", "protocol": "debridge", ...},
+ *     {"type": "swap", "protocol": "curve", ...}
+ *   ],
+ *   "gas_limit": "5000000",
+ *   "deadline": "1234567890"
+ * }
+ * 
+ * Features:
+ * - Validates opportunity feasibility
+ * - Optimizes operation ordering
+ * - Calculates optimal flash loan parameters
+ * - Estimates gas requirements
+ * - Sets appropriate deadlines
+ * - Handles multi-hop paths
+ * - Supports multiple bridge options
+ */
+
+// Implementation will be added later

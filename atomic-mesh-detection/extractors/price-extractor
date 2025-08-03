@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+"""
+price-extractor: Extracts prices from DEX events and state
+
+Processes swap events and pool states to extract real-time prices
+across all DEXes and chains. Handles different pool types and
+decimal conversions.
+
+Features:
+- Extracts prices from Uniswap V2/V3, Curve, Balancer events
+- Handles different decimal places automatically
+- Calculates TWAP from cumulative prices
+- Detects price manipulation attempts
+- Outputs normalized prices in USD
+- Supports concentrated liquidity math
+
+Input: Events or state from event-reader/state-reader
+Output: Normalized prices with metadata
+
+{
+  "chain": "ethereum",
+  "protocol": "uniswap_v3", 
+  "pool": "0x...",
+  "token0": "USDC",
+  "token1": "WETH",
+  "price0": "1823.45",      # WETH/USDC
+  "price1": "0.0005484",    # USDC/WETH
+  "liquidity": "50000000",
+  "volume24h": "10000000",
+  "timestamp": 1234567890
+}
+
+Usage:
+  event-reader --events=Swap | price-extractor
+  price-extractor --input=state --normalize=usd
+  price-extractor --protocol=curve --stablecoin-mode
+"""
+
+# Implementation will be added later

@@ -1,0 +1,40 @@
+{
+  "opportunity_id": "flash_example_001",
+  "source_chain": "polygon",
+  "path": [
+    {
+      "action": "borrow",
+      "amount": "1000",
+      "token": "WETH",
+      "protocol": "aave"
+    },
+    {
+      "action": "swap",
+      "from": "WETH",
+      "to": "USDC",
+      "amount": "1000",
+      "minOut": "1500000",
+      "protocol": "uniswap"
+    },
+    {
+      "action": "swap",
+      "from": "USDC",
+      "to": "WETH",
+      "amount": "1500000",
+      "minOut": "1001",
+      "protocol": "uniswap"
+    },
+    {
+      "action": "repay",
+      "amount": "1000",
+      "token": "WETH",
+      "protocol": "aave"
+    }
+  ],
+  "expected_profit": "1",
+  "confidence": 0.99,
+  "constraints": {
+    "deadline": 10,
+    "max_gas": 300000
+  }
+}

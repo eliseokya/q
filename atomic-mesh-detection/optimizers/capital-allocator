@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+capital-allocator: Allocates capital across opportunities
+
+Optimally distributes available capital across multiple opportunities
+for maximum return.
+
+Features:
+- Portfolio optimization
+- Risk-adjusted allocation
+- Multi-asset support
+- Reserve management
+- Dynamic rebalancing
+- Constraint satisfaction
+
+Input: Opportunities + capital
+Output: Capital allocation
+
+Usage:
+  opportunities | capital-allocator --capital=1M
+  capital-allocator --risk-limit=0.2 --diversify
+"""
+
+# Implementation will be added later

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+emergency-coordinator: Coordinates emergency stops
+
+Manages emergency procedures between detection and execution systems
+during critical events.
+
+Features:
+- Emergency detection
+- System halt coordination
+- State preservation
+- Recovery planning
+- Alert management
+- Graceful shutdown
+
+Input: Emergency signals
+Output: Coordination commands
+
+Usage:
+  emergency-signal | emergency-coordinator --halt-all
+  emergency-coordinator --preserve-state --alert
+"""
+
+# Implementation will be added later

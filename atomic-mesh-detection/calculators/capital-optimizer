@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+capital-optimizer: Optimizes capital allocation
+
+Determines optimal capital allocation across opportunities and chains
+for maximum risk-adjusted returns.
+
+Features:
+- Portfolio optimization
+- Risk management
+- Capital efficiency
+- Rebalancing logic
+- Reserve requirements
+- Multi-asset support
+
+Input: Opportunities + capital
+Output: Optimal allocation
+
+Usage:
+  opportunities | capital-optimizer --risk-limit=0.1
+  capital-optimizer --rebalance --current-positions
+"""
+
+# Implementation will be added later

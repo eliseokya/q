@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+"""
+flash-loan-enhancer: Adds flash loan strategies to opportunities
+
+Enhances arbitrage opportunities by adding optimal flash loan
+strategies, removing capital requirements.
+
+Features:
+- Selects optimal flash loan protocol
+- Calculates required loan amount
+- Accounts for flash loan fees
+- Handles multi-asset loans
+- Optimizes repayment paths
+- Falls back to owned capital
+
+Input: Arbitrage opportunity
+Output: Flash loan enhanced opportunity
+
+{
+  "originalOpp": "arb_123",
+  "flashLoanProtocol": "balancer",
+  "loanAsset": "USDC",
+  "loanAmount": "1000000",
+  "flashFee": "0",
+  "enhancedProfit": "950",
+  "capitalRequired": "0",
+  "repaymentPath": ["execute_arb", "swap_back", "repay"],
+  "fallbackCapital": "50000"
+}
+
+Usage:
+  path-builder | flash-loan-enhancer --prefer-zero-fee
+  flash-loan-enhancer --max-loan=10000000 --multi-asset
+  flash-loan-enhancer --fallback-to-capital
+"""
+
+# Implementation will be added later

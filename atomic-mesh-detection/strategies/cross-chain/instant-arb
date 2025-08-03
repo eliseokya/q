@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+
+"""
+instant-arb: Sub-second cross-chain arbitrage
+
+Executes arbitrage across chains using our atomic bridge for
+near-instant settlement. Optimized for speed over profit size.
+
+Strategy:
+1. Detect price delta between chains
+2. Flash loan on source chain
+3. Execute swap
+4. Bridge via atomic-mesh (400ms)
+5. Execute counter-swap
+6. Bridge back and repay
+
+Features:
+- 400ms target execution
+- Atomic guarantee
+- No bridge risk
+- Parallel execution
+- Automatic routing
+- MEV protection
+
+Input: Cross-chain price deltas
+Output: Execution bundles
+
+{
+  "strategy": "instant-arb",
+  "sourceChain": "arbitrum",
+  "targetChain": "polygon",
+  "token": "USDC",
+  "amount": "100000",
+  "expectedTime": "385ms",
+  "atomicBundle": true,
+  "profitEstimate": "125"
+}
+
+Usage:
+  price-delta-finder | instant-arb --max-time=500ms
+  instant-arb --min-profit=50 --chains=arbitrum,polygon
+  instant-arb --atomic-only --high-frequency
+"""
+
+# Implementation will be added later

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+congestion-detector: Detects network congestion
+
+Monitors network congestion across chains to optimize timing and
+gas strategies.
+
+Features:
+- Mempool depth analysis
+- Gas price spikes
+- Block fullness
+- Congestion prediction
+- Chain comparison
+- Optimal timing hints
+
+Input: Network state
+Output: Congestion metrics
+
+Usage:
+  network-state | congestion-detector --all-chains
+  congestion-detector --predict --horizon=10-blocks
+"""
+
+# Implementation will be added later

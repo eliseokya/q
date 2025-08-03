@@ -1,0 +1,102 @@
+#!/bin/bash
+# Execution Tools Pipeline - Optimization and Orchestration
+# Input: Validated bundle JSON from DSL compilation
+# Output: Optimized bundle JSON ready for smart contract execution
+
+set -euo pipefail
+
+# Module directory
+MODULE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Function to send feedback to detection system
+send_feedback() {
+    local type="$1"
+    local reason="$2"
+    local bundle_id="$3"
+    
+    echo -e "${RED}Execution preparation failed: $reason${NC}" >&2
+    
+    # Send feedback to detection system
+    node "$MODULE_DIR/feedback/send-feedback.ts" \
+        --type "$type" \
+        --reason "$reason" \
+        --bundle-id "$bundle_id"
+}
+
+# Read validated bundle JSON from stdin
+BUNDLE_JSON=$(cat)
+
+# Extract bundle ID for feedback
+BUNDLE_ID=$(echo "$BUNDLE_JSON" | jq -r '.bundle_id')
+
+echo -e "${YELLOW}Processing bundle: $BUNDLE_ID${NC}" >&2
+
+# Step 1: Bundle Composition
+echo -e "Step 1: Composing bundle for execution..." >&2
+COMPOSED_BUNDLE=$("$MODULE_DIR/bundle-composer/bin/bundle-composer" <<< "$BUNDLE_JSON")
+echo -e "${GREEN}✓ Bundle composed${NC}" >&2
+
+# Step 2: Gas Optimization
+echo -e "Step 2: Optimizing gas usage..." >&2
+OPTIMIZED_BUNDLE=$("$MODULE_DIR/gas-optimizer/bin/gas-optimizer" <<< "$COMPOSED_BUNDLE")
+
+GAS_SAVINGS=$(echo "$OPTIMIZED_BUNDLE" | jq -r '.optimization.gas_savings_percent')
+echo -e "${GREEN}✓ Gas optimized - ${GAS_SAVINGS}% savings achieved${NC}" >&2
+
+# Step 3: Profitability Check
+echo -e "Step 3: Checking profitability..." >&2
+PROFIT_CHECK=$("$MODULE_DIR/profitability-checker/bin/profitability-checker" <<< "$OPTIMIZED_BUNDLE")
+
+if [ "$(echo "$PROFIT_CHECK" | jq -r '.profitable')" != "true" ]; then
+    send_feedback "unprofitable" \
+        "Bundle not profitable after gas costs" \
+        "$BUNDLE_ID"
+    exit 1
+fi
+
+EXPECTED_PROFIT=$(echo "$PROFIT_CHECK" | jq -r '.expected_profit_usd')
+echo -e "${GREEN}✓ Profitable - Expected: \$$EXPECTED_PROFIT${NC}" >&2
+
+# Step 4: Bridge Selection
+echo -e "Step 4: Selecting optimal bridge..." >&2
+BRIDGE_SELECTED=$("$MODULE_DIR/bridge-selector/bin/bridge-selector" <<< "$PROFIT_CHECK")
+
+SELECTED_BRIDGE=$(echo "$BRIDGE_SELECTED" | jq -r '.selected_bridge')
+echo -e "${GREEN}✓ Bridge selected: $SELECTED_BRIDGE${NC}" >&2
+
+# Step 5: Execution Simulation
+echo -e "Step 5: Simulating execution..." >&2
+SIMULATION_RESULT=$("$MODULE_DIR/execution-simulator/bin/execution-simulator" <<< "$BRIDGE_SELECTED")
+
+if [ "$(echo "$SIMULATION_RESULT" | jq -r '.simulation_success')" != "true" ]; then
+    FAILURE_REASON=$(echo "$SIMULATION_RESULT" | jq -r '.failure_reason')
+    send_feedback "simulation_failed" \
+        "$FAILURE_REASON" \
+        "$BUNDLE_ID"
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Simulation successful${NC}" >&2
+
+# Final preparation for execution
+FINAL_BUNDLE=$(echo "$SIMULATION_RESULT" | jq '{
+    bundle_id: .bundle_id,
+    opportunity_id: .opportunity_id,
+    execution_plan: .execution_plan,
+    gas_config: .gas_config,
+    expected_profit: .expected_profit,
+    contracts: .contracts,
+    deadline: .deadline
+}')
+
+# Output the optimized bundle
+echo "$FINAL_BUNDLE"
+
+# Log success
+echo -e "${GREEN}Bundle $BUNDLE_ID optimized and ready for execution${NC}" >&2

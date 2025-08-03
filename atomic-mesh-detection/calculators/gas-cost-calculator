@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+"""
+gas-cost-calculator: Calculates detailed gas costs
+
+Calculates gas costs across all chains involved in an arbitrage,
+including L2 calldata costs and priority fees.
+
+Features:
+- Per-operation gas estimation
+- L2 calldata cost calculation
+- Priority fee optimization
+- Batch transaction savings
+- Gas token considerations
+- Historical gas analysis
+
+Input: Execution path
+Output: Detailed gas breakdown
+
+{
+  "path": "path_123",
+  "gasBreakdown": {
+    "ethereum": {
+      "operations": {
+        "flashLoan": 150000,
+        "swap": 120000,
+        "bridge": 80000
+      },
+      "baseFee": "30",
+      "priorityFee": "2",
+      "totalGas": 350000,
+      "costUSD": "45.50"
+    },
+    "arbitrum": {
+      "operations": {
+        "swap": 180000
+      },
+      "l2GasPrice": "0.1",
+      "l1DataCost": "50000",
+      "totalGas": 230000,
+      "costUSD": "8.50"
+    }
+  },
+  "totalCostUSD": "54.00",
+  "gasOptimizations": ["batch_swaps", "storage_packing"]
+}
+
+Usage:
+  execution-path | gas-cost-calculator --current-prices
+  gas-cost-calculator --simulate --l1-gas=100gwei
+  gas-cost-calculator --optimize --target-cost=50
+"""
+
+# Implementation will be added later

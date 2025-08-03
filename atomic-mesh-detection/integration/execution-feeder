@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+"""
+execution-feeder: Feeds opportunities to execution system
+
+Final step in detection pipeline that formats and sends validated
+opportunities to the atomic-mesh-execution system.
+
+Features:
+- Bundle formatting
+- Priority queue management
+- Execution rate limiting
+- State synchronization
+- Error handling
+- Performance tracking
+
+Input: Validated opportunities
+Output: Formatted bundles to execution
+
+{
+  "bundleId": "bundle_123",
+  "opportunity": "arb_456",
+  "priority": "high",
+  "estimatedProfit": "500",
+  "executionDeadline": 1234567890,
+  "atomicityRequired": true,
+  "alternativePaths": 2,
+  "sent": true,
+  "queuePosition": 1
+}
+
+Usage:
+  validated-opportunities | execution-feeder
+  execution-feeder --rate-limit=10/s --priority-sort
+  execution-feeder --execution-endpoint=unix:///tmp/execution
+"""
+
+# Implementation will be added later

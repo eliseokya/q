@@ -1,0 +1,19 @@
+# Polygon configuration
+
+[chain]
+id = 137
+name = "polygon"
+currency = "MATIC"
+
+[node]
+type = "unified-reth-bor"
+ipc_path = "/tmp/polygon.ipc"
+http_port = 8549
+ws_port = 8550
+
+[heimdall]
+endpoint = "https://heimdall.polygon.technology"
+
+[sync]
+mode = "full"
+checkpoint_sync = true

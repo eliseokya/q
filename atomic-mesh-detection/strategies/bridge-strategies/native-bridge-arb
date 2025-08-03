@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+native-bridge-arb: Native vs third-party bridge arbitrage
+
+Arbitrages between native and third-party bridge implementations.
+
+Strategy:
+1. Compare bridge rates
+2. Account for all costs
+3. Execute on cheaper
+4. Manage risks
+5. Optimize routing
+
+Features:
+- Rate comparison
+- Cost accounting
+- Risk assessment
+- Route selection
+- Liquidity checks
+- Performance tracking
+
+Usage:
+  bridge-rates | native-bridge-arb --all-bridges
+  native-bridge-arb --safe-only --track
+"""
+
+# Implementation will be added later

@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+gas-coordinator: Syncs gas calculations
+
+Coordinates gas calculations between detection and execution systems.
+
+Features:
+- Gas sync
+- Model alignment
+- Real-time updates
+- Calculation validation
+- Optimization hints
+- Profitability check
+
+Usage:
+  gas-calcs | gas-coordinator --sync
+  gas-coordinator --validate --optimize
+"""
+
+# Implementation will be added later

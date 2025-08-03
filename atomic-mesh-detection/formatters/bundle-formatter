@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+bundle-formatter: Formats bundles for execution
+
+Converts opportunities into properly formatted bundles for the
+execution system.
+
+Features:
+- Standard formatting
+- Validation
+- Metadata addition
+- Priority setting
+- Deadline calculation
+- Alternative paths
+
+Input: Opportunities
+Output: Execution bundles
+
+Usage:
+  opportunities | bundle-formatter --validate
+  bundle-formatter --priority=high --deadline=5s
+"""
+
+# Implementation will be added later

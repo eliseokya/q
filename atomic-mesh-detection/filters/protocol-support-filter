@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+protocol-support-filter: Filters unsupported protocols
+
+Ensures opportunities only use protocols supported by the execution
+system.
+
+Features:
+- Protocol validation
+- Version checking
+- Feature support
+- Chain compatibility
+- Fallback options
+- Alternative paths
+
+Input: Opportunities
+Output: Supported opportunities
+
+Usage:
+  opportunities | protocol-support-filter --strict
+  protocol-support-filter --allow-similar --map
+"""
+
+# Implementation will be added later

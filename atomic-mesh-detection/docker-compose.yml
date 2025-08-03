@@ -1,0 +1,148 @@
+version: '3.8'
+
+services:
+  # Ethereum Node
+  ethereum-node:
+    build:
+      context: ./nodes/unified-reth
+      dockerfile: Dockerfile.ethereum
+    container_name: unified-reth-ethereum
+    volumes:
+      - ethereum-data:/data
+      - ./configs/chains/ethereum.toml:/config/ethereum.toml:ro
+    ports:
+      - "8545:8545"  # RPC
+      - "8546:8546"  # WebSocket
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Arbitrum Node
+  arbitrum-node:
+    build:
+      context: ./nodes/unified-reth
+      dockerfile: Dockerfile.arbitrum
+    container_name: unified-reth-arbitrum
+    volumes:
+      - arbitrum-data:/data
+      - ./configs/chains/arbitrum.toml:/config/arbitrum.toml:ro
+    ports:
+      - "8547:8547"
+      - "8548:8548"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Polygon Node
+  polygon-node:
+    build:
+      context: ./nodes/unified-reth
+      dockerfile: Dockerfile.polygon
+    container_name: unified-reth-polygon
+    volumes:
+      - polygon-data:/data
+      - ./configs/chains/polygon.toml:/config/polygon.toml:ro
+    ports:
+      - "8549:8549"
+      - "8550:8550"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Base Node
+  base-node:
+    build:
+      context: ./nodes/unified-reth
+      dockerfile: Dockerfile.base
+    container_name: unified-reth-base
+    volumes:
+      - base-data:/data
+      - ./configs/chains/base.toml:/config/base.toml:ro
+    ports:
+      - "8551:8551"
+      - "8552:8552"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Optimism Node
+  optimism-node:
+    build:
+      context: ./nodes/unified-reth
+      dockerfile: Dockerfile.optimism
+    container_name: unified-reth-optimism
+    volumes:
+      - optimism-data:/data
+      - ./configs/chains/optimism.toml:/config/optimism.toml:ro
+    ports:
+      - "8553:8553"
+      - "8554:8554"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Detection Engine
+  detection-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: atomic-mesh-detection
+    depends_on:
+      - ethereum-node
+      - arbitrum-node
+      - polygon-node
+      - base-node
+      - optimism-node
+    volumes:
+      - ./pipes:/app/pipes:ro
+      - ./configs:/app/configs:ro
+      - detection-data:/data
+      - /tmp/execution.sock:/tmp/execution.sock
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: detection-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: detection-grafana
+    volumes:
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    networks:
+      - detection-net
+    restart: unless-stopped
+
+volumes:
+  ethereum-data:
+  arbitrum-data:
+  polygon-data:
+  base-data:
+  optimism-data:
+  detection-data:
+  prometheus-data:
+  grafana-data:
+
+networks:
+  detection-net:
+    driver: bridge

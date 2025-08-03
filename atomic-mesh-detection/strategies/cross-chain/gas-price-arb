@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+gas-price-arb: L1/L2 gas price arbitrage
+
+Exploits gas price differences between L1 and L2s for profit.
+
+Strategy:
+1. Monitor gas prices
+2. Identify operations cheaper on L2
+3. Execute on L2
+4. Bridge results to L1
+5. Profit from gas savings
+
+Features:
+- Gas monitoring
+- Operation selection
+- Timing optimization
+- Batch operations
+- Bridge selection
+- Profit calculation
+
+Usage:
+  gas-prices | gas-price-arb --min-savings=50%
+  gas-price-arb --operations=complex --batch
+"""
+
+# Implementation will be added later

@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+"""
+node-manager: Start/stop/manage unified nodes
+
+Manages the unified node infrastructure across all chains.
+
+Features:
+- Node lifecycle management
+- Health monitoring
+- Resource allocation
+- Sync status tracking
+- Peer management
+- Performance optimization
+
+Usage:
+  node-manager start --chain=all
+  node-manager status --detailed
+  node-manager stop --chain=ethereum --graceful
+"""
+
+# Implementation will be added later

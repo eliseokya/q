@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+"""
+pending-tx-extractor: Extracts relevant pending transactions
+
+Filters mempool transactions for those that will impact arbitrage
+opportunities, such as large swaps or liquidity changes.
+
+Features:
+- Filters high-impact transactions
+- Predicts price impact
+- Identifies sandwich opportunities
+- Detects liquidations early
+- Tracks MEV bundles
+- Prioritizes by profitability
+
+Input: Raw mempool transactions
+Output: Filtered high-value pending txs
+
+{
+  "txHash": "0x...",
+  "chain": "ethereum",
+  "impact": "high",
+  "type": "large_swap",
+  "protocol": "uniswap_v3",
+  "predictedPriceImpact": "0.5%",
+  "token0": "WETH",
+  "token1": "USDC",
+  "amount": "100",
+  "estimatedGas": "200000",
+  "maxPriorityFee": "5"
+}
+
+Usage:
+  mempool-reader | pending-tx-extractor --min-impact=0.1%
+  pending-tx-extractor --types=swap,add-liquidity --large-only
+  pending-tx-extractor --sandwich-filter --profit-threshold=50
+"""
+
+# Implementation will be added later

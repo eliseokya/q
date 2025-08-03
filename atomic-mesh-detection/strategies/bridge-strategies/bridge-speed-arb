@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+bridge-speed-arb: Fast vs slow bridge arbitrage
+
+Arbitrages between fast and slow bridges using speed advantage.
+
+Strategy:
+1. Monitor bridge speeds
+2. Find price discrepancies
+3. Use fast bridge first
+4. Arb before slow bridge
+5. Manage timing risk
+
+Features:
+- Speed monitoring
+- Route optimization
+- Timing windows
+- Risk assessment
+- Parallel execution
+- Fallback plans
+
+Usage:
+  bridge-speeds | bridge-speed-arb --min-window=30s
+  bridge-speed-arb --fast-only --parallel
+"""
+
+# Implementation will be added later

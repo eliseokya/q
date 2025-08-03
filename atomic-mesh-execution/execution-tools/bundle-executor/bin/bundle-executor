@@ -1,0 +1,38 @@
+#!/usr/bin/env node
+
+/**
+ * bundle-executor: Submits bundle to AtomicExecutor
+ * 
+ * Final step that submits the optimized and validated bundle
+ * to the on-chain AtomicExecutor contract for execution.
+ * 
+ * Execution flow:
+ * 1. Final pre-flight checks
+ * 2. Prepare transaction data
+ * 3. Estimate gas with buffer
+ * 4. Submit to AtomicExecutor
+ * 5. Monitor execution
+ * 6. Handle results
+ * 
+ * Pre-flight checks:
+ * - Contract not paused
+ * - Sufficient gas funds
+ * - Nonces available
+ * - RPC connectivity
+ * - Time remaining in window
+ * 
+ * Transaction management:
+ * - EIP-1559 gas pricing
+ * - Priority fee optimization
+ * - Nonce management
+ * - Retry logic
+ * - Timeout handling
+ * 
+ * Result handling:
+ * - Success: Record profit, emit events
+ * - Failure: Trigger recovery, analyze cause
+ * - Timeout: Cancel and retry
+ * - Partial: Initiate recovery manager
+ */
+
+// Implementation will be added later

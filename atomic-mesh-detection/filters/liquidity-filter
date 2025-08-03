@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-filter: Filters by available liquidity
+
+Ensures opportunities have sufficient liquidity for execution
+without excessive slippage.
+
+Features:
+- Liquidity checking
+- Slippage estimation
+- Depth analysis
+- Multi-venue aggregation
+- Dynamic sizing
+- Split recommendations
+
+Input: Opportunities
+Output: Liquid opportunities
+
+Usage:
+  opportunities | liquidity-filter --min-depth=100k
+  liquidity-filter --max-impact=0.5% --aggregate
+"""
+
+# Implementation will be added later

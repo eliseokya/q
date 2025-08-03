@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+route-finder: Finds best execution routes
+
+Discovers optimal paths through multiple protocols and chains
+for maximum profit.
+
+Features:
+- Graph-based routing
+- Multi-hop optimization
+- Liquidity routing
+- Fee minimization
+- Parallel paths
+- Dynamic updates
+
+Input: Start/end points + venues
+Output: Optimal routes
+
+Usage:
+  routing-request | route-finder --max-hops=4
+  route-finder --split-routes --parallel
+"""
+
+# Implementation will be added later

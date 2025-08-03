@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+cex-dex-arb: CEX/DEX arbitrage
+
+Arbitrages between centralized and decentralized exchanges.
+
+Strategy:
+1. Monitor CEX prices
+2. Compare to DEX
+3. Account for delays
+4. Execute transfers
+5. Manage inventory
+
+Features:
+- CEX integration
+- Price monitoring
+- Delay accounting
+- Transfer optimization
+- Inventory management
+- Risk hedging
+
+Usage:
+  price-feeds | cex-dex-arb --exchanges=binance,ftx
+  cex-dex-arb --hedged --fast-only
+"""
+
+# Implementation will be added later

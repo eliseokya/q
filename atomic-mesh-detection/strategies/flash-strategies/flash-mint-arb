@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+flash-mint-arb: Flash mintable token arbitrage
+
+Exploits tokens with flash mint capabilities for arbitrage.
+
+Strategy:
+1. Identify flash mintable tokens
+2. Find arbitrage paths
+3. Flash mint tokens
+4. Execute arbitrage
+5. Burn and profit
+
+Features:
+- Mint detection
+- Path finding
+- Fee calculation
+- Risk assessment
+- Multi-token support
+- Burn verification
+
+Usage:
+  mintable-tokens | flash-mint-arb --verified-only
+  flash-mint-arb --max-mint=10M --safe
+"""
+
+# Implementation will be added later

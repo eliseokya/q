@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+"""
+bridge-opportunity-finder: Finds cross-chain arbitrage
+
+Specializes in finding opportunities that require bridging assets
+between chains, accounting for bridge fees and timing.
+
+Features:
+- Cross-chain price comparison
+- Bridge fee optimization
+- Timing window calculation
+- Bridge selection logic
+- Risk assessment
+- Profit estimation
+
+Input: Prices from multiple chains
+Output: Cross-chain opportunities
+
+{
+  "oppId": "bridge_opp_789",
+  "sourceChain": "polygon",
+  "targetChain": "ethereum",
+  "token": "USDC",
+  "buyPrice": "0.9985",
+  "sellPrice": "1.0000",
+  "amount": "1000000",
+  "bridgeFee": "10",
+  "bridgeTime": "300s",
+  "estimatedProfit": "5000",
+  "riskScore": 0.15
+}
+
+Usage:
+  price-extractor | bridge-opportunity-finder --min-profit=100
+  bridge-opportunity-finder --fast-bridges-only
+  bridge-opportunity-finder --stable-pairs --low-risk
+"""
+
+# Implementation will be added later

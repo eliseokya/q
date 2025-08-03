@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+gas-optimizer: Optimizes gas usage
+
+Comprehensive gas optimization for all operations including
+calldata, storage, and execution paths.
+
+Features:
+- Calldata compression
+- Storage optimization
+- Batch operation planning
+- Gas token usage
+- Priority fee optimization
+- L2 calldata costs
+
+Input: Execution plan
+Output: Gas-optimized plan
+
+Usage:
+  execution-plan | gas-optimizer --target=minimal
+  gas-optimizer --l2-optimize --use-gas-tokens
+"""
+
+# Implementation will be added later

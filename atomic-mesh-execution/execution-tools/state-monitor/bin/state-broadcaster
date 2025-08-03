@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+
+/**
+ * state-broadcaster: Broadcasts execution state to detection
+ * 
+ * This tool monitors execution system state changes and broadcasts
+ * them to the detection system for real-time awareness. It ensures
+ * both systems maintain synchronized state information.
+ * 
+ * Monitors and broadcasts:
+ * - Active executions in progress
+ * - Capital availability per chain
+ * - Bridge congestion status
+ * - Protocol availability
+ * - Recent execution results
+ * - System health metrics
+ * 
+ * Output format (state update):
+ * {
+ *   "timestamp": "1234567890",
+ *   "state_type": "execution|capital|bridge|protocol|health",
+ *   "update": {
+ *     "active_executions": [
+ *       {
+ *         "bundle_id": "uuid",
+ *         "chains": ["ethereum", "arbitrum"],
+ *         "status": "bridging",
+ *         "started_at": "1234567880"
+ *       }
+ *     ],
+ *     "capital_state": {
+ *       "ethereum": {
+ *         "USDC": "50000.00",
+ *         "WETH": "25.50",
+ *         "locked": "10000.00"
+ *       },
+ *       "arbitrum": {
+ *         "USDC": "30000.00",
+ *         "WETH": "15.25",
+ *         "locked": "5000.00"
+ *       }
+ *     },
+ *     "bridge_state": {
+ *       "atomic_mesh": {
+ *         "available": true,
+ *         "queue_depth": 2,
+ *         "avg_time_ms": 380
+ *       },
+ *       "debridge": {
+ *         "available": true,
+ *         "queue_depth": 5,
+ *         "avg_time_ms": 850
+ *       }
+ *     },
+ *     "protocol_state": {
+ *       "aave_v3": "active",
+ *       "uniswap": "active",
+ *       "curve": "paused",  // Emergency pause
+ *       "compound": "active",
+ *       "balancer": "active"
+ *     },
+ *     "health_metrics": {
+ *       "success_rate_1h": 0.95,
+ *       "avg_execution_time": 412,
+ *       "gas_efficiency": 0.88
+ *     }
+ *   }
+ * }
+ * 
+ * Features:
+ * - Real-time state monitoring
+ * - Efficient delta updates
+ * - WebSocket broadcasting
+ * - State persistence
+ * - Recovery from disconnections
+ * - Configurable update frequency
+ * - Filters sensitive information
+ * 
+ * Usage:
+ *   state-broadcaster --endpoint ws://detection:8888
+ *   state-broadcaster --interval 100ms --verbose
+ *   state-monitor | state-broadcaster | tee state.log
+ */
+
+// Implementation will be added later

@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+opportunity-simulator: Test strategies offline
+
+Simulates arbitrage strategies against historical data.
+
+Features:
+- Historical simulation
+- Strategy backtesting
+- Performance metrics
+- Risk analysis
+- Parameter optimization
+- What-if scenarios
+
+Usage:
+  opportunity-simulator --strategy=cross-chain --period=7d
+  opportunity-simulator --optimize --monte-carlo
+"""
+
+# Implementation will be added later

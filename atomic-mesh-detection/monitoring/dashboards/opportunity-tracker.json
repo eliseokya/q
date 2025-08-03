@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Opportunity Tracking",
+    "panels": [
+      {
+        "title": "Opportunities Found",
+        "type": "counter",
+        "targets": ["opportunities.found.total"]
+      },
+      {
+        "title": "Opportunities Sent",
+        "type": "counter",
+        "targets": ["opportunities.sent.total"]
+      },
+      {
+        "title": "Success Rate",
+        "type": "gauge",
+        "targets": ["opportunities.success.rate"]
+      },
+      {
+        "title": "Profit by Strategy",
+        "type": "bar",
+        "targets": ["profit.by.strategy"]
+      }
+    ]
+  }
+}

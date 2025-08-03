@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-extractor: Extracts pool liquidity across protocols
+
+Monitors liquidity levels in pools to ensure arbitrage opportunities
+are executable. Tracks both total liquidity and available liquidity
+at different price points.
+
+Features:
+- Extracts liquidity from all major AMMs
+- Handles concentrated liquidity (Uni V3)
+- Tracks liquidity changes over time
+- Calculates maximum executable size
+- Monitors liquidity distribution
+- Detects JIT liquidity attacks
+
+Input: Pool state from state-reader or events
+Output: Liquidity information per pool
+
+{
+  "chain": "arbitrum",
+  "protocol": "uniswap_v3",
+  "pool": "0x...",
+  "totalLiquidity": "10000000",
+  "activeLiquidity": "5000000",
+  "token0Locked": "5000",
+  "token1Locked": "9130000",
+  "tickLiquidity": {
+    "-887220": "1000000",
+    "-887210": "2000000"
+  },
+  "maxSwap0": "1000",
+  "maxSwap1": "1823000"
+}
+
+Usage:
+  state-reader --slots=liquidity | liquidity-extractor
+  liquidity-extractor --min-liquidity=100000 --chain=all
+  liquidity-extractor --concentrated --tick-range=1000
+"""
+
+# Implementation will be added later

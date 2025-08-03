@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+auction-sniper: Liquidation auction sniper
+
+Wins liquidation auctions with optimal bidding strategies.
+
+Strategy:
+1. Monitor auctions
+2. Calculate fair value
+3. Predict competition
+4. Submit optimal bid
+5. Manage won collateral
+
+Features:
+- Auction monitoring
+- Valuation models
+- Bid optimization
+- Competition analysis
+- Gas war strategies
+- Collateral management
+
+Usage:
+  auction-feed | auction-sniper --min-profit=500
+  auction-sniper --dutch-only --aggressive
+"""
+
+# Implementation will be added later

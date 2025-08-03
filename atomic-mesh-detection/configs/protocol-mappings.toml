@@ -1,0 +1,21 @@
+# Protocol mapping configuration
+
+[uniswap_v2]
+execution_contract = "UniswapComplete"
+supported_chains = ["ethereum", "arbitrum", "polygon", "base", "optimism"]
+
+[uniswap_v3]
+execution_contract = "UniswapComplete"
+supported_chains = ["ethereum", "arbitrum", "polygon", "base", "optimism"]
+
+[aave_v3]
+execution_contract = "AaveV3Complete"
+supported_chains = ["ethereum", "arbitrum", "polygon", "base", "optimism"]
+
+[curve]
+execution_contract = "CurveComplete"
+supported_chains = ["ethereum", "arbitrum", "polygon"]
+
+[balancer]
+execution_contract = "BalancerComplete"
+supported_chains = ["ethereum", "arbitrum", "polygon"]

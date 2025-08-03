@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Protocol Performance",
+    "panels": [
+      {
+        "title": "Protocol Success Rates",
+        "type": "heatmap",
+        "targets": ["protocol.success.rate"]
+      },
+      {
+        "title": "Gas Usage by Protocol",
+        "type": "bar",
+        "targets": ["protocol.gas.usage"]
+      },
+      {
+        "title": "Profit by Protocol",
+        "type": "pie",
+        "targets": ["protocol.profit.total"]
+      },
+      {
+        "title": "Protocol Latency",
+        "type": "box",
+        "targets": ["protocol.latency.distribution"]
+      }
+    ]
+  }
+}

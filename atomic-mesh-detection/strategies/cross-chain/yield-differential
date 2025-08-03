@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+"""
+yield-differential: Cross-chain yield arbitrage
+
+Arbitrages yield rate differences between chains and protocols
+using flash loans.
+
+Strategy:
+1. Monitor yield rates
+2. Calculate profitable paths
+3. Flash loan capital
+4. Deposit high yield
+5. Borrow low yield
+6. Pocket difference
+
+Features:
+- Yield monitoring
+- Path calculation
+- Risk assessment
+- Capital efficiency
+- Auto-rebalancing
+- Rate prediction
+
+Usage:
+  yield-rates | yield-differential --min-spread=1%
+  yield-differential --protocols=aave,compound
+"""
+
+# Implementation will be added later

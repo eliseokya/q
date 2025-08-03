@@ -1,0 +1,35 @@
+{
+  "ethereum": {
+    "base_swap_gas": 150000,
+    "flash_loan_gas": 300000,
+    "bridge_gas": 100000,
+    "priority_fee_multiplier": 1.2
+  },
+  "arbitrum": {
+    "base_swap_gas": 180000,
+    "flash_loan_gas": 350000,
+    "bridge_gas": 80000,
+    "l1_calldata_per_byte": 16,
+    "priority_fee_multiplier": 1.1
+  },
+  "polygon": {
+    "base_swap_gas": 160000,
+    "flash_loan_gas": 320000,
+    "bridge_gas": 90000,
+    "priority_fee_multiplier": 1.3
+  },
+  "base": {
+    "base_swap_gas": 170000,
+    "flash_loan_gas": 340000,
+    "bridge_gas": 85000,
+    "l1_calldata_per_byte": 16,
+    "priority_fee_multiplier": 1.1
+  },
+  "optimism": {
+    "base_swap_gas": 170000,
+    "flash_loan_gas": 340000,
+    "bridge_gas": 85000,
+    "l1_calldata_per_byte": 16,
+    "priority_fee_multiplier": 1.1
+  }
+}

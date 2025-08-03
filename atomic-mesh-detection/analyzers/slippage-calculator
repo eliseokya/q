@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+slippage-calculator: Calculates expected slippage
+
+Estimates price impact and slippage for different trade sizes
+across various liquidity conditions.
+
+Features:
+- AMM math implementation
+- Liquidity depth analysis
+- Multi-hop slippage
+- Sandwich attack impact
+- Dynamic adjustments
+- Worst-case estimates
+
+Input: Trade parameters + liquidity
+Output: Slippage estimates
+
+Usage:
+  trade-params | slippage-calculator --conservative
+  slippage-calculator --size=1000000 --path=multi-hop
+"""
+
+# Implementation will be added later

@@ -1,0 +1,15 @@
+# Integration configuration
+
+[execution]
+endpoint = "unix:///tmp/execution.sock"
+timeout_ms = 5000
+max_retries = 3
+
+[feedback]
+enabled = true
+update_interval_seconds = 60
+learning_rate = 0.1
+
+[capability_sync]
+check_interval_seconds = 300
+auto_update = true

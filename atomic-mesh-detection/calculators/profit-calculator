@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+"""
+profit-calculator: Calculates expected profit from opportunities
+
+Precisely calculates expected profit after all costs including
+gas, fees, slippage, and bridge costs.
+
+Features:
+- Multi-chain gas calculation
+- Protocol fee accounting
+- Slippage estimation
+- Bridge fee inclusion
+- MEV cost factors
+- Confidence intervals
+
+Input: Opportunity with path
+Output: Detailed profit breakdown
+
+{
+  "opportunity": "arb_123",
+  "revenue": "1500.00",
+  "costs": {
+    "gas": {
+      "ethereum": "45.00",
+      "arbitrum": "5.00"
+    },
+    "protocolFees": "30.00",
+    "bridgeFees": "10.00",
+    "slippage": "15.00",
+    "flashLoanFee": "0.00"
+  },
+  "totalCosts": "105.00",
+  "expectedProfit": "1395.00",
+  "profitMargin": "93%",
+  "confidence": 0.85,
+  "breakEvenGasPrice": "450"
+}
+
+Usage:
+  path-builder | profit-calculator --include-all-costs
+  profit-calculator --opportunity=arb_123 --gas-prices=current
+  profit-calculator --confidence-interval=95%
+"""
+
+# Implementation will be added later

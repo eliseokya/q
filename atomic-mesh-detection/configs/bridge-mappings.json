@@ -1,0 +1,25 @@
+{
+  "bridges": {
+    "atomic_mesh": {
+      "execution_contract": "AtomicMeshBridge",
+      "supported_routes": [
+        ["ethereum", "arbitrum"],
+        ["ethereum", "polygon"],
+        ["ethereum", "base"],
+        ["ethereum", "optimism"],
+        ["arbitrum", "polygon"],
+        ["arbitrum", "base"],
+        ["arbitrum", "optimism"],
+        ["polygon", "base"],
+        ["polygon", "optimism"],
+        ["base", "optimism"]
+      ],
+      "max_time_ms": 400
+    },
+    "debridge": {
+      "execution_contract": "DeBridge",
+      "supported_routes": "all",
+      "max_time_ms": 300000
+    }
+  }
+}

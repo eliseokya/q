@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "src/common",
+    "src/parse-and-validate", 
+    "src/transform-actions",
+    "src/build-expression",
+    "src/assemble-bundle",
+    "src/monolithic"
+]
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+common = { path = "src/common" }

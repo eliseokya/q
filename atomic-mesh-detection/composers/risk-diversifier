@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+risk-diversifier: Diversifies across strategies
+
+Diversifies execution across multiple strategies to reduce risk.
+
+Features:
+- Risk assessment
+- Diversification logic
+- Correlation analysis
+- Portfolio optimization
+- Rebalancing
+- Performance tracking
+
+Usage:
+  opportunities | risk-diversifier --max-risk=0.1
+  risk-diversifier --uncorrelated --rebalance
+"""
+
+# Implementation will be added later

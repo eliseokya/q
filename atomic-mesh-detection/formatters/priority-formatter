@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+priority-formatter: Adds priority scoring
+
+Calculates and adds priority scores to opportunities for
+execution ordering.
+
+Features:
+- Priority calculation
+- Multi-factor scoring
+- Dynamic adjustment
+- Queue optimization
+- Urgency detection
+- Value weighting
+
+Input: Opportunities
+Output: Prioritized opportunities
+
+Usage:
+  opportunities | priority-formatter --factors=all
+  priority-formatter --dynamic --time-sensitive
+"""
+
+# Implementation will be added later

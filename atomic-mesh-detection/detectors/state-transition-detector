@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+state-transition-detector: Detects profitable state changes
+
+Monitors for state transitions that create temporary arbitrage
+opportunities.
+
+Features:
+- State change monitoring
+- Transition patterns
+- Profit calculation
+- Timing windows
+- Multi-state tracking
+- Predictive transitions
+
+Input: State changes
+Output: Transition opportunities
+
+Usage:
+  state-stream | state-transition-detector --profitable
+  state-transition-detector --predict-next --confidence=0.8
+"""
+
+# Implementation will be added later

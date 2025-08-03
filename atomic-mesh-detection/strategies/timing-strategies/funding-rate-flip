@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+funding-rate-flip: Funding rate arbitrage
+
+Captures profits from perpetual funding rate changes.
+
+Strategy:
+1. Monitor funding rates
+2. Predict rate changes
+3. Position before funding
+4. Capture payment
+5. Hedge risks
+
+Features:
+- Rate monitoring
+- Change prediction
+- Position sizing
+- Risk hedging
+- Multi-exchange support
+- PnL optimization
+
+Usage:
+  funding-rates | funding-rate-flip --min-rate=0.1%
+  funding-rate-flip --hedged --multi-exchange
+"""
+
+# Implementation will be added later

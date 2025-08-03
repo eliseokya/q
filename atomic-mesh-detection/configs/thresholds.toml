@@ -1,0 +1,23 @@
+# Detection thresholds
+
+[profit]
+minimum_usd = 50
+minimum_percentage = 0.1
+
+[gas]
+max_price_gwei = 500
+max_percentage_of_profit = 0.5
+l2_multiplier = 0.1
+
+[timing]
+max_execution_seconds = 5
+max_bridge_seconds = 300
+
+[risk]
+max_risk_score = 0.2
+min_success_probability = 0.8
+max_slippage = 0.02
+
+[competition]
+max_competitors = 3
+min_win_probability = 0.7

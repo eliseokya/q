@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+whale-movement-detector: Specialized whale movement detection
+
+Advanced whale tracking with predictive capabilities and impact
+analysis.
+
+Features:
+- Wallet clustering
+- Movement patterns
+- Destination prediction
+- Impact modeling
+- Behavioral analysis
+- Copy trading signals
+
+Input: On-chain data
+Output: Movement predictions
+
+Usage:
+  blockchain-data | whale-movement-detector --predictive
+  whale-movement-detector --follow --min-size=10M
+"""
+
+# Implementation will be added later

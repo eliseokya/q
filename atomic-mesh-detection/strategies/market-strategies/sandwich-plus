@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+sandwich-plus: Enhanced sandwich strategies
+
+Advanced sandwiching with protection and optimization features.
+
+Strategy:
+1. Detect sandwichable txs
+2. Calculate optimal sizing
+3. Submit bundle
+4. Manage risks
+5. Distribute profits
+
+Features:
+- Target detection
+- Size optimization
+- Bundle creation
+- Risk limits
+- Profit sharing
+- MEV protection
+
+Usage:
+  mempool | sandwich-plus --ethical --share-profit
+  sandwich-plus --max-impact=1% --protected
+"""
+
+# Implementation will be added later

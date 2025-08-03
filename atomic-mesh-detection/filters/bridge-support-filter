@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+bridge-support-filter: Filters unsupported bridges
+
+Validates that cross-chain opportunities use supported bridges
+with acceptable parameters.
+
+Features:
+- Bridge validation
+- Route checking
+- Fee verification
+- Timing requirements
+- Liquidity confirmation
+- Alternative routing
+
+Input: Cross-chain opportunities
+Output: Valid bridge opportunities
+
+Usage:
+  opportunities | bridge-support-filter --bridges=atomic,debridge
+  bridge-support-filter --max-time=5min --min-liquidity=1M
+"""
+
+# Implementation will be added later

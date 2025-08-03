@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+strategy-combiner: Combines multiple strategies
+
+Intelligently combines multiple strategies for better results.
+
+Features:
+- Strategy combination
+- Synergy detection
+- Resource allocation
+- Conflict resolution
+- Performance optimization
+- Risk management
+
+Usage:
+  strategies | strategy-combiner --synergistic
+  strategy-combiner --max=3 --optimize
+"""
+
+# Implementation will be added later

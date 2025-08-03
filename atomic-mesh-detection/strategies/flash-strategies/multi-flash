@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+multi-flash: Multiple flash loan composition
+
+Combines flash loans from multiple protocols for larger operations.
+
+Strategy:
+1. Identify loan sources
+2. Calculate optimal mix
+3. Execute multiple loans
+4. Coordinate repayment
+5. Manage dependencies
+
+Features:
+- Multi-source loans
+- Fee optimization
+- Dependency management
+- Parallel execution
+- Risk distribution
+- Fallback handling
+
+Usage:
+  large-opportunity | multi-flash --sources=3
+  multi-flash --optimize-fees --parallel
+"""
+
+# Implementation will be added later

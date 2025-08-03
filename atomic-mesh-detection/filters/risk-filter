@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+risk-filter: Filters by risk score
+
+Removes opportunities that exceed risk thresholds based on multiple
+risk factors.
+
+Features:
+- Risk scoring
+- Factor analysis
+- Threshold filtering
+- Risk categories
+- Historical validation
+- Custom risk models
+
+Input: Opportunities with context
+Output: Low-risk opportunities
+
+Usage:
+  opportunities | risk-filter --max-risk=0.2
+  risk-filter --factors=bridge,timing,competition
+"""
+
+# Implementation will be added later

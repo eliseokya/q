@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+/**
+ * slot-reader: Outputs storage slots from contracts
+ * 
+ * Directly reads storage slots from contracts, essential for
+ * monitoring pool reserves, protocol parameters, and other state
+ * that may not emit events.
+ * 
+ * Features:
+ * - Batch slot reading for efficiency
+ * - Automatic slot decoding
+ * - Cross-chain slot monitoring
+ * - Historical slot queries
+ * - Slot change subscriptions
+ * - Pattern-based slot discovery
+ * 
+ * Output format:
+ * {
+ *   "chain": "base",
+ *   "address": "0x...",
+ *   "slots": {
+ *     "0x0": "0x0000000000000000000000000000000011e1a300",  // reserve0
+ *     "0x1": "0x000000000000000000000000000000001dcd6500",  // reserve1
+ *     "0x8": "0x64f9b3ab000000000000000000000000000000cd"   // price0CumulativeLast
+ *   },
+ *   "decoded": {
+ *     "reserve0": "300000000",
+ *     "reserve1": "500000000",
+ *     "lastUpdate": 1689876543
+ *   }
+ * }
+ * 
+ * Usage:
+ *   slot-reader --address=0xPOOL --slots=0-10
+ *   slot-reader --pattern=uniswap-v2 --all-pools
+ *   slot-reader --monitor --alert-on-change
+ */
+
+// Implementation will be added later

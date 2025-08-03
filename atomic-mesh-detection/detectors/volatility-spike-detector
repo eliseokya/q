@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+volatility-spike-detector: Detects volatility events
+
+Identifies volatility spikes that create profitable trading
+opportunities.
+
+Features:
+- Volatility calculation
+- Spike detection
+- Direction prediction
+- Options strategies
+- Cross-market analysis
+- Risk assessment
+
+Input: Price data
+Output: Volatility alerts
+
+Usage:
+  prices | volatility-spike-detector --window=5min
+  volatility-spike-detector --cross-chain --threshold=50%
+"""
+
+# Implementation will be added later

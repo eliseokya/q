@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+capital-splitter: Splits capital optimally
+
+Determines optimal capital allocation across opportunities.
+
+Features:
+- Capital allocation
+- Size optimization
+- Risk weighting
+- Return maximization
+- Constraint satisfaction
+- Dynamic adjustment
+
+Usage:
+  opportunities | capital-splitter --capital=1M
+  capital-splitter --risk-weighted --dynamic
+"""
+
+# Implementation will be added later

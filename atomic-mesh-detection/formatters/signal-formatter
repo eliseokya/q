@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+signal-formatter: Creates execution signals
+
+Formats opportunities as signals with all required metadata
+for execution.
+
+Features:
+- Signal creation
+- Metadata enrichment
+- Validation
+- Priority scoring
+- Timing info
+- Risk metrics
+
+Input: Analyzed opportunities
+Output: Execution signals
+
+Usage:
+  opportunities | signal-formatter --enrich
+  signal-formatter --scoring=advanced
+"""
+
+# Implementation will be added later

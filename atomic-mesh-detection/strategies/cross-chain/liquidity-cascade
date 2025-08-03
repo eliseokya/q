@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-cascade: Cascading liquidity movement arbitrage
+
+Exploits cascading effects when large trades or liquidity movements
+create opportunities across multiple venues.
+
+Strategy:
+1. Detect large liquidity event
+2. Model cascade effects
+3. Position before cascade
+4. Execute through cascade
+5. Exit at optimal points
+
+Features:
+- Cascade modeling
+- Multi-venue execution
+- Timing optimization
+- Risk management
+- Parallel execution
+- MEV protection
+
+Usage:
+  liquidity-events | liquidity-cascade --min-size=1M
+  liquidity-cascade --predictive --multi-chain
+"""
+
+# Implementation will be added later

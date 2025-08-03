@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+gas-data-formatter: Formats gas data for GasProfitability.sol
+
+Formats gas calculations for consumption by the execution system's
+gas profitability contract.
+
+Features:
+- Gas formatting
+- Chain-specific data
+- L2 considerations
+- Priority calculation
+- Historical context
+- Optimization hints
+
+Input: Gas calculations
+Output: Formatted gas data
+
+Usage:
+  gas-calcs | gas-data-formatter --all-chains
+  gas-data-formatter --l2-optimized --historical
+"""
+
+# Implementation will be added later

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+execution-capability-validator: Pre-validates execution capabilities
+
+Validates opportunities against execution system capabilities before
+sending to prevent failures.
+
+Features:
+- Capability checking
+- Protocol support validation
+- Resource availability
+- Constraint verification
+- Performance limits
+- Dynamic updates
+
+Input: Opportunities
+Output: Validated opportunities
+
+Usage:
+  opportunities | execution-capability-validator --strict
+  execution-capability-validator --check=all --filter
+"""
+
+# Implementation will be added later

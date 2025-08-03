@@ -1,0 +1,17 @@
+# Extractor configuration
+
+[extractors]
+parallel_workers = 8
+buffer_size = 10000
+
+[price_extractor]
+normalize_to_usd = true
+decimal_precision = 18
+
+[liquidity_extractor]
+min_liquidity_usd = 1000
+track_concentrated = true
+
+[gas_extractor]
+track_priority_fee = true
+l2_calldata_calculation = true

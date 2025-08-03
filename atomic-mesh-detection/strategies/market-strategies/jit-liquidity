@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+jit-liquidity: Just-in-time liquidity provision
+
+Provides liquidity just before large trades to capture fees.
+
+Strategy:
+1. Detect incoming trades
+2. Calculate LP position
+3. Add liquidity JIT
+4. Capture fees
+5. Remove liquidity
+
+Features:
+- Trade detection
+- Position sizing
+- Timing precision
+- Fee optimization
+- Risk management
+- Multi-pool support
+
+Usage:
+  large-trades | jit-liquidity --min-fee=0.3%
+  jit-liquidity --concentrated --optimize
+"""
+
+# Implementation will be added later

@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Execution Integration",
+    "panels": [
+      {
+        "title": "Integration Latency",
+        "type": "graph",
+        "targets": ["integration.latency.ms"]
+      },
+      {
+        "title": "Bundle Queue",
+        "type": "graph",
+        "targets": ["integration.queue.size"]
+      },
+      {
+        "title": "Feedback Processing",
+        "type": "graph",
+        "targets": ["feedback.processed.rate"]
+      },
+      {
+        "title": "Capability Sync",
+        "type": "status",
+        "targets": ["capability.sync.status"]
+      }
+    ]
+  }
+}

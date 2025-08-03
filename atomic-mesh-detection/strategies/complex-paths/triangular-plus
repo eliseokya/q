@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+"""
+triangular-plus: 4+ hop arbitrage paths
+
+Executes complex arbitrage paths with 4 or more hops across
+multiple venues.
+
+Strategy:
+1. Build price graph
+2. Find profitable cycles
+3. Optimize execution order
+4. Handle partial fills
+5. Manage gas costs
+
+Features:
+- Graph algorithms
+- Path optimization
+- Gas management
+- Liquidity routing
+- Failure handling
+- Profit maximization
+
+Usage:
+  price-graph | triangular-plus --max-hops=6
+  triangular-plus --min-profit=100 --optimize
+"""
+
+# Implementation will be added later

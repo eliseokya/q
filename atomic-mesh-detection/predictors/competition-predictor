@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+competition-predictor: Predicts competitor actions
+
+Predicts what competitors will do for specific opportunities.
+
+Features:
+- Action prediction
+- Strategy modeling
+- Success probability
+- Gas war detection
+- Timing prediction
+- Counter-strategies
+
+Usage:
+  opportunity | competition-predictor --competitors=known
+  competition-predictor --counter --optimize
+"""
+
+# Implementation will be added later

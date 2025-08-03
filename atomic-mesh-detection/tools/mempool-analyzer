@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+mempool-analyzer: Analyze mempool contents
+
+Provides insights into mempool composition and opportunities.
+
+Features:
+- Transaction categorization
+- Value distribution
+- Gas price analysis
+- MEV opportunity detection
+- Congestion patterns
+- Statistical analysis
+
+Usage:
+  mempool-analyzer --chain=ethereum --deep
+  mempool-analyzer --opportunities --mev
+"""
+
+# Implementation will be added later

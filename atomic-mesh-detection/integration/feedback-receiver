@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+"""
+feedback-receiver: Receives execution results for learning
+
+Processes execution results from atomic-mesh-execution to improve
+detection accuracy and strategy selection.
+
+Features:
+- Result correlation
+- Success pattern analysis
+- Failure root cause analysis
+- Parameter optimization
+- Model updates
+- Performance metrics
+
+Input: Execution results
+Output: Learning updates
+
+{
+  "executionId": "exec_123",
+  "opportunityId": "arb_456",
+  "result": "success",
+  "actualProfit": "485",
+  "expectedProfit": "500",
+  "accuracy": "97%",
+  "gasAccuracy": "92%",
+  "learnings": {
+    "gasAdjustment": 1.08,
+    "slippageModel": "update",
+    "prioritySuccess": true
+  }
+}
+
+Usage:
+  execution-results | feedback-receiver --update-models
+  feedback-receiver --analyze-window=1h --generate-report
+  feedback-receiver --failure-analysis --deep-dive
+"""
+
+# Implementation will be added later

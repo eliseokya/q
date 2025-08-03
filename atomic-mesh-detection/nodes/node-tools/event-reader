@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+
+/**
+ * event-reader: Outputs specific events from smart contracts
+ * 
+ * Filters and streams specific events from contracts across all chains.
+ * More efficient than parsing all transactions when looking for
+ * specific protocol events like swaps, mints, or liquidations.
+ * 
+ * Features:
+ * - Direct event log filtering
+ * - Automatic event decoding
+ * - Multi-contract monitoring
+ * - Topic-based filtering
+ * - Historical event queries
+ * - Real-time event streaming
+ * 
+ * Output format:
+ * {
+ *   "chain": "polygon",
+ *   "blockNumber": 50000000,
+ *   "txHash": "0x...",
+ *   "address": "0x...",
+ *   "event": "Swap",
+ *   "args": {
+ *     "sender": "0x...",
+ *     "amount0In": "1000000",
+ *     "amount1In": "0",
+ *     "amount0Out": "0",
+ *     "amount1Out": "2000000000"
+ *   },
+ *   "protocol": "uniswap_v2"
+ * }
+ * 
+ * Usage:
+ *   event-reader --events=Swap,Mint,Burn --chain=all
+ *   event-reader --contract=0xPOOL --all-events
+ *   event-reader --topic0=0xSWAP_TOPIC --decode
+ */
+
+// Implementation will be added later

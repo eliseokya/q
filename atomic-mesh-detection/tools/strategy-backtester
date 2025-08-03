@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+strategy-backtester: Backtest strategies
+
+Tests strategies against historical data for validation.
+
+Features:
+- Historical testing
+- Performance metrics
+- Risk analysis
+- Parameter sweep
+- Comparison tools
+- Report generation
+
+Usage:
+  strategy-backtester --strategy=all --period=30d
+  strategy-backtester --compare --optimize
+"""
+
+# Implementation will be added later

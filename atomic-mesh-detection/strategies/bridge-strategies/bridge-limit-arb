@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+bridge-limit-arb: Bridge limit arbitrage
+
+Exploits different transfer limits across bridges.
+
+Strategy:
+1. Map bridge limits
+2. Find constrained liquidity
+3. Use multiple bridges
+4. Aggregate transfers
+5. Capture premium
+
+Features:
+- Limit mapping
+- Route splitting
+- Parallel bridging
+- Fee optimization
+- Risk distribution
+- Completion tracking
+
+Usage:
+  bridge-limits | bridge-limit-arb --split-routes
+  bridge-limit-arb --optimize-fees --track
+"""
+
+# Implementation will be added later

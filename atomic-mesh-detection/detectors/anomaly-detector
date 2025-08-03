@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+anomaly-detector: Detects unusual patterns
+
+Uses statistical methods to detect anomalies that might indicate
+opportunities or risks.
+
+Features:
+- Statistical anomaly detection
+- Pattern matching
+- Outlier identification
+- Correlation breaks
+- Event detection
+- ML-based detection
+
+Input: Multiple data streams
+Output: Anomaly alerts
+
+Usage:
+  data-streams | anomaly-detector --sensitivity=high
+  anomaly-detector --train --historical-data
+"""
+
+# Implementation will be added later

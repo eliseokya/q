@@ -1,0 +1,24 @@
+# Detection system configuration
+
+[detection]
+parallel_workers = 16
+buffer_size = 10000
+latency_target_ms = 5
+
+[opportunities]
+min_profit_usd = 50
+max_gas_percentage = 0.5
+confidence_threshold = 0.8
+
+[strategies]
+enabled = [
+  "instant-arb",
+  "flash-liquidator",
+  "triangular-plus",
+  "stablecoin-depeg"
+]
+
+[monitoring]
+enable_metrics = true
+metrics_port = 9090
+alert_webhook = ""

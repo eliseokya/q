@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+size-optimizer: Optimizes trade sizes
+
+Determines optimal trade sizes considering liquidity, slippage,
+and capital efficiency.
+
+Features:
+- Slippage curves
+- Liquidity analysis
+- Capital efficiency
+- Split recommendations
+- Impact minimization
+- Profit maximization
+
+Input: Opportunity + liquidity
+Output: Optimal sizes
+
+Usage:
+  opportunity | size-optimizer --max-impact=0.3%
+  size-optimizer --split --venues=multiple
+"""
+
+# Implementation will be added later

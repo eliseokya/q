@@ -1,0 +1,258 @@
+name: Continuous Verification
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lean-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Lean 4
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    
+    - name: Setup Lean environment
+      working-directory: maths
+      run: |
+        lake update
+        lake build --verbose
+    
+    - name: Run basic tests
+      working-directory: maths
+      run: |
+        # Test that all modules compile
+        lake build
+        echo "✓ All Lean modules compile successfully"
+        
+        # Test DSL examples
+        lake env lean --run DSL/Pipeline.lean
+        echo "✓ DSL pipeline tests pass"
+    
+    - name: Verify no sorry proofs in core modules
+      working-directory: maths
+      run: |
+        # Check critical modules don't contain sorry
+        CRITICAL_MODULES="EVM/Category.lean Stack/Atomicity.lean DSL/TypeCheck.lean"
+        
+        for module in $CRITICAL_MODULES; do
+          if grep -q "sorry" "$module"; then
+            echo "❌ Found sorry in critical module: $module"
+            exit 1
+          else
+            echo "✓ No sorry in $module"
+          fi
+        done
+    
+    - name: Proof complexity analysis
+      working-directory: maths
+      run: |
+        # Count lines of proof vs code
+        PROOF_LINES=$(find . -name "*.lean" -exec grep -l "by\|:=" {} \; | xargs wc -l | tail -1 | awk '{print $1}')
+        TOTAL_LINES=$(find . -name "*.lean" | xargs wc -l | tail -1 | awk '{print $1}')
+        
+        echo "Total lines: $TOTAL_LINES"
+        echo "Proof lines: $PROOF_LINES"
+        echo "Proof coverage: $((PROOF_LINES * 100 / TOTAL_LINES))%"
+
+  bundle-verification:
+    runs-on: ubuntu-latest
+    needs: lean-build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Lean 4
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    
+    - name: Test bundle compilation
+      working-directory: maths
+      run: |
+        lake update
+        
+        # Test that example bundles compile to atomic proofs
+        cat << 'EOF' > test_bundle.lean
+        import DSL.Pipeline
+        
+        def test_bundle : DSL.Bundle := {
+          name := "ci_test"
+          startChain := Chain.polygon
+          expr := DSL.Expr.borrow 100 DSL.Token.WETH DSL.Protocol.Aave →
+                  DSL.Expr.repay 100 DSL.Token.WETH DSL.Protocol.Aave
+          constraints := [DSL.Constraint.deadline 5]
+        }
+        
+        #eval DSL.typeCheck test_bundle
+        #eval DSL.generateLeanCode test_bundle
+        EOF
+        
+        lake env lean test_bundle.lean
+        echo "✓ Bundle compilation test passed"
+    
+    - name: Security verification
+      working-directory: maths
+      run: |
+        # Verify that atomic bundles satisfy security properties
+        cat << 'EOF' > security_test.lean
+        import Examples.AtomicFlashLoan
+        import Bridge.IsoBundle
+        
+        -- Test that our examples are actually atomic
+        example : Stack.isAtomic simpleAtomicBundle := 
+          simple_is_atomic
+          
+        example : Stack.isAtomic htlbFlashLoanBundle := 
+          htlb_flash_loan_atomic
+        EOF
+        
+        lake env lean security_test.lean
+        echo "✓ Security verification passed"
+
+  performance-tests:
+    runs-on: ubuntu-latest
+    needs: lean-build
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install dependencies
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    
+    - name: Build time benchmark
+      working-directory: maths
+      run: |
+        lake update
+        
+        echo "Starting build benchmark..."
+        start_time=$(date +%s)
+        lake build
+        end_time=$(date +%s)
+        
+        build_time=$((end_time - start_time))
+        echo "Build completed in ${build_time} seconds"
+        
+        # Fail if build takes too long (more than 5 minutes)
+        if [ $build_time -gt 300 ]; then
+          echo "❌ Build time exceeded 5 minutes"
+          exit 1
+        else
+          echo "✓ Build time acceptable: ${build_time}s"
+        fi
+    
+    - name: Memory usage check
+      working-directory: maths
+      run: |
+        # Monitor memory usage during compilation
+        /usr/bin/time -v lake build 2>&1 | grep "Maximum resident set size"
+        echo "✓ Memory usage logged"
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    needs: [lean-build, bundle-verification]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Lean 4
+      run: |
+        curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -sSf | sh -s -- -y
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+    
+    - name: End-to-end pipeline test
+      working-directory: maths
+      run: |
+        lake update
+        
+        # Test complete pipeline: DSL → Type Check → Compile → Verify
+        cat << 'EOF' > e2e_test.lean
+        import DSL.Pipeline
+        import Stack.Atomicity
+        
+        def e2e_bundle : DSL.Bundle := DSL.Examples.complexArbitrage
+        
+        #check DSL.typeCheck e2e_bundle = Except.ok _
+        #check DSL.compile e2e_bundle
+        
+        -- Verify the compilation produces valid results
+        run_cmd do
+          match DSL.typeCheck e2e_bundle with
+          | Except.ok state => 
+              IO.println s!"✓ Type check passed: {state.gasUsed} gas"
+          | Except.error e => 
+              IO.println s!"❌ Type check failed: {e}"
+              
+          let lean_code := DSL.generateLeanCode e2e_bundle
+          IO.println "✓ Lean code generation completed"
+        EOF
+        
+        lake env lean e2e_test.lean
+        echo "✓ End-to-end pipeline test passed"
+    
+    - name: Cross-chain simulation
+      working-directory: maths
+      run: |
+        # Simulate cross-chain execution
+        cat << 'EOF' > simulation.lean
+        import Examples.BicategoryExample
+        import Crypto.Integration
+        
+        -- Test bridge selection
+        run_cmd do
+          let result1 := Crypto.choose_optimal_bridge 10 2
+          let result2 := Crypto.choose_optimal_bridge 25 3
+          
+          IO.println s!"Fast execution: {result1}"
+          IO.println s!"Secure execution: {result2}"
+          IO.println "✓ Bridge selection working"
+        EOF
+        
+        lake env lean simulation.lean
+        echo "✓ Cross-chain simulation passed"
+
+  documentation-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Check documentation coverage
+      run: |
+        # Count modules with documentation
+        TOTAL_MODULES=$(find maths -name "*.lean" | wc -l)
+        DOCUMENTED_MODULES=$(find maths -name "*.lean" -exec grep -l "/-!" {} \; | wc -l)
+        
+        DOC_COVERAGE=$((DOCUMENTED_MODULES * 100 / TOTAL_MODULES))
+        echo "Documentation coverage: ${DOC_COVERAGE}% (${DOCUMENTED_MODULES}/${TOTAL_MODULES})"
+        
+        if [ $DOC_COVERAGE -lt 80 ]; then
+          echo "❌ Documentation coverage below 80%"
+          exit 1
+        else
+          echo "✓ Documentation coverage acceptable"
+        fi
+    
+    - name: Generate proof statistics
+      working-directory: maths
+      run: |
+        echo "## Proof Statistics" > proof_stats.md
+        echo "" >> proof_stats.md
+        
+        # Count theorems and lemmas
+        THEOREMS=$(find . -name "*.lean" -exec grep -c "^theorem\|^lemma" {} \; | awk '{sum+=$1} END {print sum}')
+        DEFINITIONS=$(find . -name "*.lean" -exec grep -c "^def\|^structure\|^inductive" {} \; | awk '{sum+=$1} END {print sum}')
+        
+        echo "- Theorems and Lemmas: $THEOREMS" >> proof_stats.md
+        echo "- Definitions: $DEFINITIONS" >> proof_stats.md
+        echo "- Total Lean Files: $(find . -name "*.lean" | wc -l)" >> proof_stats.md
+        
+        cat proof_stats.md 

@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+pool-monitor: Monitors pool state changes
+
+Tracks all changes to liquidity pools including reserves, fees,
+and parameters for opportunity detection.
+
+Features:
+- Real-time monitoring
+- Change detection
+- Anomaly alerts
+- Pool health metrics
+- Volume tracking
+- Fee tier changes
+
+Input: Pool addresses
+Output: Pool state updates
+
+Usage:
+  pool-monitor --pools=all --alert-threshold=5%
+  pool-monitor --protocol=uniswap-v3 --new-pools
+"""
+
+# Implementation will be added later

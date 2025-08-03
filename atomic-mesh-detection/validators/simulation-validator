@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+simulation-validator: Validates via local simulation
+
+Simulates transactions locally to validate they will succeed
+before submission.
+
+Features:
+- Local simulation
+- Fork testing
+- State overrides
+- Multi-step validation
+- Gas estimation
+- Revert detection
+
+Input: Transaction bundle
+Output: Simulation results
+
+Usage:
+  bundle | simulation-validator --full
+  simulation-validator --fork --quick-mode
+"""
+
+# Implementation will be added later

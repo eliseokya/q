@@ -1,0 +1,21 @@
+# Arbitrum configuration
+
+[chain]
+id = 42161
+name = "arbitrum"
+currency = "ETH"
+l1_chain = 1
+
+[node]
+type = "unified-reth-nitro"
+ipc_path = "/tmp/arbitrum.ipc"
+http_port = 8547
+ws_port = 8548
+
+[sequencer]
+endpoint = "https://arb1.arbitrum.io/rpc"
+dangerous_allow_custom = false
+
+[sync]
+mode = "snap"
+l1_messages = true

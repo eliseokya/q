@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+protocol-hopper: Multi-protocol arbitrage
+
+Jumps between different protocols to capture inefficiencies.
+
+Strategy:
+1. Map protocol interfaces
+2. Find equivalent operations
+3. Compare prices/rates
+4. Execute across protocols
+5. Optimize for gas
+
+Features:
+- Protocol mapping
+- Interface abstraction
+- Cost comparison
+- Route finding
+- Gas optimization
+- Error handling
+
+Usage:
+  opportunities | protocol-hopper --protocols=5
+  protocol-hopper --equivalent-only --fast
+"""
+
+# Implementation will be added later

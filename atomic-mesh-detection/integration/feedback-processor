@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+feedback-processor: Processes execution feedback
+
+Processes feedback from execution to improve detection.
+
+Features:
+- Feedback processing
+- Learning extraction
+- Model updates
+- Pattern recognition
+- Improvement tracking
+- Report generation
+
+Usage:
+  execution-feedback | feedback-processor --learn
+  feedback-processor --update-models --report
+"""
+
+# Implementation will be added later

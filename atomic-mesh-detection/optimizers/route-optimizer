@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+route-optimizer: Optimizes execution routes
+
+Finds and optimizes the best routes for arbitrage execution across
+protocols and chains.
+
+Features:
+- Graph optimization
+- Multi-hop routing
+- Liquidity consideration
+- Gas cost inclusion
+- Slippage minimization
+- Parallel routes
+
+Input: Trading graph
+Output: Optimal route
+
+Usage:
+  trading-graph | route-optimizer --max-hops=4
+  route-optimizer --split-routes --minimize=gas
+"""
+
+# Implementation will be added later

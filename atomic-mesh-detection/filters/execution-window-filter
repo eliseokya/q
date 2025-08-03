@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+execution-window-filter: Filters by time constraints
+
+Ensures opportunities can be executed within required time windows
+considering all steps.
+
+Features:
+- Time estimation
+- Window checking
+- Deadline management
+- Multi-step timing
+- Buffer inclusion
+- Fast-path detection
+
+Input: Opportunities with timing
+Output: Time-feasible opportunities
+
+Usage:
+  opportunities | execution-window-filter --max=5s
+  execution-window-filter --include-bridges --buffer=20%
+"""
+
+# Implementation will be added later

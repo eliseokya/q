@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+capability-filter: Filters based on execution capabilities
+
+Comprehensive filter ensuring opportunities match all execution
+system capabilities.
+
+Features:
+- Capability checking
+- Resource validation
+- Constraint verification
+- Performance requirements
+- System state awareness
+- Dynamic updates
+
+Input: Opportunities
+Output: Executable opportunities
+
+Usage:
+  opportunities | capability-filter --check-all
+  capability-filter --real-time --system-state
+"""
+
+# Implementation will be added later

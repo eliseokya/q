@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-router: Routes through best liquidity
+
+Intelligently routes trades through venues with best liquidity
+to minimize slippage.
+
+Strategy:
+1. Map liquidity landscape
+2. Calculate optimal routing
+3. Split large trades
+4. Execute in parallel
+5. Aggregate results
+
+Features:
+- Liquidity mapping
+- Route optimization
+- Trade splitting
+- Parallel execution
+- Slippage minimization
+- Dynamic routing
+
+Usage:
+  large-trade | liquidity-router --max-impact=0.1%
+  liquidity-router --split --parallel=4
+"""
+
+# Implementation will be added later

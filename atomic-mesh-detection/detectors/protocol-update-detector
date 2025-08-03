@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+protocol-update-detector: Detects protocol parameter changes
+
+Monitors for protocol updates that might create temporary
+inefficiencies.
+
+Features:
+- Parameter monitoring
+- Update detection
+- Impact analysis
+- Opportunity windows
+- Governance tracking
+- Update prediction
+
+Input: Protocol state
+Output: Update alerts
+
+Usage:
+  protocol-state | protocol-update-detector --all
+  protocol-update-detector --governance --predict
+"""
+
+# Implementation will be added later

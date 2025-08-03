@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+bundle-translator: Translates to execution format
+
+Translates detection bundles to execution system format.
+
+Features:
+- Format translation
+- Validation
+- Type conversion
+- Error handling
+- Metadata preservation
+- Version handling
+
+Usage:
+  detection-bundle | bundle-translator --v2
+  bundle-translator --validate --preserve-meta
+"""
+
+# Implementation will be added later

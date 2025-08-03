@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+tail-event-catcher: Extreme event profit capture
+
+Captures profits from extreme market events and black swans.
+
+Strategy:
+1. Monitor for anomalies
+2. Detect tail events
+3. Position quickly
+4. Manage extreme volatility
+5. Exit safely
+
+Features:
+- Anomaly detection
+- Event classification
+- Quick positioning
+- Vol management
+- Risk controls
+- Profit taking
+
+Usage:
+  market-data | tail-event-catcher --sensitivity=high
+  tail-event-catcher --black-swan --safe-exit
+"""
+
+# Implementation will be added later

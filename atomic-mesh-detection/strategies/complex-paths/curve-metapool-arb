@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+curve-metapool-arb: Curve metapool arbitrage
+
+Exploits inefficiencies in Curve's metapool structure.
+
+Strategy:
+1. Monitor base and meta pools
+2. Calculate indirect rates
+3. Find arbitrage paths
+4. Execute through pools
+5. Handle bonding curves
+
+Features:
+- Metapool math
+- Curve optimization
+- Slippage calculation
+- Multi-stable routing
+- Fee accounting
+- Imbalance trading
+
+Usage:
+  curve-pools | curve-metapool-arb --include-factory
+  curve-metapool-arb --stables-only --deep
+"""
+
+# Implementation will be added later

@@ -1,0 +1,20 @@
+# Strategy configuration
+
+[strategies]
+max_concurrent = 10
+default_timeout_ms = 5000
+
+[instant_arb]
+enabled = true
+max_execution_time_ms = 400
+min_profit_usd = 50
+
+[flash_liquidator]
+enabled = true
+min_health_factor = 1.05
+max_gas_price_gwei = 500
+
+[triangular_plus]
+enabled = true
+max_hops = 6
+min_profit_percentage = 0.1

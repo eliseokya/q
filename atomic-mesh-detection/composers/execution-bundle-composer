@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+execution-bundle-composer: Composes execution bundles
+
+Combines multiple operations into optimal execution bundles.
+
+Features:
+- Bundle composition
+- Gas optimization
+- Atomicity checking
+- Order optimization
+- Size limits
+- Priority management
+
+Usage:
+  operations | execution-bundle-composer --atomic
+  execution-bundle-composer --gas-optimize --priority
+"""
+
+# Implementation will be added later

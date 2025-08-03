@@ -1,0 +1,35 @@
+# Rust build artifacts
+target/
+Cargo.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+docs/
+*.md
+
+# Git
+.git/
+.gitignore
+
+# Docker files themselves
+Dockerfile*
+docker-compose.yml
+.dockerignore
+
+# Output directory
+output/
+bin/
+
+# Scripts we don't need in the build
+scripts/
+verify-*.sh

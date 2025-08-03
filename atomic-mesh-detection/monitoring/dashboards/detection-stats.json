@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "title": "Detection Statistics",
+    "panels": [
+      {
+        "title": "Opportunities Detected",
+        "type": "counter",
+        "targets": ["detection.opportunities.count"]
+      },
+      {
+        "title": "Detection Latency",
+        "type": "histogram",
+        "targets": ["detection.latency.ms"]
+      },
+      {
+        "title": "Profit Distribution",
+        "type": "heatmap",
+        "targets": ["detection.profit.distribution"]
+      }
+    ]
+  }
+}

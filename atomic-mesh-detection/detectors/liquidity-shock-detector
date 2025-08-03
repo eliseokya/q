@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-shock-detector: Detects large liquidity movements
+
+Identifies sudden liquidity additions or removals that create
+price dislocations.
+
+Features:
+- Liquidity event detection
+- Impact assessment
+- Cascade prediction
+- Recovery timing
+- Multi-pool correlation
+- Front-running detection
+
+Input: Liquidity events
+Output: Shock alerts
+
+Usage:
+  liquidity-events | liquidity-shock-detector --impact>1%
+  liquidity-shock-detector --predict-cascade
+"""
+
+# Implementation will be added later

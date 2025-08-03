@@ -1,0 +1,13 @@
+[package]
+name = "assemble-bundle"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "assemble-bundle"
+path = "main.rs"
+
+[dependencies]
+common = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

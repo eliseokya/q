@@ -1,0 +1,10 @@
+{
+  "opportunity_id": "test",
+  "path": [
+    {
+      "action": "borrow",
+      "amount": "100"
+      "token": "WETH"  // Missing comma
+    }
+  ]
+}

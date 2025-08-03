@@ -1,0 +1,50 @@
+{
+  "opportunity_id": "parallel_arb_001",
+  "source_chain": "polygon",
+  "target_chain": "arbitrum",
+  "path": [
+    {
+      "action": "borrow",
+      "amount": "1000",
+      "token": "WETH",
+      "protocol": "aave"
+    },
+    {
+      "action": "bridge",
+      "to": "arbitrum",
+      "token": "WETH",
+      "amount": "500"
+    },
+    {
+      "action": "swap",
+      "from": "WETH",
+      "to": "USDC",
+      "amount": "500",
+      "minOut": "750000",
+      "protocol": "uniswap"
+    },
+    {
+      "action": "swap",
+      "from": "WETH",
+      "to": "DAI",
+      "amount": "500",
+      "minOut": "750000",
+      "protocol": "compound"
+    },
+    {
+      "action": "bridge",
+      "to": "polygon",
+      "token": "USDC",
+      "amount": "750000"
+    },
+    {
+      "action": "repay",
+      "amount": "1000",
+      "token": "WETH",
+      "protocol": "aave"
+    }
+  ],
+  "constraints": {
+    "deadline": 30
+  }
+}

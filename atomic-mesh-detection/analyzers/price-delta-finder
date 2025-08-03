@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+"""
+price-delta-finder: Finds price differences across venues
+
+Core arbitrage detection tool that identifies price discrepancies
+between different DEXes, chains, and protocols.
+
+Features:
+- Compares prices across all venues
+- Accounts for decimals and routing
+- Calculates profit after fees
+- Identifies best execution path
+- Monitors price convergence
+- Filters noise vs real opportunities
+
+Input: Normalized prices from price-extractor
+Output: Price delta opportunities
+
+{
+  "token": "WETH",
+  "buyVenue": {
+    "chain": "arbitrum",
+    "protocol": "uniswap_v3",
+    "price": "1820.50"
+  },
+  "sellVenue": {
+    "chain": "ethereum",
+    "protocol": "curve",
+    "price": "1825.00"
+  },
+  "delta": "4.50",
+  "deltaPercent": "0.247%",
+  "estimatedProfit": "145.30",
+  "confidence": 0.92
+}
+
+Usage:
+  price-extractor | price-delta-finder --min-delta=0.1%
+  price-delta-finder --token=WETH --cross-chain
+  price-delta-finder --include-fees --real-profit-only
+"""
+
+# Implementation will be added later

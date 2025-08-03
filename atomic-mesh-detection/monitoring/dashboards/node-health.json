@@ -1,0 +1,22 @@
+{
+  "dashboard": {
+    "title": "Node Health Monitoring",
+    "panels": [
+      {
+        "title": "Sync Status",
+        "type": "graph",
+        "targets": ["node.sync.height", "node.sync.highest"]
+      },
+      {
+        "title": "Peer Count",
+        "type": "graph",
+        "targets": ["node.peers.count"]
+      },
+      {
+        "title": "Mempool Size",
+        "type": "graph",
+        "targets": ["node.mempool.size"]
+      }
+    ]
+  }
+}

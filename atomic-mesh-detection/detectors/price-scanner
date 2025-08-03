@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+"""
+price-scanner: Fast price discrepancy scanner
+
+High-performance scanner that continuously monitors prices across
+all venues to detect arbitrage opportunities in real-time.
+
+Features:
+- Sub-millisecond scanning
+- Parallel price fetching
+- Smart caching strategy
+- Delta threshold filtering
+- Priority queue output
+- Statistical filtering
+
+Input: Direct from nodes
+Output: Price discrepancies stream
+
+{
+  "scanId": "scan_12345",
+  "timestamp": 1234567890123,
+  "token": "WETH",
+  "venues": [
+    {"chain": "ethereum", "protocol": "uniswap_v3", "price": "1820.50"},
+    {"chain": "arbitrum", "protocol": "sushiswap", "price": "1818.00"}
+  ],
+  "maxDelta": "2.50",
+  "maxDeltaPct": "0.137%",
+  "volume24h": "5000000",
+  "updateFreq": "high"
+}
+
+Usage:
+  price-scanner --tokens=WETH,USDC,DAI --min-delta=0.1%
+  price-scanner --all-tokens --fast-mode --parallel=16
+  price-scanner --focus=stables --high-volume-only
+"""
+
+# Implementation will be added later

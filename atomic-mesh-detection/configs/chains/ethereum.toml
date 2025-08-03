@@ -1,0 +1,21 @@
+# Ethereum mainnet configuration
+
+[chain]
+id = 1
+name = "ethereum"
+currency = "ETH"
+
+[node]
+type = "unified-reth"
+ipc_path = "/tmp/ethereum.ipc"
+http_port = 8545
+ws_port = 8546
+
+[sync]
+mode = "full"
+snapshot = true
+max_peers = 50
+
+[mempool]
+size_limit = 10000
+min_gas_price = "1000000000"

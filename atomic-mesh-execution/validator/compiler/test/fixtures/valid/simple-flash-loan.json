@@ -1,0 +1,40 @@
+{
+  "opportunity_id": "flash_loan_001",
+  "source_chain": "polygon",
+  "path": [
+    {
+      "action": "borrow",
+      "amount": "1000",
+      "token": "USDC",
+      "protocol": "aave"
+    },
+    {
+      "action": "swap",
+      "from": "USDC",
+      "to": "WETH",
+      "amount": "1000",
+      "minOut": "0.5",
+      "protocol": "uniswap"
+    },
+    {
+      "action": "swap",
+      "from": "WETH",
+      "to": "USDC",
+      "amount": "0.5",
+      "minOut": "1050",
+      "protocol": "uniswap"
+    },
+    {
+      "action": "repay",
+      "amount": "1000",
+      "token": "USDC",
+      "protocol": "aave"
+    }
+  ],
+  "expected_profit": "50",
+  "confidence": 0.95,
+  "constraints": {
+    "deadline": 20,
+    "max_gas": 500000
+  }
+}

@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+flash-rebalancer: Pool rebalancing via flash loans
+
+Rebalances pools using flash loans to capture fees and incentives.
+
+Strategy:
+1. Identify imbalanced pools
+2. Calculate rebalancing profit
+3. Flash loan required assets
+4. Rebalance pool
+5. Collect rewards
+
+Features:
+- Imbalance detection
+- Profit calculation
+- Multi-asset loans
+- Incentive capture
+- Gas optimization
+- Risk management
+
+Usage:
+  pool-states | flash-rebalancer --min-imbalance=5%
+  flash-rebalancer --incentivized-only
+"""
+
+# Implementation will be added later

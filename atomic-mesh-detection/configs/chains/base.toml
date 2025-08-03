@@ -1,0 +1,21 @@
+# Base configuration
+
+[chain]
+id = 8453
+name = "base"
+currency = "ETH"
+l1_chain = 1
+
+[node]
+type = "unified-reth-op"
+ipc_path = "/tmp/base.ipc"
+http_port = 8551
+ws_port = 8552
+
+[sequencer]
+endpoint = "https://mainnet.base.org"
+dangerous_allow_custom = false
+
+[sync]
+mode = "snap"
+l1_messages = true

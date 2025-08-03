@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Production build
+  compiler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: atomic-mesh-compiler:latest
+    volumes:
+      - ./examples/input:/data/input:ro
+      - ./output:/data/output
+    environment:
+      - RUST_LOG=info
+    command: ["/opt/compiler/pipeline.sh", "/data/input/flash-loan.json"]
+
+  # Development environment
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: atomic-mesh-compiler:dev
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+    environment:
+      - RUST_LOG=debug
+      - CARGO_TERM_COLOR=always
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+
+  # Test runner
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: atomic-mesh-compiler:dev
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+    working_dir: /workspace
+    command: ["cargo", "test", "--all"]
+
+  # Build only
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: atomic-mesh-compiler:dev
+    volumes:
+      - .:/workspace
+      - cargo-cache:/usr/local/cargo/registry
+    working_dir: /workspace
+    command: ["cargo", "build", "--release", "--all"]
+
+volumes:
+  cargo-cache:

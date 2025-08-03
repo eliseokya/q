@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+block-start-arb: First transaction advantage
+
+Captures arbitrage by being first transaction in new blocks.
+
+Strategy:
+1. Predict next block
+2. Prepare transactions
+3. Submit at block time
+4. Ensure first position
+5. Capture clean state
+
+Features:
+- Block prediction
+- Timing optimization
+- Builder relationships
+- Priority management
+- State advantages
+- MEV protection
+
+Usage:
+  block-predictor | block-start-arb --builders=all
+  block-start-arb --flashbots --priority
+"""
+
+# Implementation will be added later

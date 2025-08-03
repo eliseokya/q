@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+
+"""
+gas-extractor: Extracts gas prices and estimates costs
+
+Monitors gas prices across all chains and estimates transaction costs
+for different operations. Critical for profitability calculations.
+
+Features:
+- Real-time gas price monitoring
+- L2 calldata cost calculation
+- Priority fee optimization
+- Gas usage estimation by operation
+- MEV-boost priority calculations
+- Historical gas patterns
+
+Input: Blocks and transactions
+Output: Gas information per chain
+
+{
+  "chain": "ethereum",
+  "baseFee": "25",
+  "priorityFee": "2",
+  "fastGasPrice": "27",
+  "l1DataCost": "0",    # 0 for L1
+  "estimatedCosts": {
+    "swap": "150000",
+    "flashLoan": "300000",
+    "bridge": "100000"
+  },
+  "congestion": "medium",
+  "nextBlockBaseFee": "26"
+}
+
+Usage:
+  block-reader | gas-extractor
+  gas-extractor --estimate-bundle --operations=swap,bridge
+  gas-extractor --l2-calldata-size=5000 --chain=arbitrum
+"""
+
+# Implementation will be added later

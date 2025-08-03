@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+capital-validator: Validates capital availability
+
+Ensures required capital is available across all chains for
+execution.
+
+Features:
+- Balance checking
+- Lock verification
+- Reserve requirements
+- Multi-asset validation
+- Flash loan availability
+- Capital routing
+
+Input: Capital requirements
+Output: Availability status
+
+Usage:
+  requirements | capital-validator --include-flash
+  capital-validator --multi-chain --reserves
+"""
+
+# Implementation will be added later

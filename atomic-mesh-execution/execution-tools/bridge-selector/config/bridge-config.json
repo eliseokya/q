@@ -1,0 +1,55 @@
+{
+  "bridgeConfig": {
+    "description": "Bridge endpoints and parameters",
+    "note": "Critical infrastructure - handle with care",
+    
+    "atomicMeshBridge": {
+      "description": "Custom ultra-fast atomic bridge",
+      "endpoints": {
+        "arbitrum": "0x0000000000000000000000000000000000000001",
+        "ethereum": "0x0000000000000000000000000000000000000001",
+        "polygon": "0x0000000000000000000000000000000000000001",
+        "base": "0x0000000000000000000000000000000000000001",
+        "optimism": "0x0000000000000000000000000000000000000001"
+      },
+      "fees": {
+        "percentage": 0.1,
+        "minimum": 5,
+        "maximum": 1000
+      },
+      "timing": {
+        "expectedMs": 200,
+        "timeoutMs": 5000
+      }
+    },
+    
+    "deBridge": {
+      "description": "deBridge protocol integration",
+      "gates": {
+        "arbitrum": "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA",
+        "ethereum": "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA",
+        "polygon": "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA",
+        "base": "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA",
+        "optimism": "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA"
+      },
+      "fees": {
+        "protocolFeePercentage": 0.1,
+        "executionFee": "calculated"
+      },
+      "timing": {
+        "expectedMs": 2000,
+        "timeoutMs": 30000
+      }
+    },
+    
+    "supportedPairs": [
+      {"from": "arbitrum", "to": "polygon"},
+      {"from": "arbitrum", "to": "ethereum"},
+      {"from": "ethereum", "to": "arbitrum"},
+      {"from": "ethereum", "to": "polygon"},
+      {"from": "polygon", "to": "arbitrum"},
+      {"from": "base", "to": "ethereum"},
+      {"from": "optimism", "to": "ethereum"}
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+block-builder-predictor: Predicts builder behavior
+
+Predicts which builder will win blocks and their behavior patterns.
+
+Features:
+- Builder identification
+- Win probability
+- Behavior patterns
+- MEV strategies
+- Timing prediction
+- Bundle acceptance
+
+Usage:
+  builder-data | block-builder-predictor --next-block
+  block-builder-predictor --builder=flashbots --analyze
+"""
+
+# Implementation will be added later

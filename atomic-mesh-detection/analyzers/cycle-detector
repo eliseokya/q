@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+"""
+cycle-detector: Detects arbitrage cycles in the price graph
+
+Finds profitable trading cycles (triangular, quadrangular, etc.)
+by analyzing the price graph across all venues.
+
+Features:
+- Detects cycles up to N hops
+- Bellman-Ford for negative cycles
+- Accounts for gas costs per hop
+- Optimizes cycle execution order
+- Handles cross-chain cycles
+- Parallel cycle detection
+
+Input: Price graph from multiple venues
+Output: Profitable cycles
+
+{
+  "cycleId": "cycle_123",
+  "path": [
+    {"chain": "ethereum", "protocol": "uniswap", "action": "ETH->USDC"},
+    {"chain": "ethereum", "protocol": "curve", "action": "USDC->DAI"},
+    {"chain": "ethereum", "protocol": "uniswap", "action": "DAI->ETH"}
+  ],
+  "startToken": "ETH",
+  "endToken": "ETH",
+  "inputAmount": "10",
+  "outputAmount": "10.15",
+  "profit": "0.15",
+  "gasEstimate": "0.05",
+  "netProfit": "0.10"
+}
+
+Usage:
+  price-extractor | cycle-detector --max-hops=4
+  cycle-detector --min-profit=50 --include-bridges
+  cycle-detector --parallel --threads=8
+"""
+
+# Implementation will be added later

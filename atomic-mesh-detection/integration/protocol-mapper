@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+protocol-mapper: Maps protocols to execution contracts
+
+Maps detection protocol names to execution system contracts.
+
+Features:
+- Name mapping
+- Version handling
+- Feature mapping
+- Chain support
+- Fallback options
+- Validation
+
+Usage:
+  protocols | protocol-mapper --validate
+  protocol-mapper --with-features --fallbacks
+"""
+
+# Implementation will be added later

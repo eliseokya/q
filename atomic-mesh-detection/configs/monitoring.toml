@@ -1,0 +1,16 @@
+# Monitoring configuration
+
+[monitoring]
+enabled = true
+metrics_port = 9090
+log_level = "info"
+
+[alerts]
+webhook_url = ""
+alert_on_failure = true
+alert_on_low_profit = true
+low_profit_threshold_usd = 10
+
+[dashboards]
+refresh_interval_seconds = 5
+retention_days = 30

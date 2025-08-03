@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+liquidity-flow-predictor: Predicts liquidity movements
+
+Predicts large liquidity additions/removals before they happen.
+
+Features:
+- Flow prediction
+- Whale tracking
+- Pattern recognition
+- Impact estimation
+- Timing prediction
+- Confidence scoring
+
+Usage:
+  liquidity-data | liquidity-flow-predictor --whales
+  liquidity-flow-predictor --high-confidence --alert
+"""
+
+# Implementation will be added later

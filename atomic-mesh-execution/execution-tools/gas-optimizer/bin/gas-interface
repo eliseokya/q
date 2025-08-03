@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+/**
+ * gas-interface: Exposes GasProfitability.sol calculations
+ * 
+ * This tool provides an interface to the on-chain GasProfitability contract,
+ * allowing the detection system to query real-time gas calculations and
+ * profitability thresholds without direct blockchain calls.
+ * 
+ * Input: Query from detection system
+ * {
+ *   "query_type": "estimate|validate|threshold",
+ *   "bundle": {
+ *     "source_chain": "ethereum",
+ *     "target_chain": "arbitrum",
+ *     "operations": [...],
+ *     "expected_revenue": "500.00"
+ *   }
+ * }
+ * 
+ * Output: Gas profitability analysis
+ * {
+ *   "profitable": true,
+ *   "gas_costs": {
+ *     "ethereum": {
+ *       "base_fee": "30",
+ *       "priority_fee": "2",
+ *       "gas_units": "250000",
+ *       "cost_usd": "45.50"
+ *     },
+ *     "arbitrum": {
+ *       "l2_gas_price": "0.1",
+ *       "l1_data_cost": "15.00",
+ *       "gas_units": "1500000",
+ *       "cost_usd": "20.00"
+ *     },
+ *     "bridge_fees": {
+ *       "atomic_mesh": "5.00",
+ *       "debridge": "12.00"
+ *     }
+ *   },
+ *   "total_cost_usd": "70.50",
+ *   "expected_profit_usd": "429.50",
+ *   "profit_margin": 0.859,
+ *   "breakeven_price_impact": "14.1%",
+ *   "recommended_gas_limits": {
+ *     "ethereum": "300000",
+ *     "arbitrum": "2000000"
+ *   },
+ *   "current_thresholds": {
+ *     "min_profit_usd": "50.00",
+ *     "min_profit_margin": 0.20,
+ *     "max_gas_price_gwei": "200"
+ *   }
+ * }
+ * 
+ * Features:
+ * - Real-time gas price monitoring
+ * - L2-specific calculations (L1 data costs)
+ * - Bridge fee integration
+ * - Dynamic threshold management
+ * - Historical gas usage patterns
+ * - MEV protection cost estimates
+ * - Caches frequent queries
+ * - Supports batch queries
+ * 
+ * Usage:
+ *   echo '{"query_type":"estimate","bundle":{...}}' | gas-interface
+ *   gas-interface --serve 8080  # Run as HTTP service
+ *   gas-interface --watch       # Monitor gas changes
+ */
+
+// Implementation will be added later

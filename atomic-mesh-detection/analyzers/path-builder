@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+"""
+path-builder: Builds optimal execution paths
+
+Constructs the optimal sequence of operations to capture an
+arbitrage opportunity, considering liquidity and gas costs.
+
+Features:
+- Dynamic programming path optimization
+- Liquidity-aware routing
+- Multi-path splitting
+- Cross-chain path building
+- Slippage optimization
+- Fallback path generation
+
+Input: Arbitrage opportunity
+Output: Optimal execution path
+
+{
+  "pathId": "path_456",
+  "opportunity": "arb_123",
+  "steps": [
+    {
+      "step": 1,
+      "chain": "arbitrum",
+      "action": "flashloan",
+      "protocol": "aave",
+      "amount": "100000_USDC"
+    },
+    {
+      "step": 2,
+      "chain": "arbitrum", 
+      "action": "swap",
+      "protocol": "uniswap_v3",
+      "params": {"amountIn": "100000", "path": "USDC->WETH"}
+    },
+    {
+      "step": 3,
+      "chain": "arbitrum",
+      "action": "bridge",
+      "protocol": "atomic_mesh",
+      "targetChain": "ethereum"
+    }
+  ],
+  "estimatedGas": "1500000",
+  "estimatedTime": "420ms"
+}
+
+Usage:
+  cycle-detector | path-builder --optimize=gas
+  path-builder --opportunity=arb_123 --max-slippage=0.5%
+  path-builder --multi-path --split-threshold=100000
+"""
+
+# Implementation will be added later

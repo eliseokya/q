@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+fallback-planner: Plans fallback strategies
+
+Creates fallback plans for when primary strategies fail.
+
+Features:
+- Fallback generation
+- Failure modes
+- Alternative paths
+- Cost analysis
+- Quick switching
+- Success tracking
+
+Usage:
+  primary-strategy | fallback-planner --depth=3
+  fallback-planner --quick-switch --analyze
+"""
+
+# Implementation will be added later

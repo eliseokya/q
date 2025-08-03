@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+"""
+liquidation-finder: Finds positions near liquidation
+
+Monitors lending protocols for positions approaching liquidation
+thresholds, enabling profitable liquidation strategies.
+
+Features:
+- Multi-protocol monitoring
+- Health factor tracking
+- Liquidation bonus calculation
+- Gas auction strategies
+- MEV protection tactics
+- Collateral analysis
+
+Input: Lending protocol state
+Output: Liquidation opportunities
+
+{
+  "protocol": "aave_v3",
+  "chain": "ethereum",
+  "user": "0x...",
+  "healthFactor": "1.02",
+  "collateral": {
+    "WETH": "100",
+    "value": "182000"
+  },
+  "debt": {
+    "USDC": "178000"
+  },
+  "liquidationBonus": "5%",
+  "maxLiquidatable": "89000",
+  "estimatedProfit": "4450",
+  "gasEstimate": "400"
+}
+
+Usage:
+  lending-state | liquidation-finder --health-factor<1.1
+  liquidation-finder --min-profit=1000 --all-protocols
+  liquidation-finder --whale-positions --continuous
+"""
+
+# Implementation will be added later

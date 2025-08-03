@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+bundle-optimizer: Optimizes transaction bundles
+
+Optimizes the arrangement and parameters of transactions in bundles
+for maximum efficiency and profit.
+
+Features:
+- Transaction ordering
+- Gas optimization
+- MEV protection
+- Parallel execution planning
+- Atomic grouping
+- Priority optimization
+
+Input: Multiple transactions
+Output: Optimized bundle
+
+Usage:
+  transactions | bundle-optimizer --max-bundle-size=10
+  bundle-optimizer --mev-protect --optimize=gas
+"""
+
+# Implementation will be added later

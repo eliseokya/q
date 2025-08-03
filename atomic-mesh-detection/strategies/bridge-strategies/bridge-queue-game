@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+bridge-queue-game: Bridge queue manipulation
+
+Optimizes position in bridge queues for better execution.
+
+Strategy:
+1. Monitor queue depths
+2. Predict processing
+3. Time submissions
+4. Manage position
+5. Optimize outcomes
+
+Features:
+- Queue monitoring
+- Position prediction
+- Timing optimization
+- Priority management
+- Multi-bridge coordination
+- Game theory application
+
+Usage:
+  bridge-queues | bridge-queue-game --optimize
+  bridge-queue-game --priority --coordinate
+"""
+
+# Implementation will be added later

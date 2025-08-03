@@ -1,0 +1,54 @@
+[workspace]
+members = [
+    "nodes/unified-reth",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Atomic Mesh Team"]
+license = "MIT"
+repository = "https://github.com/atomic-mesh/detection"
+
+[workspace.dependencies]
+tokio = { version = "1.35", features = ["full"] }
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+thiserror = "1.0"
+clap = { version = "4.4", features = ["derive"] }
+
+# Blockchain specific
+ethers = "2.0"
+revm = "3.5"
+alloy-primitives = "0.5"
+
+# Database
+rocksdb = "0.21"
+sled = "0.34"
+
+# Networking
+libp2p = "0.53"
+axum = "0.7"
+tower = "0.4"
+
+# Performance
+rayon = "1.8"
+dashmap = "5.5"
+crossbeam = "0.8"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1
+panic = "abort"
+
+[profile.bench]
+inherits = "release"
+
+[profile.dev]
+opt-level = 1
+debug = true

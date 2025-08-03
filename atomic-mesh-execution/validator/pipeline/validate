@@ -1,0 +1,40 @@
+#!/bin/bash
+# Validator Pipeline - Main validation script
+# Processes opportunity JSON through all four modules
+
+set -euo pipefail
+
+# Check if input is provided
+if [ -t 0 ]; then
+    echo "Error: No input provided. Expected opportunity JSON via stdin." >&2
+    echo "Usage: ./pipeline/validate < opportunity.json" >&2
+    exit 1
+fi
+
+# Read input
+OPPORTUNITY_JSON=$(cat)
+
+# Module paths (relative to validator directory)
+COMPILER_BIN="./compiler/bin/compile"
+ANALYZER_BIN="./analyzer/bin/analyze"
+VERIFIER_BIN="./proof-verifier/bin/verify"
+GENERATOR_BIN="./bundle-generator/bin/generate"
+
+# Check if all modules exist
+for module in "$COMPILER_BIN" "$ANALYZER_BIN" "$VERIFIER_BIN" "$GENERATOR_BIN"; do
+    if [ ! -x "$module" ]; then
+        echo "Error: Module $module not found or not executable" >&2
+        echo "Please build all modules first" >&2
+        exit 1
+    fi
+done
+
+# Pipeline execution with error handling
+echo "$OPPORTUNITY_JSON" | \
+    $COMPILER_BIN | \
+    $ANALYZER_BIN | \
+    $VERIFIER_BIN | \
+    $GENERATOR_BIN
+
+# Exit with the status of the last command
+exit ${PIPESTATUS[-1]}

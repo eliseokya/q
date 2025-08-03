@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+protocol-compatibility-validator: Checks protocol compatibility
+
+Validates protocol versions and features are compatible with
+execution system.
+
+Features:
+- Version checking
+- Feature validation
+- Interface compatibility
+- Chain support
+- Upgrade detection
+- Compatibility matrix
+
+Input: Protocol usage
+Output: Compatibility status
+
+Usage:
+  protocol-usage | protocol-compatibility-validator
+  protocol-compatibility-validator --strict --matrix
+"""
+
+# Implementation will be added later

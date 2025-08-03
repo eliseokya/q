@@ -1,0 +1,61 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Foundry
+out/
+cache/
+broadcast/
+coverage/
+lcov.info
+
+# Dependencies
+lib/
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keys and secrets
+*.pem
+*.key
+*.secret
+
+# Build artifacts
+artifacts/
+build/
+dist/
+
+# Logs
+*.log
+logs/
+
+# Testing
+test-results/
+.test-cache/
+
+# Documentation
+docs/_build/
+docs/generated/
+
+# Deployment
+deployments/local/
+deployment-*.json
+
+# Monitoring
+grafana-storage/
+prometheus-data/
+
+# Temporary files
+*.tmp
+temp/
+tmp/

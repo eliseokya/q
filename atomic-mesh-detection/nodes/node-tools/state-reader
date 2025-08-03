@@ -1,0 +1,40 @@
+#!/usr/bin/env node
+
+/**
+ * state-reader: Outputs state changes from blockchain nodes
+ * 
+ * Monitors and outputs state changes across all chains, including
+ * storage updates, balance changes, and contract deployments.
+ * Essential for detecting arbitrage opportunities from state transitions.
+ * 
+ * Features:
+ * - Monitors storage slot changes in real-time
+ * - Tracks balance updates for all tokens
+ * - Detects new pool deployments
+ * - Filters by contract or storage pattern
+ * - Supports state diff subscriptions
+ * - Minimal latency via direct node access
+ * 
+ * Output format:
+ * {
+ *   "chain": "arbitrum",
+ *   "block": 12345678,
+ *   "address": "0x...",
+ *   "changes": [
+ *     {
+ *       "slot": "0x0",
+ *       "oldValue": "0x1234",
+ *       "newValue": "0x5678",
+ *       "interpretation": "reserve0 updated"
+ *     }
+ *   ],
+ *   "gasUsed": 150000
+ * }
+ * 
+ * Usage:
+ *   state-reader --chain=all --contracts=0xPOOL
+ *   state-reader --slots=0x0,0x1 --decode=uniswap
+ *   state-reader --filter=balance-changes --min-value=1000
+ */
+
+// Implementation will be added later

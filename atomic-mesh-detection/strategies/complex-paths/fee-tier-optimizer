@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+"""
+fee-tier-optimizer: Optimizes Uniswap V3 fee tiers
+
+Finds optimal routes through different fee tiers in concentrated
+liquidity pools.
+
+Strategy:
+1. Analyze liquidity distribution
+2. Calculate fee impact
+3. Route through optimal tiers
+4. Handle tick ranges
+5. Maximize output
+
+Features:
+- Tick analysis
+- Fee comparison
+- Liquidity depth
+- Range optimization
+- Multi-pool routing
+- Gas efficiency
+
+Usage:
+  uni-v3-opportunity | fee-tier-optimizer
+  fee-tier-optimizer --tiers=0.05,0.3,1 --compare
+"""
+
+# Implementation will be added later

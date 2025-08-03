@@ -1,0 +1,39 @@
+#!/usr/bin/env python3
+
+"""
+lending-rate-extractor: Extracts lending/borrowing rates
+
+Monitors interest rates across lending protocols to identify
+rate arbitrage opportunities and flash loan costs.
+
+Features:
+- Extracts supply/borrow APY
+- Calculates flash loan fees
+- Monitors utilization rates
+- Tracks rate changes
+- Identifies rate arbitrage
+- Monitors liquidation thresholds
+
+Input: Lending protocol state
+Output: Rate information
+
+{
+  "chain": "polygon",
+  "protocol": "aave_v3",
+  "asset": "USDC",
+  "supplyAPY": "3.25",
+  "borrowAPY": "4.80",
+  "utilization": "0.85",
+  "flashLoanFee": "0.09",
+  "availableLiquidity": "10000000",
+  "ltv": "0.80",
+  "liquidationThreshold": "0.85"
+}
+
+Usage:
+  state-reader --protocols=lending | lending-rate-extractor
+  lending-rate-extractor --asset=USDC --all-protocols
+  lending-rate-extractor --flash-loan-only
+"""
+
+# Implementation will be added later

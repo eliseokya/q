@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+"""
+oracle-update-arb: Oracle update timing arbitrage
+
+Trades on price discrepancies around oracle updates.
+
+Strategy:
+1. Track oracle schedules
+2. Monitor price feeds
+3. Predict update impact
+4. Trade before update
+5. Close after update
+
+Features:
+- Oracle monitoring
+- Update prediction
+- Impact modeling
+- Risk limits
+- Multi-oracle support
+- Timing precision
+
+Usage:
+  oracle-feeds | oracle-update-arb --oracles=chainlink
+  oracle-update-arb --predict --safe-only
+"""
+
+# Implementation will be added later

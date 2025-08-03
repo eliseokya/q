@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "lastUpdate": "2024-01-01T00:00:00Z",
+  "execution_system": "atomic-mesh-execution",
+  
+  "supported_chains": [
+    "ethereum",
+    "arbitrum", 
+    "polygon",
+    "base",
+    "optimism"
+  ],
+  
+  "supported_protocols": {
+    "aave_v3": {
+      "contract": "AaveV3Complete",
+      "chains": ["all"],
+      "features": ["swap", "flashloan", "supply", "borrow"]
+    },
+    "uniswap_v2": {
+      "contract": "UniswapComplete",
+      "chains": ["all"],
+      "features": ["swap", "liquidity"]
+    },
+    "uniswap_v3": {
+      "contract": "UniswapComplete", 
+      "chains": ["all"],
+      "features": ["swap", "liquidity", "flashloan"]
+    },
+    "curve": {
+      "contract": "CurveComplete",
+      "chains": ["ethereum", "arbitrum", "polygon"],
+      "features": ["swap", "metapool"]
+    },
+    "compound_v3": {
+      "contract": "CompoundV3Complete",
+      "chains": ["ethereum", "arbitrum", "polygon", "base"],
+      "features": ["supply", "borrow", "flashloan"]
+    },
+    "balancer": {
+      "contract": "BalancerComplete",
+      "chains": ["ethereum", "arbitrum", "polygon"],
+      "features": ["swap", "flashloan", "weighted_pools"]
+    }
+  },
+  
+  "supported_bridges": {
+    "atomic_mesh": {
+      "contract": "AtomicMeshBridge",
+      "speed": "400ms",
+      "chains": ["all"]
+    },
+    "debridge": {
+      "contract": "DeBridge",
+      "speed": "2-5min",
+      "chains": ["all"]
+    }
+  },
+  
+  "constraints": {
+    "max_bundle_size": 10,
+    "max_gas_per_tx": 30000000,
+    "max_execution_time": 5000,
+    "min_profit_usd": 50,
+    "max_slippage": 0.02
+  }
+}

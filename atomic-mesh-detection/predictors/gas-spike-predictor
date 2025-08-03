@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+"""
+gas-spike-predictor: Predicts gas price spikes
+
+Predicts sudden gas price increases to optimize timing.
+
+Features:
+- Spike prediction
+- Cause analysis
+- Timing estimation
+- Chain correlation
+- NFT mint detection
+- Congestion prediction
+
+Usage:
+  gas-history | gas-spike-predictor --horizon=10min
+  gas-spike-predictor --nft-mints --alert
+"""
+
+# Implementation will be added later

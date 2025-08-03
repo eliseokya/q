@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+
+"""
+execution-bundle-formatter: Formats for execution contracts
+
+Specialized formatter that creates bundles matching execution
+contract interfaces.
+
+Features:
+- Contract formatting
+- ABI encoding
+- Parameter validation
+- Gas estimation
+- Signature preparation
+- Error checking
+
+Input: Opportunities
+Output: Contract-ready bundles
+
+Usage:
+  opportunities | execution-bundle-formatter --abi
+  execution-bundle-formatter --estimate-gas
+"""
+
+# Implementation will be added later
