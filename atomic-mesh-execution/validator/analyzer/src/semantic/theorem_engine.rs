@@ -4,7 +4,7 @@
 //! that matched patterns satisfy their mathematical properties.
 
 use crate::common::pattern_types::{ProvenPattern, SafetyProperty};
-use common::types::{Bundle, Action, Expr, Chain, Protocol, Rational};
+use common::types::{Bundle, Action, Expr, Chain, Protocol};
 use std::collections::HashMap;
 use thiserror::Error;
 

@@ -7,7 +7,7 @@ use common::types::{Bundle, Expr, Action, Token, Protocol, Chain};
 use crate::fallback::{SafetyAnalysis, RiskLevel, RiskAssessment};
 use crate::common::pattern_types::SafetyProperty;
 use std::collections::{HashMap, HashSet};
-use num_traits::sign::Signed;
+
 
 /// Structural analyzer for heuristic safety assessment
 pub struct StructuralAnalyzer {

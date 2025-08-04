@@ -3,12 +3,11 @@
 //! This module provides heuristic methods to assess bundle safety
 //! when mathematical theorems are not available.
 
-use common::types::{Bundle, Action, Token, Protocol};
+use common::types::{Action, Token};
 use crate::common::pattern_types::SafetyProperty;
 use crate::fallback::{RejectionReason, SuggestedFix, FixType};
-use super::structural_analyzer::{StructuralAnalysis, ActionInfo};
-use std::collections::{HashMap, HashSet};
-use num_traits::sign::Signed;
+use super::structural_analyzer::StructuralAnalysis;
+use std::collections::HashMap;
 
 /// Safety heuristics engine
 pub struct SafetyHeuristics {
@@ -56,7 +55,7 @@ impl SafetyHeuristics {
     }
     
     /// Generate suggested fixes for safety violations
-    pub fn generate_fixes(&self, violations: &[RejectionReason], analysis: &StructuralAnalysis) -> Vec<SuggestedFix> {
+    pub fn generate_fixes(&self, violations: &[RejectionReason], _analysis: &StructuralAnalysis) -> Vec<SuggestedFix> {
         let mut fixes = Vec::new();
         
         for violation in violations {
@@ -303,6 +302,7 @@ impl ExtendedSafetyChecks {
 mod tests {
     use super::*;
     use common::types::{Rational, Chain};
+    use std::collections::HashSet;
     
     #[test]
     fn test_safety_violations() {

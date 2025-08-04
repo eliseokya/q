@@ -6,5 +6,8 @@
 pub mod structural_analyzer;
 pub mod safety_heuristics;
 
-pub use structural_analyzer::{StructuralAnalyzer, StructuralAnalysis};
+pub use structural_analyzer::{
+    StructuralAnalyzer, StructuralAnalysis,
+    BalanceFlowAnalysis, TimingRiskAnalysis, ProtocolRiskAnalysis, CrossChainComplexity
+};
 pub use safety_heuristics::{SafetyHeuristics, ExtendedSafetyChecks};

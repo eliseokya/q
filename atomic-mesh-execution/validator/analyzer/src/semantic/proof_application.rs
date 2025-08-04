@@ -93,7 +93,7 @@ impl ProofApplicationEngine {
         &self,
         pattern: &ProvenPattern,
         confidence: f64,
-        reason: String,
+        _reason: String,
     ) -> AnalysisResult {
         let validated = pattern.safety_properties.clone();
         let missing = vec![]; // Could be computed based on what failed
@@ -109,11 +109,11 @@ impl ProofApplicationEngine {
     
     fn create_heuristic_result(
         &self,
-        bundle: &Bundle,
+        _bundle: &Bundle,
         pattern: &ProvenPattern,
         error_reason: String,
     ) -> AnalysisResult {
-        use crate::common::analysis_result::{RiskFactor, RiskRecommendation};
+        use crate::common::analysis_result::RiskRecommendation;
         use uuid::Uuid;
         
         // Analyze risk based on the failure
@@ -139,7 +139,7 @@ impl ProofApplicationEngine {
         }
     }
     
-    fn create_rejection_result(&self, bundle: &Bundle, reason: &str) -> AnalysisResult {
+    fn create_rejection_result(&self, bundle: &Bundle, _reason: &str) -> AnalysisResult {
         use crate::common::analysis_result::{ValidationError, BundleAnalysis, ComplexityEstimate};
         use uuid::Uuid;
         

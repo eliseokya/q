@@ -14,7 +14,7 @@ use crate::matching::{StructuralMatcher, AutomataMatchEngine};
 use crate::validation::ConstraintChecker;
 use crate::semantic::{SemanticValidator, TheoremEngine};
 use crate::scoring::{ConfidenceCalculator, RiskAssessor};
-use crate::fallback::{ResultBuilder, RejectionReason};
+use crate::fallback::ResultBuilder;
 use crate::heuristics::{StructuralAnalyzer, SafetyHeuristics};
 use std::time::{Duration, Instant};
 use std::collections::HashMap;
