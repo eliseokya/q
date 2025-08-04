@@ -8,6 +8,7 @@ use crate::common::{
     ValidationError, RiskProfile, BundleAnalysis, ComplexityEstimate,
     ValidationRecommendation, RiskFactor, RiskRecommendation,
 };
+
 use crate::engine::{StaticPatternLibrary, DynamicPatternCache};
 use crate::matching::{StructuralMatcher, AutomataMatchEngine};
 use crate::validation::ConstraintChecker;
@@ -379,46 +380,48 @@ impl AnalyzerEngine {
             crate::fallback::AnalysisResult::PartialMatch { 
                 confidence,
                 validated_properties,
-                warnings,
+                unverified_properties,
+                matched_structure,
                 .. 
             } => {
                 AnalysisResult::PartialMatch {
-                    matched_patterns: vec![], // Could extract from enhanced result if needed
+                    theorem_reference: matched_structure,
                     confidence,
                     validated_properties,
-                    unverified_properties: vec![],
-                    warnings,
+                    missing_guarantees: unverified_properties,
                     recommendation: if confidence >= 0.7 {
-                        ValidationRecommendation::ApproveWithMonitoring
+                        ValidationRecommendation::ProceedWithCaution
                     } else {
-                        ValidationRecommendation::ManualReview
+                        ValidationRecommendation::RequireAdditionalValidation
                     },
                 }
             }
             crate::fallback::AnalysisResult::Heuristic { 
                 confidence,
                 risk_assessment,
-                recommended_action,
+                pattern_type,
+                manual_review_required,
                 .. 
             } => {
                 AnalysisResult::Heuristic {
-                    analysis: bundle_analysis.clone(),
+                    risk_assessment: self.convert_risk_assessment_to_profile(&risk_assessment),
                     confidence,
-                    risk_profile: self.convert_risk_assessment_to_profile(&risk_assessment),
-                    recommendation: match recommended_action {
-                        crate::fallback::RecommendedAction::ExecuteWithMonitoring => 
-                            ValidationRecommendation::ApproveWithMonitoring,
-                        crate::fallback::RecommendedAction::ExecuteWithSafeguards { .. } =>
-                            ValidationRecommendation::ApproveWithCaution,
-                        _ => ValidationRecommendation::ManualReview,
-                    },
+                    detected_patterns: vec![pattern_type],
+                    safety_warnings: risk_assessment.mitigation_strategies.clone(),
+                    manual_review_required,
+                    analysis_id: Uuid::new_v4(),
                 }
             }
-            crate::fallback::AnalysisResult::Reject { reasons, .. } => {
+            crate::fallback::AnalysisResult::Reject { reasons, suggested_fixes, .. } => {
                 AnalysisResult::Reject {
-                    reasons: reasons.into_iter().map(|r| r.to_string()).collect(),
-                    confidence: 0.0,
-                    recommendation: ValidationRecommendation::RejectWithFeedback,
+                    error: ValidationError::MalformedBundle {
+                        details: reasons.into_iter().map(|r| r.to_string()).collect::<Vec<_>>().join("; "),
+                    },
+                    bundle_hash: "unknown".to_string(),
+                    analyzed_properties: bundle_analysis.clone(),
+                    suggested_fixes: suggested_fixes.into_iter().map(|f| f.description).collect(),
+                    analysis_id: Uuid::new_v4(),
+
                 }
             }
         }
@@ -454,7 +457,7 @@ impl AnalyzerEngine {
             crate::fallback::RiskLevel::Low => RiskRecommendation::LowRisk,
             crate::fallback::RiskLevel::Medium => RiskRecommendation::MediumRisk,
             crate::fallback::RiskLevel::High => RiskRecommendation::HighRisk,
-            crate::fallback::RiskLevel::Critical => RiskRecommendation::RejectBundle,
+            crate::fallback::RiskLevel::Critical => RiskRecommendation::HighRisk, // Use HighRisk for Critical
         };
         
         RiskProfile {

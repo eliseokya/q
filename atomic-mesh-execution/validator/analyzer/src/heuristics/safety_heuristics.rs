@@ -22,7 +22,7 @@ impl SafetyHeuristics {
         let mut min_liquidity_thresholds = HashMap::new();
         min_liquidity_thresholds.insert(Token::WETH, 100_000_000_000_000_000); // 0.1 ETH
         min_liquidity_thresholds.insert(Token::USDC, 100_000_000); // 100 USDC
-        min_liquidity_thresholds.insert(Token::DAI, 100_000_000_000_000_000_000); // 100 DAI
+        min_liquidity_thresholds.insert(Token::DAI, 100_000_000_000_000_000); // 0.1 DAI (18 decimals)
         
         Self {
             min_liquidity_thresholds,

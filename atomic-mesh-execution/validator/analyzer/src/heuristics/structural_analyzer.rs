@@ -47,6 +47,7 @@ impl StructuralAnalyzer {
         let timing_risks = self.analyze_timing_risks(&action_sequence);
         let protocol_risks = self.analyze_protocol_risks(&action_sequence);
         let cross_chain_complexity = self.analyze_cross_chain_complexity(&action_sequence);
+        let pattern_type = self.detect_pattern_type(&action_sequence);
         
         StructuralAnalysis {
             action_sequence,
@@ -54,7 +55,7 @@ impl StructuralAnalyzer {
             timing_risks,
             protocol_risks,
             cross_chain_complexity,
-            pattern_type: self.detect_pattern_type(&action_sequence),
+            pattern_type,
         }
     }
     
@@ -159,16 +160,16 @@ impl StructuralAnalyzer {
                 });
             }
             Expr::Seq { first, second } => {
-                self.extract_actions_recursive(first, actions, current_chain);
+                self.extract_actions_recursive(first, actions, current_chain.clone());
                 self.extract_actions_recursive(second, actions, current_chain);
             }
             Expr::Parallel { exprs } => {
                 for e in exprs {
-                    self.extract_actions_recursive(e, actions, current_chain);
+                    self.extract_actions_recursive(e, actions, current_chain.clone());
                 }
             }
             Expr::OnChain { chain, expr } => {
-                self.extract_actions_recursive(expr, actions, *chain);
+                self.extract_actions_recursive(expr, actions, chain.clone());
             }
         }
     }
@@ -181,11 +182,11 @@ impl StructuralAnalyzer {
         for action_info in actions {
             match &action_info.action {
                 Action::Borrow { amount, token, .. } => {
-                    *token_flows.entry(*token).or_insert(0) += amount.num as i64;
+                    *token_flows.entry(token.clone()).or_insert(0) += amount.num as i64;
                     unmatched_borrows.push((token.clone(), amount.num as i64));
                 }
                 Action::Repay { amount, token, .. } => {
-                    *token_flows.entry(*token).or_insert(0) -= amount.num as i64;
+                    *token_flows.entry(token.clone()).or_insert(0) -= amount.num as i64;
                     if let Some(pos) = unmatched_borrows.iter().position(|(t, _)| t == token) {
                         unmatched_borrows.remove(pos);
                     } else {
@@ -193,11 +194,17 @@ impl StructuralAnalyzer {
                     }
                 }
                 Action::Swap { amount_in, token_in, token_out, min_out, .. } => {
-                    *token_flows.entry(*token_in).or_insert(0) -= amount_in.num as i64;
-                    *token_flows.entry(*token_out).or_insert(0) += min_out.num as i64;
+                    *token_flows.entry(token_in.clone()).or_insert(0) -= amount_in.num as i64;
+                    *token_flows.entry(token_out.clone()).or_insert(0) += min_out.num as i64;
                 }
                 Action::Bridge { .. } => {
                     // Bridges are neutral for balance analysis
+                }
+                Action::Deposit { .. } => {
+                    // Deposits are tracked separately
+                }
+                Action::Withdraw { .. } => {
+                    // Withdrawals are tracked separately
                 }
             }
         }
@@ -260,7 +267,7 @@ impl StructuralAnalyzer {
         let mut bridge_count = 0;
         
         for action_info in actions {
-            used_chains.insert(action_info.chain);
+            used_chains.insert(action_info.chain.clone());
             if matches!(action_info.action, Action::Bridge { .. }) {
                 bridge_count += 1;
             }
@@ -337,11 +344,11 @@ impl StructuralAnalyzer {
             return false;
         }
         
-        let first_chain = actions.first().unwrap().chain;
+        let first_chain = actions.first().unwrap().chain.clone();
         let mut visited_other_chain = false;
         
         for action in actions.iter().skip(1) {
-            if action.chain != first_chain {
+            if action.chain.clone() != first_chain {
                 visited_other_chain = true;
             } else if visited_other_chain {
                 return true; // Returned to first chain
@@ -431,7 +438,9 @@ fn get_action_protocol(action: &Action) -> Option<Protocol> {
         Action::Borrow { protocol, .. } |
         Action::Repay { protocol, .. } |
         Action::Swap { protocol, .. } => Some(protocol.clone()),
-        _ => None,
+        Action::Deposit { .. } |
+        Action::Withdraw { .. } |
+        Action::Bridge { .. } => None,
     }
 }
 

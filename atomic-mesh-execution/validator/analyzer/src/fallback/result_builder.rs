@@ -348,7 +348,13 @@ impl ResultBuilder {
         }
     }
     
-
+    fn generate_proof_certificate(&self, pattern: &ProvenPattern) -> String {
+        format!("PROOF[{}:{}:{}]", 
+            pattern.theorem_file.display(),
+            pattern.theorem_line,
+            pattern.theorem_reference
+        )
+    }
 }
 
 impl SafetyAnalysis {
@@ -386,7 +392,9 @@ mod tests {
         let candidate = PatternCandidate {
             pattern: pattern.clone(),
             confidence_score: 0.95,
-            match_location: (0, 10),
+            structural_match: true,
+            semantic_match: true,
+            match_details: "Test match".to_string(),
         };
         
         let mut theorem_results = HashMap::new();

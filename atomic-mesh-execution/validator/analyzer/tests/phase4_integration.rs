@@ -1,7 +1,8 @@
 //! Integration tests for Phase 4: Error Handling & Graceful Degradation
 
 use analyzer::*;
-use common::types::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational};
+use ::common::types::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational};
+use analyzer::fallback::AnalysisResult as EnhancedAnalysisResult;
 
 #[test]
 fn test_phase4_full_match_with_enhanced_result() {
