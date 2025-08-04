@@ -16,13 +16,14 @@ The Validator does NOT compile a Domain Specific Language. Instead, it:
 ## Architecture
 
 ```
-Opportunity JSON → Compiler → Analyzer → Proof Verifier → Bundle Generator → Validated Bundle JSON
-                      ↓          ↓            ↓                ↓
-                  JSON→DSL    Pattern      Verify          Generate
-                             Matching    Constraints    Execution Plan
+Opportunity JSON → Compiler → Analyzer → Bundle Generator → Validated Bundle JSON
+                      ↓          ↓              ↓
+                  JSON→DSL    Pattern      Generate
+                           Matching &    Execution Plan
+                           Verification
 ```
 
-## Four-Module Design
+## Three-Module Design
 
 ### 1. Compiler Module (`compiler/`)
 
@@ -40,50 +41,36 @@ Opportunity JSON → Compiler → Analyzer → Proof Verifier → Bundle Generat
 
 ### 2. Analyzer Module (`analyzer/`)
 
-**Purpose**: Pattern matches DSL expressions against pre-proven patterns
+**Purpose**: Pattern matches DSL expressions against pre-proven patterns and verifies all mathematical constraints
 
 **What it does**:
 - Maintains a library of mathematically proven patterns
 - Performs structural pattern matching on DSL expressions
 - Identifies which pattern (if any) matches the opportunity
 - Extracts pattern parameters for instantiation
-- References Lean proofs for matched patterns
+- Verifies theorem preconditions are satisfied
+- Validates all constraints (deadline, gas, balance, invariants)
+- Ensures atomicity and other safety properties
+- Provides risk assessment and confidence scoring
 
 **Input**: DSL Expression from Compiler  
-**Output**: Matched Pattern with parameters and proof reference
+**Output**: Analysis Result with pattern match and verification status
 
-### 3. Proof Verifier Module (`proof-verifier/`)
+### 3. Bundle Generator Module (`bundle-generator/`)
 
-**Purpose**: Verifies mathematical constraints and feasibility
-
-**What it does**:
-- Validates that the Lean proof certificate is valid
-- Checks pattern instantiation satisfies theorem preconditions
-- Verifies mathematical properties (atomicity, value preservation)
-- Performs real-time feasibility checks:
-  - Gas cost estimation
-  - Timing constraints
-  - Bridge availability
-  - Liquidity sufficiency
-- Provides detailed failure reasons
-
-**Input**: Matched Pattern from Analyzer  
-**Output**: Verified Pattern with all constraint checks
-
-### 4. Bundle Generator Module (`bundle-generator/`)
-
-**Purpose**: Generates executable bundles from verified patterns
+**Purpose**: Transforms verified patterns into executable bundles
 
 **What it does**:
-- Resolves abstract operations to concrete contract addresses
-- Encodes function parameters for smart contract calls
-- Calculates dynamic values and dependencies
+- Takes validated patterns with their parameters
+- Resolves contract addresses for all protocols
+- Encodes parameters for smart contract calls
+- Calculates dynamic values (e.g., swap outputs)
+- Estimates gas with safety buffers
 - Optimizes execution ordering
-- Adds gas configurations and deadlines
 - Generates fallback options
 
-**Input**: Verified Pattern from Proof Verifier  
-**Output**: Execution Bundle JSON ready for execution tools
+**Input**: Analysis Result from Analyzer  
+**Output**: Execution Bundle JSON ready for on-chain execution
 
 ## Mathematical Foundation
 

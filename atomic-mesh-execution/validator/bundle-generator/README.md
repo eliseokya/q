@@ -1,19 +1,21 @@
 # Bundle Generator Module
 
 ## Purpose
-The Bundle Generator module creates executable bundles from verified patterns, translating abstract mathematical operations into concrete smart contract calls.
+The Bundle Generator module is the final stage in the validator pipeline, responsible for transforming verified patterns into executable bundles with all concrete implementation details needed for on-chain execution.
 
 ## Functionality
+- Takes Analysis Results from the Analyzer containing validated patterns with their parameters
 - Resolves abstract operations to concrete contract addresses
 - Encodes function parameters for smart contract calls
-- Calculates dynamic values and dependencies
-- Optimizes execution ordering
-- Adds gas configurations and deadlines
-- Generates fallback options
+- Calculates dynamic values and dependencies between operations
+- Optimizes execution ordering for gas efficiency
+- Adds gas configurations with safety buffers
+- Calculates deadlines based on current block
+- Generates fallback options for increased reliability
 
 ## Input/Output
-- **Input**: Verified Pattern from Proof Verifier
-- **Output**: Execution Bundle JSON ready for execution tools
+- **Input**: Analysis Result from Analyzer (FullMatch with pattern parameters)
+- **Output**: Execution Bundle JSON ready for on-chain execution
 
 ## Performance Target
 - < 3ms bundle generation time
