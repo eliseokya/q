@@ -28,13 +28,26 @@ The Analyzer module is the second stage in the Atomic Mesh VM Validator pipeline
    - Ensures matched patterns satisfy runtime constraints
    - Provides early rejection of invalid bundles
 
+5. **Semantic Validator** (`src/semantic/`) *[NEW in Phase 2]*
+   - `theorem_engine.rs`: Applies mathematical theorems to validate bundles
+   - `proof_application.rs`: Bridges pattern matches to theorem proofs
+   - Verifies atomicity, invariants, and composition laws from `maths/` folder
+
+6. **Scoring System** (`src/scoring/`) *[NEW in Phase 2]*
+   - `confidence_calculator.rs`: Mathematical confidence scoring (0.0-1.0)
+   - `risk_assessor.rs`: Risk assessment for unknown patterns
+   - Provides graduated confidence based on proof strength
+
 ### Data Flow
 
 ```
-DSL Bundle (JSON) → Tokenization → Automata Matching → Constraint Validation → Analysis Result
-                                          ↓
-                                   Pattern Library
-                                   (Lean Theorems)
+DSL Bundle (JSON) → Tokenization → Automata Matching → Constraint Validation → Semantic Validation → Analysis Result
+                                          ↓                                           ↓
+                                   Pattern Library                            Theorem Application
+                                   (Lean Theorems)                           (Mathematical Proofs)
+                                                                                      ↓
+                                                                            Confidence Scoring
+                                                                            Risk Assessment
 ```
 
 ### Key Types
@@ -61,6 +74,8 @@ The analyzer operates over a bicategorical abstract machine:
 
 ## Build Status
 
+### 📊 Overall Progress: 33% Complete (2 of 6 phases)
+
 ### Phase 1: Core Pattern Recognition Engine ✅ COMPLETE
 
 **Status**: All components implemented, tests passing, code compiles successfully
@@ -86,17 +101,44 @@ The analyzer operates over a bicategorical abstract machine:
   - Action validity verification
   - Performance within 10ms budget
 
-#### Test Coverage:
-- 9 unit tests covering all major components
-- 100% test pass rate
-- Integration with common types from compiler module
+### Phase 2: Semantic Validation & Mathematical Integration ✅ COMPLETE
+
+**Status**: Theorem application and confidence scoring fully operational
+
+#### Completed Components:
+- ✅ **2.1 Mathematical Property Verification**
+  - Theorem application engine (`src/semantic/theorem_engine.rs`)
+  - Proof application bridge (`src/semantic/proof_application.rs`)
+  - Support for flash loan atomicity, cross-chain consistency, protocol invariants
+  - Integration with theorems from `maths/` folder
+  
+- ✅ **2.2 Pattern Confidence Scoring**
+  - Mathematical confidence calculator (`src/scoring/confidence_calculator.rs`)
+  - Risk assessment for unknown patterns (`src/scoring/risk_assessor.rs`)
+  - Confidence gradients: 1.0 (proven) → 0.5-0.95 (heuristic) → 0.1-0.5 (risk-based)
+  - Tiered fallback: FullMatch → PartialMatch → Heuristic → Reject
+
+### 🧪 Test Status
+
+- **Total Tests**: 17 unit tests
+- **Pass Rate**: 100% ✅
+- **Build Status**: Success (warnings only)
+- **Coverage**: All major components tested
+- **Performance**: Within target budgets
+
+### 📈 Recent Progress
+
+- Implemented semantic validation using mathematical theorems
+- Added confidence scoring with proper gradients
+- Created risk assessment for unknown patterns
+- Integrated Phase 2 components into main analyzer engine
+- All tests passing, code compiles successfully
 
 ### Upcoming Phases:
 
-- **Phase 2**: Semantic Validation & Mathematical Integration (Next)
-- **Phase 3**: Risk Assessment & Extensibility
-- **Phase 4**: Error Handling & Recovery
-- **Phase 5**: Performance Optimization
+- **Phase 3**: Integration Layer & API Design (Ready to start)
+- **Phase 4**: Tiered Fallback System & Heuristics
+- **Phase 5**: Performance Optimization & Production Readiness
 - **Phase 6**: Integration & Testing
 
 ## Usage
