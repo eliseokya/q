@@ -23,6 +23,7 @@ regex = "1.10"
 parking_lot = "0.12"
 tempfile = "3.8"
 md5 = "0.7"
+num-traits = "0.2"
 
 # Reference to compiler's common types
 common = { path = "../compiler/src/common" }

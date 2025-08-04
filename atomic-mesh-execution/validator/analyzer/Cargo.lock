@@ -26,6 +26,7 @@ dependencies = [
  "log",
  "lru",
  "md5",
+ "num-traits",
  "parking_lot",
  "regex",
  "serde",

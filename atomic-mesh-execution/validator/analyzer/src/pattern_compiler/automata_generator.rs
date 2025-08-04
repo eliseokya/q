@@ -3,7 +3,7 @@
 //! This module generates finite automata from patterns to enable
 //! ultra-fast structural matching.
 
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::collections::HashMap;
 use regex::Regex;
 use thiserror::Error;
 

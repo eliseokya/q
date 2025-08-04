@@ -209,22 +209,22 @@ impl LeanToPatternCompiler {
         }
     }
 
-    fn extract_cross_chain_structure(&self, content: &str) -> Result<String, CompilerError> {
+    fn extract_cross_chain_structure(&self, _content: &str) -> Result<String, CompilerError> {
         // Pattern: operations on chain A, bridge to chain B, operations on chain B
         Ok(r"seq\s*\(\s*onChain\s*\([^)]+\)\s*,\s*seq\s*\(\s*bridge\s*\([^)]+\)\s*,\s*onChain\s*\([^)]+\)\s*\)\s*\)".to_string())
     }
 
-    fn extract_optimization_pattern(&self, content: &str) -> Result<String, CompilerError> {
+    fn extract_optimization_pattern(&self, _content: &str) -> Result<String, CompilerError> {
         // Pattern for gas optimization opportunities
         Ok(r"(parallel|batch|optimize)\s*\([^)]+\)".to_string())
     }
 
-    fn extract_bridge_pattern(&self, content: &str) -> Result<String, CompilerError> {
+    fn extract_bridge_pattern(&self, _content: &str) -> Result<String, CompilerError> {
         // Pattern for bridge operations
         Ok(r"bridge\s*\(\s*(\w+)\s*,\s*(\w+)\s*,\s*([^)]+)\s*\)".to_string())
     }
 
-    fn extract_general_pattern(&self, content: &str) -> Result<String, CompilerError> {
+    fn extract_general_pattern(&self, _content: &str) -> Result<String, CompilerError> {
         // General atomic pattern
         Ok(r"atomic\s*\([^)]+\)".to_string())
     }

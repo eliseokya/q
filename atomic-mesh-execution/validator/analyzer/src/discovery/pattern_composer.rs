@@ -5,7 +5,7 @@
 
 use crate::common::pattern_types::{ProvenPattern, PatternTemplate, SafetyProperty};
 use crate::common::analysis_result::AnalysisResult;
-use common::{Bundle, Expr, Action, Chain, Token, Rational, Protocol};
+use common::Bundle;
 use std::collections::HashMap;
 use std::path::PathBuf;
 
@@ -147,7 +147,7 @@ impl PatternComposer {
         
         // Collect safety properties from all components
         let mut safety_properties = Vec::new();
-        for pattern_id in &sequence.patterns {
+        for _pattern_id in &sequence.patterns {
             // In a real implementation, we'd look up the pattern's properties
             // For now, we'll use common properties
             safety_properties.push(SafetyProperty::Atomicity);
@@ -228,6 +228,7 @@ pub struct ComposerStatistics {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use common::types::{Expr, Action, Chain, Token, Protocol, Rational};
     use crate::common::analysis_result::ValidationRecommendation;
 
     #[test]

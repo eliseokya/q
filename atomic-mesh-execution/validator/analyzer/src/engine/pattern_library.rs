@@ -95,7 +95,7 @@ impl StaticPatternLibrary {
                 })?;
         }
         
-        let stats = database.get_statistics();
+        let _stats = database.get_statistics();
         // Log would go here: "Theorem statistics: X flash loan patterns, Y cross-chain patterns, Z protocol invariants"
         
         // Compile theorems to patterns
