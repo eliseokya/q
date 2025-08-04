@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Analyzer module is the second stage in the Atomic Mesh VM Validator pipeline, responsible for pattern matching DSL bundles against mathematically proven patterns from our categorical model. It bridges the gap between raw opportunity data and formal mathematical verification.
+The Analyzer module is the second stage in the Atomic Mesh VM Validator pipeline, responsible for pattern matching DSL bundles against mathematically proven patterns from our categorical model and verifying all mathematical constraints. It performs both pattern identification and proof verification in a single, efficient pass, then outputs validated results to the Bundle Generator for execution planning.
 
 ## Project Structure
 
@@ -89,8 +89,8 @@ analyzer/
 
 ```
 DSL Bundle (JSON) → Tokenization → Automata Matching → Constraint Validation → Semantic Validation → Analysis Result
-                                          ↓                                           ↓
-                                   Pattern Library ←────────────────────┐    Theorem Application
+                                          ↓                                           ↓                    ↓
+                                   Pattern Library ←────────────────────┐    Theorem Application    To Bundle Generator
                                    (Lean Theorems)                      │    (Mathematical Proofs)
                                           ↑                             │             ↓
                                     Hot-Reload ←──── File Changes       │    Confidence Scoring
@@ -108,6 +108,60 @@ DSL Bundle (JSON) → Tokenization → Automata Matching → Constraint Validati
 - **FiniteAutomaton**: State machine for pattern recognition
 - **RejectionReason**: Detailed error types with contextual information
 - **SuggestedFix**: Actionable recommendations for invalid bundles
+
+## Input/Output Specification
+
+### Input: DSL Bundle from Compiler
+
+The Analyzer receives a DSL Bundle in JSON format, which contains:
+- `bundle_data`: The raw DSL expression (e.g., `{"bundle": "..."}`)
+- `bundle_type`: The type of bundle (e.g., `"flash_loan_arbitrage"`)
+- `bundle_version`: The version of the bundle
+- `bundle_context`: Additional context for the bundle (e.g., `{"block_number": 123456, "timestamp": 1700000000}`)
+
+### Output: Analysis Result to Bundle Generator
+
+The analyzer outputs one of four possible analysis results that the Bundle Generator uses to create execution plans:
+
+1. **FullMatch**: Complete pattern match with mathematical proof verification
+```json
+{
+  "result": "FullMatch",
+  "pattern": {
+    "id": "flash-loan-arbitrage",
+    "name": "Flash Loan Arbitrage Pattern",
+    "version": "1.0",
+    "proof_reference": "maths/DSL/Patterns/FlashLoan.lean",
+    "parameters": {
+      "$BORROW_AMOUNT": 1000,
+      "$BORROW_TOKEN": "WETH",
+      "$PROTOCOL": "Aave"
+    }
+  },
+  "validation": {
+    "pattern_match": { "confidence": 1.0 },
+    "mathematical_verification": {
+      "atomicity": { "verified": true },
+      "theorem_application": { "theorem": "FlashLoanPattern_is_atomic", "valid": true }
+    },
+    "constraint_verification": {
+      "deadline": { "passed": true },
+      "gas_limits": { "passed": true }
+    }
+  },
+  "bundle_data": { /* Original bundle for next stage */ }
+}
+```
+
+2. **PartialMatch**: Pattern identified but some validation failed
+3. **Heuristic**: No pattern match but heuristic analysis suggests safety
+4. **Reject**: Bundle cannot be safely executed
+
+The Bundle Generator receives these results and:
+- For FullMatch: Generates optimized execution plan with full confidence
+- For PartialMatch: May generate cautious execution plan with safeguards
+- For Heuristic: Requires additional validation before execution
+- For Reject: No execution plan generated
 
 ## Performance Characteristics
 

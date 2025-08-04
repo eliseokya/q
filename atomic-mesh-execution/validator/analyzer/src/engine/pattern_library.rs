@@ -208,6 +208,11 @@ impl StaticPatternLibrary {
     pub fn get_all_patterns(&self) -> Vec<ProvenPattern> {
         self.patterns.values().cloned().collect()
     }
+    
+    /// Get the count of loaded patterns
+    pub fn get_pattern_count(&self) -> usize {
+        self.patterns.len()
+    }
 
     /// Get pattern metadata
     pub fn get_metadata(&self, pattern_id: &str) -> Option<&PatternMetadata> {

@@ -2,22 +2,23 @@
 
 ## Overview
 
-The Validator is responsible for mathematically validating incoming arbitrage opportunities against pre-proven patterns from our categorical model. It consists of four sequential modules, each with a single input and single output, following the Unix philosophy of "do one thing well."
+The Validator is responsible for mathematically validating incoming arbitrage opportunities against pre-proven patterns from our categorical model. It consists of three sequential modules, each with a single input and single output, following the Unix philosophy of "do one thing well."
 
 ## Architecture
 
 ```
-Opportunity JSON → Compiler → Analyzer → Proof Verifier → Bundle Generator → Validated Bundle JSON
-                      ↓          ↓            ↓                ↓
-                  JSON→DSL    Pattern      Verify          Generate
-                             Matching    Constraints    Execution Plan
+Opportunity JSON → Compiler → Analyzer → Bundle Generator → Validated Bundle JSON
+                      ↓          ↓              ↓
+                  JSON→DSL    Pattern      Generate
+                           Matching &    Execution Plan
+                           Verification
 ```
 
 ## Key Insight
 
 The Validator does NOT compile a Domain Specific Language (DSL). Instead, it:
 1. **Compiles TO** the existing mathematical DSL (defined in `maths/DSL/Syntax.lean`)
-2. **Validates** against pre-proven patterns
+2. **Validates** against pre-proven patterns and verifies mathematical constraints
 3. **Generates** execution bundles
 
 ## Module Specifications
@@ -105,40 +106,85 @@ The Validator does NOT compile a Domain Specific Language (DSL). Instead, it:
 
 ### 2. Analyzer Module
 
-**Purpose**: Analyze the DSL expression to identify which pre-proven pattern it matches and extract pattern parameters.
+**Purpose**: Analyze the DSL expression to identify which pre-proven pattern it matches, extract pattern parameters, and verify all mathematical constraints are satisfied.
 
 **Input**: DSL Expression from Compiler
 
-**Output**: Matched Pattern
+**Output**: Analysis Result
 ```json
 {
-  "pattern_id": "cross-chain-arbitrage",
-  "pattern_name": "Cross-Chain Flash Loan Arbitrage",
-  "pattern_version": "1.0",
-  "proof_certificate": "maths/DSL/Patterns/CrossChainArb.proof",
-  "pattern_structure": {
-    "type": "FlashLoanCrossChain",
-    "components": [
-      {"step": 1, "pattern": "borrow", "matched": true},
-      {"step": 2, "pattern": "bridge", "matched": true},
-      {"step": 3, "pattern": "swap", "matched": true},
-      {"step": 4, "pattern": "bridge_back", "matched": true},
-      {"step": 5, "pattern": "repay", "matched": true}
-    ]
+  "result": "FullMatch",
+  "pattern": {
+    "id": "cross-chain-arbitrage",
+    "name": "Cross-Chain Flash Loan Arbitrage",
+    "version": "1.0",
+    "proof_reference": "maths/DSL/Patterns/CrossChainArb.lean",
+    "parameters": {
+      "$SOURCE_CHAIN": "ethereum",
+      "$TARGET_CHAIN": "arbitrum",
+      "$BORROW_TOKEN": "USDC",
+      "$BORROW_AMOUNT": 100000,
+      "$INTERMEDIATE_TOKEN": "ETH",
+      "$BORROW_PROTOCOL": "Aave",
+      "$SOURCE_DEX": "UniswapV2",
+      "$TARGET_DEX": "Sushiswap"
+    }
   },
-  "pattern_parameters": {
-    "$SOURCE_CHAIN": "ethereum",
-    "$TARGET_CHAIN": "arbitrum",
-    "$BORROW_TOKEN": "USDC",
-    "$BORROW_AMOUNT": 100000,
-    "$INTERMEDIATE_TOKEN": "ETH",
-    "$BORROW_PROTOCOL": "Aave",
-    "$SOURCE_DEX": "UniswapV2",
-    "$TARGET_DEX": "Sushiswap"
+  "validation": {
+    "pattern_match": {
+      "confidence": 1.0,
+      "matched_components": [
+        {"step": 1, "pattern": "borrow", "matched": true},
+        {"step": 2, "pattern": "bridge", "matched": true},
+        {"step": 3, "pattern": "swap", "matched": true},
+        {"step": 4, "pattern": "bridge_back", "matched": true},
+        {"step": 5, "pattern": "repay", "matched": true}
+      ]
+    },
+    "mathematical_verification": {
+      "atomicity": {
+        "verified": true,
+        "details": "Forms invertible 2-cell in bicategory of chains"
+      },
+      "theorem_application": {
+        "theorem": "CrossChainArbPattern_is_atomic",
+        "preconditions_met": true,
+        "proof_valid": true
+      }
+    },
+    "constraint_verification": {
+      "value_preservation": {
+        "passed": true,
+        "details": "Borrow amount equals repay amount: 100000 USDC"
+      },
+      "timing_feasibility": {
+        "passed": true,
+        "details": "All operations completable within deadline (20 blocks)"
+      },
+      "bridge_validity": {
+        "passed": true,
+        "details": "Bridges available: ETH ethereum→arbitrum, USDC arbitrum→ethereum"
+      },
+      "gas_feasibility": {
+        "passed": true,
+        "details": "Estimated gas: $45, Expected profit: $500, Net profit: $455"
+      },
+      "protocol_availability": {
+        "passed": true,
+        "details": "All protocols (Aave, Uniswap, Sushiswap) available on respective chains"
+      }
+    }
   },
-  "dsl_expr": { /* Original DSL expression included */ },
-  "matching_confidence": 1.0,
-  "pattern_library_ref": "maths/DSL/Patterns/Library.lean"
+  "risk_assessment": {
+    "overall_risk": "low",
+    "confidence": 0.95,
+    "factors": {
+      "pattern_complexity": "medium",
+      "cross_chain_risk": "medium",
+      "protocol_risk": "low"
+    }
+  },
+  "bundle_data": { /* Original bundle included for next stage */ }
 }
 ```
 
@@ -146,83 +192,27 @@ The Validator does NOT compile a Domain Specific Language (DSL). Instead, it:
 - Pattern library management (pre-proven patterns from Lean)
 - Structural pattern matching against DSL expressions
 - Parameter extraction from matched patterns
-- Pattern versioning and compatibility
-- Confidence scoring for matches
+- Mathematical proof verification (theorem application)
+- Constraint validation (all types)
+- Risk assessment and confidence scoring
+- Safety property verification
 
-**Pattern Library**: Lives in this module, contains references to Lean proofs in `maths/DSL/Patterns/`
+**Verification Process**:
+1. **Pattern Matching**: Identify which pre-proven pattern the bundle matches
+2. **Parameter Extraction**: Extract concrete values for pattern variables
+3. **Theorem Application**: Verify parameters satisfy theorem preconditions
+4. **Constraint Checking**: Validate all constraints (deadline, gas, balance, invariants)
+5. **Safety Verification**: Ensure atomicity and other safety properties
 
----
-
-### 3. Proof Verifier Module
-
-**Purpose**: Verify that the matched pattern with its specific parameters satisfies all mathematical constraints and that the proof certificate is valid.
-
-**Input**: Matched Pattern from Analyzer
-
-**Output**: Verified Pattern
-```json
-{
-  "verification_id": "verify_123",
-  "pattern_id": "cross-chain-arbitrage",
-  "verified": true,
-  "timestamp": 1234567891,
-  "mathematical_checks": {
-    "proof_certificate": {
-      "valid": true,
-      "location": "maths/DSL/Patterns/CrossChainArb.proof",
-      "theorem": "CrossChainArbPattern_is_atomic"
-    },
-    "pattern_instantiation": {
-      "valid": true,
-      "details": "All parameters match theorem preconditions"
-    },
-    "atomicity": {
-      "verified": true,
-      "details": "Forms invertible 2-cell in bicategory of chains"
-    }
-  },
-  "constraint_checks": {
-    "value_preservation": {
-      "passed": true,
-      "details": "Borrow amount equals repay amount: 100000 USDC"
-    },
-    "timing_feasibility": {
-      "passed": true,
-      "details": "All operations completable within deadline (20 blocks)"
-    },
-    "bridge_validity": {
-      "passed": true,
-      "details": "Bridges available: ETH ethereum→arbitrum, USDC arbitrum→ethereum"
-    },
-    "gas_feasibility": {
-      "passed": true,
-      "details": "Estimated gas: $45, Expected profit: $500, Net profit: $455"
-    },
-    "protocol_availability": {
-      "passed": true,
-      "details": "All protocols (Aave, Uniswap, Sushiswap) available on respective chains"
-    }
-  },
-  "matched_pattern": { /* Original matched pattern included */ }
-}
-```
-
-**Key Responsibilities**:
-- Verify Lean proof certificates are valid
-- Check pattern instantiation satisfies theorem preconditions
-- Validate all mathematical constraints from the model
-- Real-time feasibility checks (gas, timing, liquidity)
-- Detailed failure reporting for debugging
-
-**Mathematical Verification**: References proofs in `maths/` but doesn't reprove them
+**Pattern Library**: Lives in this module, contains implementations of theorems from `maths/DSL/Patterns/`
 
 ---
 
-### 4. Bundle Generator Module
+### 3. Bundle Generator Module
 
 **Purpose**: Transform the verified pattern into an executable bundle with all concrete details needed for the execution tools.
 
-**Input**: Verified Pattern from Proof Verifier
+**Input**: Analysis Result from Analyzer
 
 **Output**: Execution Bundle JSON
 ```json
@@ -234,7 +224,7 @@ The Validator does NOT compile a Domain Specific Language (DSL). Instead, it:
   "deadline": 1234568192,
   "mathematical_properties": {
     "is_atomic": true,
-    "proof_reference": "maths/DSL/Patterns/CrossChainArb.proof",
+    "proof_reference": "maths/DSL/Patterns/CrossChainArb.lean",
     "verified_at": 1234567891
   },
   "execution_plan": {
@@ -350,8 +340,7 @@ All inter-module communication happens through well-defined JSON structures. Eac
 # Test individual modules
 echo $OPPORTUNITY_JSON | ./compiler/bin/compile
 echo $DSL_JSON | ./analyzer/bin/analyze  
-echo $MATCHED_PATTERN_JSON | ./proof-verifier/bin/verify
-echo $VERIFIED_PATTERN_JSON | ./bundle-generator/bin/generate
+echo $ANALYSIS_RESULT_JSON | ./bundle-generator/bin/generate
 
 # Or run the complete pipeline
 echo $OPPORTUNITY_JSON | ./validator/pipeline/validate
@@ -380,24 +369,29 @@ Each module outputs an error response instead of its normal output on failure:
 ## Performance Targets
 
 - Compiler: < 2ms (JSON → DSL transformation)
-- Analyzer: < 5ms (pattern matching against library)
-- Proof Verifier: < 10ms (constraint validation)
+- Analyzer: < 10ms (pattern matching + verification)
 - Bundle Generator: < 3ms (bundle creation)
-- **Total Pipeline**: < 20ms for 95% of opportunities
+- **Total Pipeline**: < 15ms for 95% of opportunities
 
 ## Integration with Mathematical Model
 
 The Validator is tightly integrated with the mathematical model in `maths/`:
 
 1. **Compiler** targets the DSL syntax defined in `maths/DSL/Syntax.lean`
-2. **Analyzer** uses patterns proven in `maths/DSL/Patterns/`
-3. **Proof Verifier** references theorems from `maths/Grothendieck/` and `maths/Bridge/`
-4. **Bundle Generator** uses compilation strategies from `maths/DSL/Compile.lean`
+2. **Analyzer** uses patterns proven in `maths/DSL/Patterns/` and applies theorems for verification
+3. **Bundle Generator** uses compilation strategies from `maths/DSL/Compile.lean`
+
+## Benefits of Simplified Architecture
+
+1. **Performance**: Eliminates redundant JSON serialization between pattern matching and verification
+2. **Consistency**: Pattern matching and verification share context, reducing potential for errors
+3. **Maintainability**: Fewer modules to maintain and coordinate
+4. **Efficiency**: Natural flow where pattern identification and verification happen together
 
 ## Future Extensibility
 
 The modular design allows for:
 - New patterns can be proven in Lean and added to the Analyzer
-- New constraint types can be added to the Proof Verifier
+- New constraint types can be added to the Analyzer's verification engine
 - New protocols can be added to the Bundle Generator
 - Compiler can support new opportunity formats from detection system

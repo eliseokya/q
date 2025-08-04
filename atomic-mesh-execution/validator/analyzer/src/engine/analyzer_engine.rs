@@ -16,6 +16,8 @@ use crate::semantic::{SemanticValidator, TheoremEngine};
 use crate::scoring::{ConfidenceCalculator, RiskAssessor};
 use crate::fallback::ResultBuilder;
 use crate::heuristics::{StructuralAnalyzer, SafetyHeuristics};
+use crate::performance::{TimingMonitor, PerformanceBudget, BudgetEnforcer};
+use crate::monitoring::MetricsCollector;
 use std::time::{Duration, Instant};
 use std::collections::HashMap;
 use uuid::Uuid;
@@ -69,6 +71,10 @@ pub struct AnalyzerEngine {
     confidence_calculator: ConfidenceCalculator,
     risk_assessor: RiskAssessor,
     performance_metrics: PerformanceMetrics,
+    // Phase 5 additions
+    timing_monitor: TimingMonitor,
+    budget_enforcer: BudgetEnforcer,
+    metrics_collector: MetricsCollector,
 }
 
 impl AnalyzerEngine {
@@ -100,6 +106,9 @@ impl AnalyzerEngine {
             confidence_calculator,
             risk_assessor,
             performance_metrics: PerformanceMetrics::default(),
+            timing_monitor: TimingMonitor::new(),
+            budget_enforcer: BudgetEnforcer::new(PerformanceBudget::development_budget()),
+            metrics_collector: MetricsCollector::new(),
         })
     }
 
@@ -124,7 +133,11 @@ impl AnalyzerEngine {
 
     /// Main analysis entry point - analyze a bundle against proven patterns
     pub fn analyze_bundle(&mut self, bundle: &Bundle) -> AnalysisResult {
+        // Reset timing monitor for this analysis
+        self.timing_monitor.reset();
+        
         let start_time = Instant::now();
+        self.timing_monitor.start_operation("input_parsing");
         
         // Create bundle hash for caching
         let bundle_hash = self.compute_bundle_hash(bundle);
@@ -153,6 +166,32 @@ impl AnalyzerEngine {
         let elapsed = start_time.elapsed();
         self.performance_metrics.total_analysis_time_us = elapsed.as_micros() as u64;
         
+        // Record metrics based on result type
+        self.timing_monitor.finish_operation();
+        let timing = self.timing_monitor.get_timing_results();
+        
+        match &result {
+            AnalysisResult::FullMatch { .. } => {
+                self.metrics_collector.record_success("FullMatch", &timing, None);
+            },
+            AnalysisResult::PartialMatch { .. } => {
+                self.metrics_collector.record_success("PartialMatch", &timing, None);
+            },
+            AnalysisResult::Heuristic { .. } => {
+                self.metrics_collector.record_success("Heuristic", &timing, None);
+            },
+            AnalysisResult::Reject { error, .. } => {
+                // Convert ValidationError to a RejectionReason-like structure
+                let reason = crate::fallback::RejectionReason::MalformedStructure { 
+                    details: error.to_string() 
+                };
+                self.metrics_collector.record_failure(&reason, &timing);
+            }
+        }
+        
+        // Check performance budget (non-strict for development)
+        let _ = self.budget_enforcer.check_total(timing.total_duration_us);
+        
         result
     }
 
@@ -166,6 +205,7 @@ impl AnalyzerEngine {
         let timeout = Duration::from_micros(self.config.max_analysis_time_us);
         
         // Phase 1: Fast structural matching (200μs budget)
+        self.timing_monitor.start_operation("pattern_loading");
         let pattern_start = Instant::now();
         let pattern_candidates = self.structural_pattern_match(bundle);
         let pattern_time = pattern_start.elapsed();
@@ -179,6 +219,7 @@ impl AnalyzerEngine {
         self.performance_metrics.patterns_checked = pattern_candidates.len();
         
         // Phase 2: Constraint validation (100μs budget)
+        self.timing_monitor.start_operation("constraint_validation");
         let constraint_start = Instant::now();
         let validated_candidates = self.filter_by_constraints(pattern_candidates, bundle);
         let constraint_time = constraint_start.elapsed();
@@ -191,6 +232,7 @@ impl AnalyzerEngine {
         self.performance_metrics.constraint_validation_time_us = constraint_time.as_micros() as u64;
         
         // Phase 3: Semantic validation (80μs budget)
+        self.timing_monitor.start_operation("semantic_validation");
         let semantic_start = Instant::now();
         let final_matches = self.apply_semantic_validation(&validated_candidates, bundle);
         let semantic_time = semantic_start.elapsed();
@@ -198,11 +240,14 @@ impl AnalyzerEngine {
         self.performance_metrics.semantic_validation_time_us = semantic_time.as_micros() as u64;
         
         // Phase 4: Result generation (remaining budget)
+        self.timing_monitor.start_operation("result_formatting");
         self.generate_final_result(final_matches, bundle_analysis, bundle)
     }
 
     /// Phase 1: Structural pattern matching
     fn structural_pattern_match(&mut self, bundle: &Bundle) -> Vec<PatternCandidate> {
+        // Switch to structural matching timing
+        self.timing_monitor.start_operation("structural_matching");
         let start_time = Instant::now();
         
         // Use the real structural matcher
@@ -677,5 +722,32 @@ impl AnalyzerEngine {
     /// Clear performance metrics
     pub fn reset_metrics(&mut self) {
         self.performance_metrics = PerformanceMetrics::default();
+    }
+    
+    /// Get detailed timing report for the last analysis
+    pub fn get_timing_report(&mut self) -> String {
+        let timing = self.timing_monitor.get_timing_results();
+        timing.performance_report()
+    }
+    
+    /// Get metrics report showing analysis statistics
+    pub fn get_metrics_report(&self) -> String {
+        self.metrics_collector.get_report()
+    }
+    
+    /// Set performance budget (for production vs development)
+    pub fn set_performance_budget(&mut self, budget: PerformanceBudget) {
+        self.budget_enforcer.set_budget(budget);
+    }
+    
+    /// Enable strict performance mode (fail on budget violations)
+    pub fn enable_strict_performance_mode(&mut self) {
+        self.budget_enforcer = BudgetEnforcer::new(self.budget_enforcer.budget().clone())
+            .with_strict_mode();
+    }
+    
+    /// Get pattern count for health checks
+    pub fn get_pattern_count(&self) -> usize {
+        self.pattern_library.get_pattern_count()
     }
 }

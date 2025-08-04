@@ -7,6 +7,10 @@ edition = "2021"
 name = "analyzer"
 path = "src/main.rs"
 
+[[bin]]
+name = "analyzer_pipeline"
+path = "src/bin/analyzer_pipeline.rs"
+
 [lib]
 name = "analyzer"
 path = "src/lib.rs"
@@ -24,6 +28,7 @@ parking_lot = "0.12"
 tempfile = "3.8"
 md5 = "0.7"
 num-traits = "0.2"
+tokio = { version = "1.0", features = ["sync"] }
 
 # Reference to compiler's common types
 common = { path = "../compiler/src/common" }
