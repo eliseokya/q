@@ -1,0 +1,131 @@
+# Bridge configuration for Bundle Generator
+# This file contains bridge endpoints and parameters across multiple chains
+
+bridges:
+  atomicmesh:
+    endpoints:
+      polygon:
+        contract: "0x1234567890123456789012345678901234567890"
+        version: "1.0"
+        supported_tokens: ["WETH", "USDC", "WBTC"]
+        min_amounts:
+          WETH: "100000000000000000"    # 0.1 WETH
+          USDC: "100000000"              # 100 USDC
+          WBTC: "1000000"                # 0.01 WBTC
+        max_amounts:
+          WETH: "100000000000000000000"  # 100 WETH
+          USDC: "1000000000000"          # 1M USDC
+          WBTC: "10000000000"            # 100 WBTC
+        estimated_time: 120              # 2 minutes
+        base_fee: "10000000"             # $10 in USDC
+        percentage_fee: 0.001            # 0.1%
+      
+      arbitrum:
+        contract: "0x0987654321098765432109876543210987654321"
+        version: "1.0"
+        supported_tokens: ["WETH", "USDC", "WBTC"]
+        min_amounts:
+          WETH: "100000000000000000"
+          USDC: "100000000"
+          WBTC: "1000000"
+        max_amounts:
+          WETH: "100000000000000000000"
+          USDC: "1000000000000"
+          WBTC: "10000000000"
+        estimated_time: 120
+        base_fee: "10000000"
+        percentage_fee: 0.001
+
+  axelar:
+    endpoints:
+      polygon:
+        contract: "0xCe16F69375520ab01377ce7B88f5BA8C48F8D666"
+        version: "2.0"
+        supported_tokens: ["WETH", "USDC"]
+        min_amounts:
+          WETH: "200000000000000000"    # 0.2 WETH
+          USDC: "200000000"              # 200 USDC
+        max_amounts:
+          WETH: "50000000000000000000"   # 50 WETH
+          USDC: "500000000000"           # 500K USDC
+        estimated_time: 300              # 5 minutes
+        base_fee: "15000000"             # $15 in USDC
+        percentage_fee: 0.002            # 0.2%
+      
+      arbitrum:
+        contract: "0xC2E8ac4e45BaE0667C8E4f2b82c9823927718cD2"
+        version: "2.0"
+        supported_tokens: ["WETH", "USDC"]
+        min_amounts:
+          WETH: "200000000000000000"
+          USDC: "200000000"
+        max_amounts:
+          WETH: "50000000000000000000"
+          USDC: "500000000000"
+        estimated_time: 300
+        base_fee: "15000000"
+        percentage_fee: 0.002
+
+  layerzero:
+    endpoints:
+      polygon:
+        contract: "0x3c2269811836af69497E5F486A85D7316753cf62"
+        version: "1.5"
+        supported_tokens: ["WETH", "USDC"]
+        min_amounts:
+          WETH: "150000000000000000"    # 0.15 WETH
+          USDC: "150000000"              # 150 USDC
+        max_amounts:
+          WETH: "75000000000000000000"   # 75 WETH
+          USDC: "750000000000"           # 750K USDC
+        estimated_time: 180              # 3 minutes
+        base_fee: "12000000"             # $12 in USDC
+        percentage_fee: 0.0015           # 0.15%
+      
+      arbitrum:
+        contract: "0x9740FF91F1985D8d2B71494aE1A2f723bb3Ed9E4"
+        version: "1.5"
+        supported_tokens: ["WETH", "USDC"]
+        min_amounts:
+          WETH: "150000000000000000"
+          USDC: "150000000"
+        max_amounts:
+          WETH: "75000000000000000000"
+          USDC: "750000000000"
+        estimated_time: 180
+        base_fee: "12000000"
+        percentage_fee: 0.0015
+
+  debridge:
+    endpoints:
+      polygon:
+        contract: "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA"
+        version: "3.0"
+        supported_tokens: ["WETH", "USDC", "WBTC"]
+        min_amounts:
+          WETH: "50000000000000000"      # 0.05 WETH
+          USDC: "50000000"               # 50 USDC
+          WBTC: "500000"                 # 0.005 WBTC
+        max_amounts:
+          WETH: "200000000000000000000"  # 200 WETH
+          USDC: "2000000000000"          # 2M USDC
+          WBTC: "20000000000"            # 200 WBTC
+        estimated_time: 240              # 4 minutes
+        base_fee: "8000000"              # $8 in USDC
+        percentage_fee: 0.0008           # 0.08%
+      
+      arbitrum:
+        contract: "0xaC6559d5de35845Bf83A3BF4d23552C1F7b41E3c"
+        version: "3.0"
+        supported_tokens: ["WETH", "USDC", "WBTC"]
+        min_amounts:
+          WETH: "50000000000000000"
+          USDC: "50000000"
+          WBTC: "500000"
+        max_amounts:
+          WETH: "200000000000000000000"
+          USDC: "2000000000000"
+          WBTC: "20000000000"
+        estimated_time: 240
+        base_fee: "8000000"
+        percentage_fee: 0.0008

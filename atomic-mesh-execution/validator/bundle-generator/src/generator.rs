@@ -6,7 +6,8 @@ use std::path::Path;
 use crate::types::{ExecutionBundle, PatternParameters};
 use crate::traits::PatternBundleGenerator;
 use crate::registry::{ProtocolRegistry, load_protocol_config};
-use crate::patterns::FlashLoanPatternGenerator;
+use crate::bridges::{BridgeRegistry, load_bridge_config};
+use crate::patterns::{FlashLoanPatternGenerator, CrossChainPatternGenerator};
 use crate::error::{Result, BundleGeneratorError};
 use crate::analysis_result::{AnalysisResult, PatternMatch, PatternType};
 use crate::bundle_ext::BundleExt;
@@ -17,13 +18,27 @@ pub struct BundleGenerator {
     generators: HashMap<String, Box<dyn PatternBundleGenerator>>,
     /// Protocol registry shared across generators
     protocol_registry: Arc<ProtocolRegistry>,
+    /// Bridge registry for cross-chain operations
+    bridge_registry: Arc<BridgeRegistry>,
 }
 
 impl BundleGenerator {
     /// Create a new bundle generator with configuration
-    pub fn new(config_path: &Path) -> Result<Self> {
+    pub fn new(protocol_config_path: &Path) -> Result<Self> {
         // Load protocol configuration
-        let protocol_registry = Arc::new(load_protocol_config(config_path)?);
+        let protocol_registry = Arc::new(load_protocol_config(protocol_config_path)?);
+        
+        // Load bridge configuration (look for bridges.yaml in same directory)
+        let bridge_config_path = protocol_config_path
+            .parent()
+            .ok_or_else(|| BundleGeneratorError::ConfigError("Invalid config path".to_string()))?
+            .join("bridges.yaml");
+        
+        let bridge_registry = if bridge_config_path.exists() {
+            Arc::new(load_bridge_config(&bridge_config_path)?)
+        } else {
+            Arc::new(BridgeRegistry::new())
+        };
         
         // Initialize pattern generators
         let mut generators: HashMap<String, Box<dyn PatternBundleGenerator>> = HashMap::new();
@@ -35,11 +50,22 @@ impl BundleGenerator {
             Box::new(flash_loan_gen),
         );
         
+        // Register cross-chain pattern generator
+        let cross_chain_gen = CrossChainPatternGenerator::new(
+            Arc::clone(&protocol_registry),
+            Arc::clone(&bridge_registry),
+        );
+        generators.insert(
+            cross_chain_gen.pattern_id().to_string(),
+            Box::new(cross_chain_gen),
+        );
+        
         // Additional pattern generators will be added in future phases
         
         Ok(Self {
             generators,
             protocol_registry,
+            bridge_registry,
         })
     }
     
@@ -135,5 +161,10 @@ impl BundleGenerator {
     /// Check if a pattern is supported
     pub fn is_pattern_supported(&self, pattern_id: &str) -> bool {
         self.generators.contains_key(pattern_id)
+    }
+    
+    /// Get bridge registry reference
+    pub fn bridge_registry(&self) -> &BridgeRegistry {
+        &self.bridge_registry
     }
 }

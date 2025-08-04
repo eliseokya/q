@@ -12,6 +12,7 @@ pub mod generator;
 pub mod builder;
 pub mod analysis_result;
 pub mod bundle_ext;
+pub mod bridges;
 
 // Re-export main types
 pub use types::{
@@ -24,6 +25,7 @@ pub use traits::PatternBundleGenerator;
 pub use generator::BundleGenerator;
 pub use builder::ExecutionBundleBuilder;
 pub use analysis_result::{AnalysisResult, PatternMatch, PatternType};
+pub use bridges::{Bridge, BridgeRouter, BridgeRegistry};
 
 /// Module version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
