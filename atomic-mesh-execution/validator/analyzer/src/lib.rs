@@ -16,6 +16,7 @@ pub mod heuristics;
 pub mod engine;
 pub mod performance;
 pub mod monitoring;
+pub mod integration;
 
 // Re-export main types
 pub use common::*;
@@ -27,3 +28,6 @@ pub use performance::{TimingMonitor, OperationTiming, PerformanceBudget, BudgetE
 
 // Re-export monitoring types  
 pub use monitoring::{MetricsCollector, AnalysisMetrics, HealthChecker, HealthStatus};
+
+// Re-export integration types
+pub use integration::{CompilerInterface, CompilerMessage, PipelineManager, PipelineConfig, PipelineBuilder, PipelineError};
