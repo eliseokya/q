@@ -66,7 +66,11 @@ impl ConfidenceCalculator {
         confidence += verified_properties.len() as f64 * self.property_boost;
         
         // Apply pattern-specific adjustments
-        confidence *= self.pattern_complexity_factor(pattern);
+        let complexity_factor = self.pattern_complexity_factor(pattern);
+        confidence = confidence * 0.8 + confidence * complexity_factor * 0.2;
+        
+        // Ensure minimum heuristic confidence of 0.5
+        confidence = confidence.max(0.5);
         
         // Cap at maximum heuristic confidence
         confidence.min(self.max_heuristic_confidence)

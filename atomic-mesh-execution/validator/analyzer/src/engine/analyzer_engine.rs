@@ -497,7 +497,7 @@ impl AnalyzerEngine {
             confidence,
             vec!["Pattern analyzed using risk assessment".to_string()],
             vec!["Review risk factors before execution".to_string()],
-            confidence < 0.3, // Require manual review for very low confidence
+            true, // Always require manual review for unknown patterns
         )
     }
     
