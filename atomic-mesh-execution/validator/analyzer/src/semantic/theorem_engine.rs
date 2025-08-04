@@ -245,9 +245,10 @@ impl TheoremEngine {
 }
 
 // Helper functions for theorem verification
+// Note: These functions were implemented to fix Phase 2 integration tests (Dec 2024)
 
 fn extract_flash_loan_bounds(expr: &Expr) -> Result<(Action, Action), TheoremError> {
-    // Implementation would traverse the expression tree to find borrow/repay pairs
+    // Implementation traverses the expression tree to find borrow/repay pairs
     let borrow = find_first_borrow(expr)
         .ok_or_else(|| TheoremError::PreconditionFailed("No borrow action found".to_string()))?;
     
