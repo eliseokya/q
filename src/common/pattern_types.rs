@@ -129,7 +129,7 @@ pub enum ActionPattern {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum TokenPattern {
     /// Specific token
-    Specific(common::Token),
+    Specific(super::Token),
     /// Variable that must be consistent across the pattern
     Variable(String),
     /// Any token
@@ -142,7 +142,7 @@ pub enum TokenPattern {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum AmountPattern {
     /// Exact amount
-    Exact(common::Rational),
+    Exact(super::Rational),
     /// Variable amount
     Variable(String),
     /// Any amount
@@ -150,14 +150,14 @@ pub enum AmountPattern {
     /// Same as another variable
     SameAs(String),
     /// Amount range
-    Range { min: Option<common::Rational>, max: Option<common::Rational> },
+    Range { min: Option<super::Rational>, max: Option<super::Rational> },
 }
 
 /// Pattern for matching protocols
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ProtocolPattern {
     /// Specific protocol
-    Specific(common::Protocol),
+    Specific(super::Protocol),
     /// Variable protocol
     Variable(String),
     /// Any protocol
@@ -170,7 +170,7 @@ pub enum ProtocolPattern {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ChainPattern {
     /// Specific chain
-    Specific(common::Chain),
+    Specific(super::Chain),
     /// Variable chain
     Variable(String),
     /// Any chain
@@ -231,10 +231,10 @@ pub struct PatternMatch {
 /// Value bound to a pattern variable during matching
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum VariableBinding {
-    Token(common::Token),
-    Amount(common::Rational),
-    Protocol(common::Protocol),
-    Chain(common::Chain),
+    Token(super::Token),
+    Amount(super::Rational),
+    Protocol(super::Protocol),
+    Chain(super::Chain),
 }
 
 /// Candidate pattern during the matching process
@@ -365,7 +365,7 @@ mod tests {
         let mut bindings = HashMap::new();
         bindings.insert(
             "X".to_string(),
-            VariableBinding::Token(common::Token::WETH),
+            VariableBinding::Token(super::Token::WETH),
         );
         
         let pattern_match = PatternMatch::new(

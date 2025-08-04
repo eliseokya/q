@@ -171,11 +171,11 @@ pub struct BundleAnalysis {
     /// Number of actions in the bundle
     pub action_count: usize,
     /// Chains involved in the bundle
-    pub chains_involved: Vec<common::Chain>,
+    pub chains_involved: Vec<super::Chain>,
     /// Tokens involved in the bundle
-    pub tokens_involved: Vec<common::Token>,
+    pub tokens_involved: Vec<super::Token>,
     /// Protocols involved in the bundle
-    pub protocols_involved: Vec<common::Protocol>,
+    pub protocols_involved: Vec<super::Protocol>,
     /// Estimated computational complexity
     pub complexity_estimate: ComplexityEstimate,
     /// Whether the bundle has cross-chain operations
