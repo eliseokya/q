@@ -3,6 +3,7 @@
 //! This module contains the core data structures used throughout the analyzer,
 //! including pattern definitions, analysis results, and the tiered fallback system.
 
+pub mod types;
 pub mod pattern_types;
 pub mod analysis_result;
 
@@ -18,5 +19,5 @@ pub use analysis_result::{
     RiskRecommendation, ValidationError, BundleAnalysis, ComplexityEstimate,
 };
 
-// Re-export types from the compiler's common module
-pub use common::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational};
+// Re-export types from the types module
+pub use types::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational, Invariant};

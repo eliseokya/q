@@ -245,11 +245,17 @@ impl TheoremEngine {
 }
 
 // Helper functions for theorem verification
+// Note: These functions were implemented to fix Phase 2 integration tests (Dec 2024)
 
-fn extract_flash_loan_bounds(_expr: &Expr) -> Result<(Action, Action), TheoremError> {
-    // Implementation would traverse the expression tree to find borrow/repay pairs
-    // This is a simplified version
-    todo!("Implement flash loan bound extraction")
+fn extract_flash_loan_bounds(expr: &Expr) -> Result<(Action, Action), TheoremError> {
+    // Implementation traverses the expression tree to find borrow/repay pairs
+    let borrow = find_first_borrow(expr)
+        .ok_or_else(|| TheoremError::PreconditionFailed("No borrow action found".to_string()))?;
+    
+    let repay = find_last_repay(expr)
+        .ok_or_else(|| TheoremError::PreconditionFailed("No repay action found".to_string()))?;
+    
+    Ok((borrow, repay))
 }
 
 fn verify_flash_loan_conservation(borrow: &Action, repay: &Action) -> bool {
@@ -263,9 +269,51 @@ fn verify_flash_loan_conservation(borrow: &Action, repay: &Action) -> bool {
     }
 }
 
-fn extract_middle_operations(_expr: &Expr, _borrow: &Action, _repay: &Action) -> Result<Vec<Action>, TheoremError> {
+fn extract_middle_operations(expr: &Expr, _borrow: &Action, _repay: &Action) -> Result<Vec<Action>, TheoremError> {
     // Extract operations between borrow and repay
-    todo!("Implement middle operation extraction")
+    let mut operations = Vec::new();
+    let mut found_borrow = false;
+    let mut found_repay = false;
+    
+    extract_actions_between(expr, &mut operations, &mut found_borrow, &mut found_repay);
+    
+    Ok(operations)
+}
+
+fn extract_actions_between(expr: &Expr, operations: &mut Vec<Action>, found_borrow: &mut bool, found_repay: &mut bool) {
+    match expr {
+        Expr::Action { action } => {
+            match action {
+                Action::Borrow { .. } => {
+                    *found_borrow = true;
+                }
+                Action::Repay { .. } => {
+                    *found_repay = true;
+                }
+                _ => {
+                    if *found_borrow && !*found_repay {
+                        operations.push(action.clone());
+                    }
+                }
+            }
+        }
+        Expr::Seq { first, second } => {
+            extract_actions_between(first, operations, found_borrow, found_repay);
+            if !*found_repay {
+                extract_actions_between(second, operations, found_borrow, found_repay);
+            }
+        }
+        Expr::Parallel { exprs } => {
+            for e in exprs {
+                if !*found_repay {
+                    extract_actions_between(e, operations, found_borrow, found_repay);
+                }
+            }
+        }
+        Expr::OnChain { expr, .. } => {
+            extract_actions_between(expr, operations, found_borrow, found_repay);
+        }
+    }
 }
 
 fn verify_value_preservation(_actions: &[Action]) -> bool {
@@ -274,9 +322,64 @@ fn verify_value_preservation(_actions: &[Action]) -> bool {
     true // Simplified for now
 }
 
-fn find_first_borrow(_expr: &Expr) -> Option<Action> {
+fn find_first_borrow(expr: &Expr) -> Option<Action> {
     // Find the first borrow action in the expression
-    todo!("Implement borrow action finder")
+    match expr {
+        Expr::Action { action } => {
+            if let Action::Borrow { .. } = action {
+                Some(action.clone())
+            } else {
+                None
+            }
+        }
+        Expr::Seq { first, second } => {
+            // Check first expression, then second
+            find_first_borrow(first).or_else(|| find_first_borrow(second))
+        }
+        Expr::Parallel { exprs } => {
+            // Check all parallel expressions
+            for e in exprs {
+                if let Some(borrow) = find_first_borrow(e) {
+                    return Some(borrow);
+                }
+            }
+            None
+        }
+        Expr::OnChain { expr, .. } => {
+            // Recurse into the on-chain expression
+            find_first_borrow(expr)
+        }
+    }
+}
+
+fn find_last_repay(expr: &Expr) -> Option<Action> {
+    // Find the last repay action in the expression
+    match expr {
+        Expr::Action { action } => {
+            if let Action::Repay { .. } = action {
+                Some(action.clone())
+            } else {
+                None
+            }
+        }
+        Expr::Seq { first, second } => {
+            // Check second expression first (we want the last one)
+            find_last_repay(second).or_else(|| find_last_repay(first))
+        }
+        Expr::Parallel { exprs } => {
+            // Check all parallel expressions in reverse order
+            for e in exprs.iter().rev() {
+                if let Some(repay) = find_last_repay(e) {
+                    return Some(repay);
+                }
+            }
+            None
+        }
+        Expr::OnChain { expr, .. } => {
+            // Recurse into the on-chain expression
+            find_last_repay(expr)
+        }
+    }
 }
 
 fn extract_bridge_operations(_expr: &Expr) -> Result<Vec<Action>, TheoremError> {

@@ -163,7 +163,13 @@ impl RiskAssessor {
     }
     
     fn assess_cross_chain_risk(&self, bundle: &Bundle) -> Option<(RiskFactor, f64)> {
-        let chains = self.extract_chains(&bundle.expr);
+        let mut chains = self.extract_chains(&bundle.expr);
+        
+        // Always include the bundle's start chain
+        if !chains.contains(&bundle.start_chain) {
+            chains.push(bundle.start_chain.clone());
+        }
+        
         if chains.len() > 1 {
             let risk_msg = format!("Cross-chain operation across {} chains", chains.len());
             let score = 0.3 + (chains.len() as f64 * 0.2).min(0.7);

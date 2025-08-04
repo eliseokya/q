@@ -71,11 +71,11 @@ impl StaticPatternLibrary {
         let maths_path = Path::new("../../../maths");
         
         if !maths_path.exists() {
-            log::warn!("Maths directory not found at {:?}, using empty pattern library", maths_path);
+            // Log would go here: "Maths directory not found, using empty pattern library"
             return Ok(library);
         }
         
-        log::info!("Scanning maths directory for theorems...");
+        // Log would go here: "Scanning maths directory for theorems..."
         
         // Scan for theorems
         let parser = LeanParser::new();
@@ -84,7 +84,7 @@ impl StaticPatternLibrary {
                 details: format!("Failed to scan maths directory: {}", e),
             })?;
         
-        log::info!("Found {} theorems in maths directory", theorems.len());
+        // Log would go here: "Found X theorems in maths directory"
         
         // Build theorem database
         let mut database = TheoremDatabase::new();
@@ -96,8 +96,7 @@ impl StaticPatternLibrary {
         }
         
         let stats = database.get_statistics();
-        log::info!("Theorem statistics: {} flash loan patterns, {} cross-chain patterns, {} protocol invariants",
-            stats.flash_loan_patterns, stats.cross_chain_patterns, stats.protocol_invariants);
+        // Log would go here: "Theorem statistics: X flash loan patterns, Y cross-chain patterns, Z protocol invariants"
         
         // Compile theorems to patterns
         let compiler = LeanToPatternCompiler::new();
@@ -108,7 +107,7 @@ impl StaticPatternLibrary {
         for theorem in all_theorems {
             match compiler.compile_theorem(theorem) {
                 Ok(pattern) => {
-                    library.add_pattern(pattern)?;
+                    library.add_pattern_safe(pattern)?;
                 }
                 Err(e) => {
                     log::warn!("Failed to compile theorem {}: {}", theorem.name, e);
@@ -131,19 +130,19 @@ impl StaticPatternLibrary {
     /// Load default patterns from mathematical theorems
     fn load_default_patterns(&mut self) -> Result<(), PatternLibraryError> {
         // Flash loan patterns from maths/Stack/Bundles.lean
-        self.add_pattern(create_flash_loan_pattern())?;
+        self.add_pattern(create_flash_loan_pattern());
         
         // Cross-chain arbitrage patterns
-        self.add_pattern(create_cross_chain_arbitrage_pattern())?;
+        self.add_pattern(create_cross_chain_arbitrage_pattern());
         
         // Parallel execution patterns  
-        self.add_pattern(create_parallel_execution_pattern())?;
+        self.add_pattern(create_parallel_execution_pattern());
         
         // Sequential operation patterns
-        self.add_pattern(create_sequential_pattern())?;
+        self.add_pattern(create_sequential_pattern());
         
         // Bridge operation patterns
-        self.add_pattern(create_bridge_pattern())?;
+        self.add_pattern(create_bridge_pattern());
 
         log::info!("Loaded {} default patterns", self.patterns.len());
         Ok(())
@@ -152,13 +151,13 @@ impl StaticPatternLibrary {
     /// Load multiple patterns into the library
     pub fn load_patterns(&mut self, patterns: Vec<ProvenPattern>) -> Result<(), PatternLibraryError> {
         for pattern in patterns {
-            self.add_pattern(pattern)?;
+            self.add_pattern(pattern);
         }
         Ok(())
     }
 
-    /// Add a pattern to the library
-    pub fn add_pattern(&mut self, pattern: ProvenPattern) -> Result<(), PatternLibraryError> {
+    /// Add a pattern to the library (with validation)
+    pub fn add_pattern_safe(&mut self, pattern: ProvenPattern) -> Result<(), PatternLibraryError> {
         // Check for duplicates
         if self.patterns.contains_key(&pattern.pattern_id) {
             return Err(PatternLibraryError::DuplicatePattern { 
@@ -305,6 +304,53 @@ impl StaticPatternLibrary {
     fn infer_pattern_template(&self, pattern: &ProvenPattern) -> PatternTemplate {
         // Use the pattern's own template
         pattern.pattern_template.clone()
+    }
+
+    /// Add a single pattern to the library (for hot-reload)
+    pub fn add_pattern(&mut self, pattern: ProvenPattern) {
+        let pattern_id = pattern.pattern_id.clone();
+        let template = pattern.pattern_template.clone();
+        
+        // Add to patterns map
+        self.patterns.insert(pattern_id.clone(), pattern.clone());
+        
+        // Add to template index
+        self.patterns_by_template
+            .entry(template)
+            .or_insert_with(Vec::new)
+            .push(pattern_id.clone());
+        
+        // Add metadata
+        let metadata = PatternMetadata {
+            theorem_file: pattern.theorem_file.to_string_lossy().to_string(),
+            theorem_line: pattern.theorem_line,
+            compilation_timestamp: format!("{:?}", std::time::SystemTime::now()),
+            pattern_complexity: self.assess_pattern_complexity(&pattern),
+            verification_level: VerificationLevel::Proven,
+        };
+        self.pattern_metadata.insert(pattern_id, metadata);
+    }
+
+    /// Remove all patterns from a specific file (for hot-reload)
+    pub fn remove_patterns_from_file(&mut self, file_path: &std::path::Path) {
+        // Find patterns from this file
+        let patterns_to_remove: Vec<String> = self.patterns.iter()
+            .filter(|(_, pattern)| pattern.theorem_file == file_path)
+            .map(|(id, _)| id.clone())
+            .collect();
+        
+        // Remove patterns
+        for pattern_id in patterns_to_remove {
+            if let Some(pattern) = self.patterns.remove(&pattern_id) {
+                // Remove from template index
+                if let Some(template_patterns) = self.patterns_by_template.get_mut(&pattern.pattern_template) {
+                    template_patterns.retain(|id| id != &pattern_id);
+                }
+                
+                // Remove metadata
+                self.pattern_metadata.remove(&pattern_id);
+            }
+        }
     }
 }
 

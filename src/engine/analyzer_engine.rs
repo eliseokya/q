@@ -317,7 +317,7 @@ impl AnalyzerEngine {
         
         BundleAnalysis {
             action_count,
-            chains_involved,
+            chains_involved: chains_involved.clone(),
             tokens_involved,
             protocols_involved,
             complexity_estimate,
@@ -391,7 +391,8 @@ impl AnalyzerEngine {
                     crate::common::Action::Repay { token, .. } |
                     crate::common::Action::Deposit { token, .. } |
                     crate::common::Action::Withdraw { token, .. } |
-                    crate::common::Action::Bridge { token, .. } => {
+                    crate::common::Action::Bridge { token, .. } |
+                    crate::common::Action::Transfer { token, .. } => {
                         tokens.push(token.clone());
                     }
                     crate::common::Action::Swap { token_in, token_out, .. } => {
@@ -435,8 +436,9 @@ impl AnalyzerEngine {
                     crate::common::Action::Withdraw { protocol, .. } => {
                         protocols.push(protocol.clone());
                     }
-                    crate::common::Action::Bridge { .. } => {
-                        // Bridge actions don't have protocols
+                    crate::common::Action::Bridge { .. } |
+                    crate::common::Action::Transfer { .. } => {
+                        // Bridge and Transfer actions don't have protocols
                     }
                 }
             }

@@ -1,7 +1,7 @@
 //! Integration test for Phase 2: Semantic Validation & Mathematical Integration
 
 use analyzer::*;
-use common::types::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational};
+use ::common::types::{Bundle, Expr, Action, Token, Protocol, Chain, Constraint, Rational};
 
 #[test]
 fn test_phase2_semantic_validation_full_match() {
@@ -66,7 +66,7 @@ fn test_phase2_semantic_validation_full_match() {
     analyzer.load_patterns(vec![flash_loan_pattern]).unwrap();
     
     // Analyze the bundle
-    let result = analyzer.analyze_bundle(bundle);
+    let result = analyzer.analyze_bundle(&bundle);
     
     // Verify we get a full match with high confidence
     match result {
@@ -118,7 +118,7 @@ fn test_phase2_risk_assessment_for_unknown_pattern() {
     };
     
     // Analyze should fall back to risk assessment
-    let result = analyzer.analyze_bundle(unknown_bundle);
+    let result = analyzer.analyze_bundle(&unknown_bundle);
     
     // Verify we get a heuristic result with risk assessment
     match result {

@@ -11,6 +11,8 @@ pub mod matching;
 pub mod validation;
 pub mod semantic;
 pub mod scoring;
+pub mod hotreload;
+pub mod discovery;
 
 // Re-export main types and functions
 pub use common::{
@@ -32,6 +34,10 @@ pub use validation::{ConstraintChecker, ConstraintValidationResult};
 // Phase 2 exports
 pub use semantic::{TheoremEngine, TheoremError, ProofApplicationEngine, SemanticValidator};
 pub use scoring::{ConfidenceCalculator, ConfidenceConfig, RiskAssessor};
+
+// Phase 3 exports
+pub use hotreload::{FilesystemWatcher, EventHandler, WatchEvent, HotReloadManager};
+pub use discovery::{PatternComposer, CompositePattern, StructureAnalyzer, PatternStructure};
 
 // Re-export dependencies for use in main.rs
 pub use serde_json;
