@@ -269,7 +269,7 @@ impl ExtendedSafetyChecks {
     /// Check for MEV vulnerabilities
     pub fn check_mev_vulnerability(analysis: &StructuralAnalysis) -> Option<String> {
         let has_large_swaps = analysis.action_sequence.iter().any(|a| {
-            matches!(a.action, Action::Swap { amount_in, .. } if amount_in.num > 1000)
+            matches!(&a.action, Action::Swap { amount_in, .. } if amount_in.num > 1000)
         });
         
         let has_predictable_path = analysis.action_sequence.len() > 3 && 

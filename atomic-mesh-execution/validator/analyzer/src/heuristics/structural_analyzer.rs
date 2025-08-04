@@ -229,7 +229,7 @@ impl StructuralAnalyzer {
         let mut max_risk_score: f64 = 0.0;
         
         for action_info in actions {
-            if let Some(protocol) = action_info.action.protocol() {
+            if let Some(protocol) = get_action_protocol(&action_info.action) {
                 used_protocols.insert(protocol.clone());
                 
                 if !self.known_safe_protocols.contains(&protocol) {
@@ -425,14 +425,13 @@ pub struct CrossChainComplexity {
     pub has_circular_path: bool,
 }
 
-impl Action {
-    fn protocol(&self) -> Option<Protocol> {
-        match self {
-            Action::Borrow { protocol, .. } |
-            Action::Repay { protocol, .. } |
-            Action::Swap { protocol, .. } => Some(protocol.clone()),
-            _ => None,
-        }
+// Helper function to extract protocol from action
+fn get_action_protocol(action: &Action) -> Option<Protocol> {
+    match action {
+        Action::Borrow { protocol, .. } |
+        Action::Repay { protocol, .. } |
+        Action::Swap { protocol, .. } => Some(protocol.clone()),
+        _ => None,
     }
 }
 

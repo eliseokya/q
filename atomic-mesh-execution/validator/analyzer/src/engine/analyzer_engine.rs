@@ -6,13 +6,14 @@
 use crate::common::{
     Bundle, AnalysisResult, ProvenPattern, PatternCandidate, 
     ValidationError, RiskProfile, BundleAnalysis, ComplexityEstimate,
+    ValidationRecommendation, RiskFactor, RiskRecommendation,
 };
 use crate::engine::{StaticPatternLibrary, DynamicPatternCache};
 use crate::matching::{StructuralMatcher, AutomataMatchEngine};
 use crate::validation::ConstraintChecker;
 use crate::semantic::{SemanticValidator, TheoremEngine};
 use crate::scoring::{ConfidenceCalculator, RiskAssessor};
-use crate::fallback::{ResultBuilder, RejectionReason, SafetyProperty};
+use crate::fallback::{ResultBuilder, RejectionReason};
 use crate::heuristics::{StructuralAnalyzer, SafetyHeuristics};
 use std::time::{Duration, Instant};
 use std::collections::HashMap;
@@ -425,30 +426,42 @@ impl AnalyzerEngine {
     
     /// Convert risk assessment to risk profile
     fn convert_risk_assessment_to_profile(&self, assessment: &crate::fallback::RiskAssessment) -> RiskProfile {
-        let risk_factors = assessment.risk_factors.iter()
-            .map(|(name, score)| RiskFactor {
-                name: name.clone(),
-                severity: if *score < 0.3 { 
-                    crate::common::Severity::Low 
-                } else if *score < 0.7 { 
-                    crate::common::Severity::Medium 
-                } else { 
-                    crate::common::Severity::High 
-                },
-                description: format!("Risk factor: {} (score: {:.2})", name, score),
-                mitigation: assessment.mitigation_strategies.get(0).cloned(),
-            })
-            .collect();
+        let mut risk_factors = Vec::new();
+        
+        // Convert each risk factor from the assessment
+        for (name, score) in &assessment.risk_factors {
+            if name.contains("cross_chain") {
+                risk_factors.push(RiskFactor::CrossChainUnsafe(
+                    format!("Cross-chain risk detected (score: {:.2})", score)
+                ));
+            } else if name.contains("protocol") {
+                risk_factors.push(RiskFactor::UnknownActions(vec![
+                    format!("Unknown protocol risk: {:.2}", score)
+                ]));
+            } else if name.contains("timing") {
+                risk_factors.push(RiskFactor::TimingRisk(
+                    format!("Timing constraint risk: {:.2}", score)
+                ));
+            } else {
+                risk_factors.push(RiskFactor::HighComplexity(*score));
+            }
+        }
+        
+        let overall_score = assessment.risk_factors.values().sum::<f64>() / 
+                           assessment.risk_factors.len().max(1) as f64;
+        
+        let recommendation = match assessment.overall_risk {
+            crate::fallback::RiskLevel::Low => RiskRecommendation::LowRisk,
+            crate::fallback::RiskLevel::Medium => RiskRecommendation::MediumRisk,
+            crate::fallback::RiskLevel::High => RiskRecommendation::HighRisk,
+            crate::fallback::RiskLevel::Critical => RiskRecommendation::RejectBundle,
+        };
         
         RiskProfile {
-            overall_risk: match assessment.overall_risk {
-                crate::fallback::RiskLevel::Low => crate::common::RiskLevel::Low,
-                crate::fallback::RiskLevel::Medium => crate::common::RiskLevel::Medium,
-                crate::fallback::RiskLevel::High => crate::common::RiskLevel::High,
-                crate::fallback::RiskLevel::Critical => crate::common::RiskLevel::Critical,
-            },
+            overall_score,
             risk_factors,
-            confidence_impact: 1.0 - (assessment.risk_factors.values().sum::<f64>() / assessment.risk_factors.len() as f64).min(0.5),
+            confidence: assessment.confidence_in_assessment,
+            recommendation,
         }
     }
 
