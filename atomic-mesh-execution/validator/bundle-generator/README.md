@@ -321,3 +321,47 @@ Bundle Generator → bundle-composer → gas-optimizer → profitability-checker
 The Bundle Generator leverages our mathematical foundation to create a new class of transaction builder - one that knows its operations are provably safe and can optimize aggressively. By organizing around patterns rather than generic operations, we achieve both superior performance and better maintainability.
 
 **Key Innovation**: We don't defensively build transactions hoping they'll work - we instantiate mathematical patterns knowing they're guaranteed to succeed.
+
+## Validator Integration
+
+The Bundle Generator is the final stage in the three-module Validator pipeline:
+
+```
+Opportunity JSON → Compiler → Analyzer → Bundle Generator → Execution Bundle
+                  └────────────── THE VALIDATOR ──────────────┘
+```
+
+### Unified Operation
+
+While the Bundle Generator can operate standalone, it's designed to work seamlessly within the unified Validator:
+
+```bash
+# Standalone operation (for testing)
+cat analysis_result.json | bundle-generator > execution_bundle.json
+
+# Integrated operation (production)
+cat opportunity.json | validator > execution_bundle.json
+```
+
+### Integration Points
+
+1. **Input Compatibility**: Accepts `AnalysisResult` from the Analyzer
+2. **Shared Types**: Uses common types from `common` crate to avoid serialization overhead
+3. **Performance**: Maintains < 3ms latency to keep total validator time under 45ms
+4. **Error Propagation**: Errors flow cleanly through the validator pipeline
+
+### Development Workflow
+
+During development, you can test the Bundle Generator in isolation:
+
+```bash
+# Generate test input from analyzer
+cd ../analyzer
+cat test_bundle.json | ./bin/analyzer > analysis_result.json
+
+# Test bundle generator
+cd ../bundle-generator
+cat analysis_result.json | cargo run --bin bundle-generator
+```
+
+But remember, the end goal is seamless integration where users interact with a single `validator` command that handles the complete transformation from opportunity to execution bundle.

@@ -350,65 +350,207 @@ fn bench_full_pipeline(b: &mut Bencher) {
 
 ---
 
-### Phase 5: Unix Tools Integration & Deployment ⏳
+### Phase 5: Validator Pipeline Integration & Unification ⏳
 
-**Goal**: Seamless integration with the broader pipeline
+**Goal**: Create a unified validator that seamlessly processes opportunities end-to-end
 
-#### 5.1 CLI Binary
+#### 5.1 Inter-Module Integration
 
 **Files to create**:
-- `src/bin/bundle-generator.rs` - Main CLI binary
-- `src/cli.rs` - CLI argument parsing
+- Update `../pipeline/validate` script for 3-module flow
+- `tests/integration/validator_pipeline.rs` - Full pipeline tests
+- `src/integration.rs` - Integration utilities
+
+**Tasks**:
+- Ensure Compiler output perfectly matches Analyzer input
+- Ensure Analyzer output perfectly matches Bundle Generator input
+- Optimize data flow between modules
+- Add pipeline performance monitoring
+
+**Tests**:
+- `tests/validator_integration/compiler_to_analyzer.rs` - Interface compatibility
+- `tests/validator_integration/analyzer_to_generator.rs` - Data flow validation
+- `tests/validator_integration/end_to_end.rs` - Complete pipeline test
+
+**Example Test**:
+```rust
+#[test]
+fn test_opportunity_to_bundle_flow() {
+    let opportunity = load_test_opportunity("flash-loan-arb.json");
+    
+    // Compile
+    let bundle = compiler.compile(opportunity)?;
+    
+    // Analyze
+    let analysis = analyzer.analyze(bundle)?;
+    
+    // Generate
+    let execution = generator.generate(analysis)?;
+    
+    // Validate output format
+    assert!(execution.validate_schema());
+    assert!(execution.estimated_duration < 400); // ms
+}
+```
+
+#### 5.2 Unified Validator Interface
+
+**Files to create**:
+- `../bin/validator` - Single entry point for entire validator
+- `../src/pipeline.rs` - Pipeline orchestration logic
+- Update `../README.md` - Document unified operation
 
 **Features**:
 ```bash
-# Basic usage
-cat analysis.json | bundle-generator > bundle.json
+# Single command for entire validation
+cat opportunity.json | validator > execution_bundle.json
 
 # With options
-bundle-generator --config ./config --verbose --metrics
+validator --performance-mode aggressive --metrics --trace
 
-# Performance mode
-bundle-generator --optimize aggressive --parallel
+# Health check across all modules
+validator --health-check
+
+# Module-specific debugging
+validator --debug-module analyzer --verbose
 ```
 
-#### 5.2 Pipeline Integration
+**Implementation Approach**:
+```rust
+// validator/src/pipeline.rs
+pub struct ValidatorPipeline {
+    compiler: Compiler,
+    analyzer: Analyzer,
+    generator: BundleGenerator,
+    metrics: MetricsCollector,
+}
 
-**Tasks**:
-- Verify output format compatibility
-- Test with all Unix tools
-- Add pipeline test scripts
-- Create integration examples
+impl ValidatorPipeline {
+    pub fn process(&mut self, opportunity: &str) -> Result<String> {
+        let start = Instant::now();
+        
+        // Parse opportunity
+        let opp: OpportunityJson = serde_json::from_str(opportunity)?;
+        
+        // Compile to DSL
+        let compile_start = Instant::now();
+        let bundle = self.compiler.compile(opp)?;
+        self.metrics.record_compile_time(compile_start.elapsed());
+        
+        // Analyze pattern
+        let analyze_start = Instant::now();
+        let analysis = self.analyzer.analyze(bundle)?;
+        self.metrics.record_analyze_time(analyze_start.elapsed());
+        
+        // Generate bundle
+        let generate_start = Instant::now();
+        let execution = self.generator.generate(analysis)?;
+        self.metrics.record_generate_time(generate_start.elapsed());
+        
+        self.metrics.record_total_time(start.elapsed());
+        
+        Ok(serde_json::to_string(&execution)?)
+    }
+}
+```
+
+#### 5.3 Performance Optimization Across Modules
+
+**Goals**:
+- Total latency: < 45ms (40ms compiler + 12μs analyzer + 3ms generator)
+- Memory efficiency: Minimize allocations between modules
+- Consider zero-copy optimizations where possible
+
+**Optimization Strategies**:
+1. **Shared Type System**: Use common types to avoid serialization
+2. **Pipeline Parallelism**: Start analyzing while still compiling (streaming)
+3. **Memory Pool**: Reuse allocations across requests
+4. **Fast Path**: Skip serialization for internal communication
+
+**Performance Tests**:
+```rust
+#[bench]
+fn bench_full_validator_pipeline(b: &mut Bencher) {
+    let opportunity = load_test_opportunity("complex-cross-chain.json");
+    let mut pipeline = ValidatorPipeline::new();
+    
+    b.iter(|| {
+        pipeline.process(&opportunity).unwrap()
+    });
+    
+    // Target: < 45ms
+}
+```
+
+#### 5.4 Unified Monitoring & Observability
 
 **Files to create**:
-- `scripts/test_pipeline.sh` - Full pipeline test
-- `scripts/validate_output.sh` - Output validation
+- `../src/monitoring/mod.rs` - Unified monitoring
+- `../src/monitoring/metrics.rs` - Aggregated metrics
+- `../src/monitoring/tracing.rs` - Distributed tracing
 
-#### 5.3 Configuration Management
+**Metrics Dashboard**:
+```rust
+pub struct ValidatorMetrics {
+    // Module timings
+    pub compiler_p50: Duration,
+    pub analyzer_p50: Duration,
+    pub generator_p50: Duration,
+    pub total_p50: Duration,
+    
+    // Success rates
+    pub opportunities_processed: u64,
+    pub successful_validations: u64,
+    pub pattern_distribution: HashMap<String, u64>,
+    
+    // Error tracking
+    pub compiler_errors: u64,
+    pub analyzer_rejections: u64,
+    pub generator_failures: u64,
+}
+```
 
-**Files to create**:
-- `config/production.yaml` - Production configuration
-- `config/development.yaml` - Development configuration
-- `src/config.rs` - Configuration loading
+#### 5.5 End-to-End Validation Testing
 
-**Features**:
-- Environment-based configuration
-- Hot-reload for protocols/bridges
-- Override capabilities
+**Test Data**:
+- Create `../test-data/opportunities/` with real examples:
+  - `flash-loan-simple.json`
+  - `cross-chain-arb.json`
+  - `triangular-dex.json`
+  - `complex-multi-hop.json`
 
-#### 5.4 Deployment Package
+**Integration Test Suite**:
+```rust
+#[test]
+fn test_all_opportunity_types() {
+    let test_files = fs::read_dir("../test-data/opportunities")?;
+    
+    for file in test_files {
+        let opportunity = fs::read_to_string(file.path())?;
+        let result = validator.process(&opportunity);
+        
+        assert!(result.is_ok(), "Failed on: {:?}", file.path());
+        
+        let bundle: ExecutionBundle = serde_json::from_str(&result?)?;
+        assert!(bundle.validate_invariants());
+    }
+}
+```
 
-**Files to create**:
-- `Dockerfile` - Container image
-- `deploy/systemd/bundle-generator.service` - Systemd service
-- `deploy/kubernetes/deployment.yaml` - K8s deployment
-- `DEPLOYMENT.md` - Deployment guide
+**Error Propagation Tests**:
+- Invalid opportunity JSON
+- Unsupported patterns
+- Constraint violations
+- Resource exhaustion
 
 **Deliverables**:
-- ✅ CLI binary with full features
-- ✅ Pipeline integration verified
-- ✅ Production configurations
-- ✅ Deployment artifacts
+- ✅ Unified validator command working
+- ✅ < 45ms end-to-end processing time
+- ✅ All modules integrated seamlessly
+- ✅ Comprehensive test coverage
+- ✅ Unified monitoring and health checks
+- ✅ Clear documentation of validator as single component
+- ✅ Error handling across module boundaries
 
 ---
 
