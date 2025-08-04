@@ -10,9 +10,12 @@ use crate::common::{
 use crate::engine::{StaticPatternLibrary, DynamicPatternCache};
 use crate::matching::{StructuralMatcher, AutomataMatchEngine};
 use crate::validation::ConstraintChecker;
-use crate::semantic::SemanticValidator;
+use crate::semantic::{SemanticValidator, TheoremEngine};
 use crate::scoring::{ConfidenceCalculator, RiskAssessor};
+use crate::fallback::{ResultBuilder, RejectionReason, SafetyProperty};
+use crate::heuristics::{StructuralAnalyzer, SafetyHeuristics};
 use std::time::{Duration, Instant};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 /// Configuration for the analyzer engine
@@ -283,40 +286,169 @@ impl AnalyzerEngine {
             .collect()
     }
 
-    /// Generate the final analysis result
+    /// Generate the final analysis result using the new fallback system
     fn generate_final_result(
         &mut self,
         matches: Vec<PatternCandidate>,
         bundle_analysis: &BundleAnalysis,
         bundle: &Bundle
     ) -> AnalysisResult {
-        if let Some(best_match) = matches.into_iter().max_by(|a, b| 
-            a.confidence_score.partial_cmp(&b.confidence_score).unwrap()) {
+        // Create a result builder
+        let mut builder = ResultBuilder::new();
+        
+        // Add pattern candidates
+        builder = builder.with_pattern_candidates(matches.clone());
+        
+        // Perform theorem validation for candidates
+        let theorem_engine = TheoremEngine::new();
+        let mut theorem_results = HashMap::new();
+        
+        for candidate in &matches {
+            let theorem_result = theorem_engine.apply_theorem(bundle, &candidate.pattern)
+                .map_err(|e| e);
+            theorem_results.insert(candidate.pattern.theorem_reference.clone(), theorem_result);
+        }
+        
+        builder = builder.with_theorem_results(theorem_results);
+        
+        // If no full match, perform structural analysis
+        if matches.is_empty() || matches.iter().all(|m| m.confidence_score < 0.95) {
+            let structural_analyzer = StructuralAnalyzer::new();
+            let structural_analysis = structural_analyzer.analyze_structure(bundle);
             
-            // Cache the successful match (would need to update cache type)
-            // let bundle_hash = self.compute_bundle_hash(bundle);
-            // self.pattern_cache.insert(bundle_hash, best_match.clone());
-            
-            AnalysisResult::FullMatch {
-                theorem_reference: best_match.pattern.theorem_reference.clone(),
-                confidence: best_match.confidence_score,
-                safety_guarantees: best_match.pattern.safety_properties.clone(),
-                gas_optimization_available: best_match.pattern.gas_optimization_potential,
-                execution_plan: format!("Execute pattern: {}", best_match.pattern.pattern_id),
-            }
-        } else if self.config.enable_heuristic_fallback {
-            // Fall back to heuristic analysis with risk assessment
-            let risk_profile = self.risk_assessor.assess_bundle_risk(bundle);
-            let pattern_similarity = self.calculate_pattern_similarity(bundle);
-            let risk_confidence = self.confidence_calculator.calculate_risk_based_confidence(
-                &risk_profile,
-                pattern_similarity,
+            // Add structural match information
+            let similarity = if matches.is_empty() { 0.0 } else { matches[0].confidence_score };
+            builder = builder.with_structural_match(
+                structural_analysis.pattern_type.clone(),
+                similarity
             );
             
-            self.create_heuristic_result_with_risk(bundle_analysis, risk_profile, risk_confidence)
-        } else {
-            // Reject - no pattern found
-            self.create_rejection_result(bundle_analysis)
+            // Check for safety violations
+            let safety_heuristics = SafetyHeuristics::new();
+            let violations = safety_heuristics.check_safety_violations(&structural_analysis);
+            
+            for violation in violations {
+                builder = builder.add_rejection_reason(violation);
+            }
+            
+            // Add risk factors
+            if structural_analysis.protocol_risks.unknown_protocol_count > 0 {
+                builder = builder.add_risk_factor(
+                    format!("{} unknown protocols detected", structural_analysis.protocol_risks.unknown_protocol_count)
+                );
+            }
+            
+            if structural_analysis.cross_chain_complexity.chain_count > 1 {
+                builder = builder.add_risk_factor(
+                    format!("Cross-chain execution across {} chains", structural_analysis.cross_chain_complexity.chain_count)
+                );
+            }
+        }
+        
+        // Build the final result with tiered fallback
+        let enhanced_result = builder.build();
+        
+        // Convert to old AnalysisResult format for compatibility
+        self.convert_enhanced_result_to_legacy(enhanced_result, bundle_analysis)
+    }
+
+    /// Convert enhanced result to legacy format for compatibility
+    fn convert_enhanced_result_to_legacy(
+        &self,
+        enhanced_result: crate::fallback::AnalysisResult,
+        bundle_analysis: &BundleAnalysis
+    ) -> AnalysisResult {
+        match enhanced_result {
+            crate::fallback::AnalysisResult::FullMatch { 
+                theorem_reference, 
+                confidence, 
+                safety_guarantees, 
+                gas_optimization_available,
+                execution_plan,
+                .. 
+            } => {
+                AnalysisResult::FullMatch {
+                    theorem_reference,
+                    confidence,
+                    safety_guarantees,
+                    gas_optimization_available,
+                    execution_plan,
+                }
+            }
+            crate::fallback::AnalysisResult::PartialMatch { 
+                confidence,
+                validated_properties,
+                warnings,
+                .. 
+            } => {
+                AnalysisResult::PartialMatch {
+                    matched_patterns: vec![], // Could extract from enhanced result if needed
+                    confidence,
+                    validated_properties,
+                    unverified_properties: vec![],
+                    warnings,
+                    recommendation: if confidence >= 0.7 {
+                        ValidationRecommendation::ApproveWithMonitoring
+                    } else {
+                        ValidationRecommendation::ManualReview
+                    },
+                }
+            }
+            crate::fallback::AnalysisResult::Heuristic { 
+                confidence,
+                risk_assessment,
+                recommended_action,
+                .. 
+            } => {
+                AnalysisResult::Heuristic {
+                    analysis: bundle_analysis.clone(),
+                    confidence,
+                    risk_profile: self.convert_risk_assessment_to_profile(&risk_assessment),
+                    recommendation: match recommended_action {
+                        crate::fallback::RecommendedAction::ExecuteWithMonitoring => 
+                            ValidationRecommendation::ApproveWithMonitoring,
+                        crate::fallback::RecommendedAction::ExecuteWithSafeguards { .. } =>
+                            ValidationRecommendation::ApproveWithCaution,
+                        _ => ValidationRecommendation::ManualReview,
+                    },
+                }
+            }
+            crate::fallback::AnalysisResult::Reject { reasons, .. } => {
+                AnalysisResult::Reject {
+                    reasons: reasons.into_iter().map(|r| r.to_string()).collect(),
+                    confidence: 0.0,
+                    recommendation: ValidationRecommendation::RejectWithFeedback,
+                }
+            }
+        }
+    }
+    
+    /// Convert risk assessment to risk profile
+    fn convert_risk_assessment_to_profile(&self, assessment: &crate::fallback::RiskAssessment) -> RiskProfile {
+        let risk_factors = assessment.risk_factors.iter()
+            .map(|(name, score)| RiskFactor {
+                name: name.clone(),
+                severity: if *score < 0.3 { 
+                    crate::common::Severity::Low 
+                } else if *score < 0.7 { 
+                    crate::common::Severity::Medium 
+                } else { 
+                    crate::common::Severity::High 
+                },
+                description: format!("Risk factor: {} (score: {:.2})", name, score),
+                mitigation: assessment.mitigation_strategies.get(0).cloned(),
+            })
+            .collect();
+        
+        RiskProfile {
+            overall_risk: match assessment.overall_risk {
+                crate::fallback::RiskLevel::Low => crate::common::RiskLevel::Low,
+                crate::fallback::RiskLevel::Medium => crate::common::RiskLevel::Medium,
+                crate::fallback::RiskLevel::High => crate::common::RiskLevel::High,
+                crate::fallback::RiskLevel::Critical => crate::common::RiskLevel::Critical,
+            },
+            risk_factors,
+            confidence_impact: 1.0 - (assessment.risk_factors.values().sum::<f64>() / assessment.risk_factors.len() as f64).min(0.5),
         }
     }
 
