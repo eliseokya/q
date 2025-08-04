@@ -65,7 +65,7 @@ pub enum RiskFactor {
     InvariantRisk(String),
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum RiskRecommendation {
     LowRisk,
     MediumRisk,

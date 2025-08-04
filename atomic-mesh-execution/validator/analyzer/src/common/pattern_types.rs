@@ -1,7 +1,6 @@
 //! Core pattern matching types for the analyzer module
 
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::PathBuf;
 
 /// A mathematically proven pattern from the Lean 4 formalization

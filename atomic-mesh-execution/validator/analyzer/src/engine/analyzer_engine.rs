@@ -9,9 +9,9 @@ use crate::common::{
 };
 use crate::engine::{StaticPatternLibrary, DynamicPatternCache};
 use crate::matching::{StructuralMatcher, AutomataMatchEngine};
-use crate::validation::{ConstraintChecker, ConstraintValidationResult};
-use crate::pattern_compiler::AutomataGenerator;
-use std::collections::HashMap;
+use crate::validation::ConstraintChecker;
+use crate::semantic::SemanticValidator;
+use crate::scoring::{ConfidenceCalculator, RiskAssessor};
 use std::time::{Duration, Instant};
 use uuid::Uuid;
 
@@ -60,6 +60,9 @@ pub struct AnalyzerEngine {
     structural_matcher: StructuralMatcher,
     automata_engine: AutomataMatchEngine,
     constraint_checker: ConstraintChecker,
+    semantic_validator: SemanticValidator,
+    confidence_calculator: ConfidenceCalculator,
+    risk_assessor: RiskAssessor,
     performance_metrics: PerformanceMetrics,
 }
 
@@ -71,9 +74,12 @@ impl AnalyzerEngine {
 
     /// Create analyzer with custom configuration
     pub fn with_config(config: AnalyzerConfig) -> Result<Self, ValidationError> {
-        let mut structural_matcher = StructuralMatcher::new();
-        let mut automata_engine = AutomataMatchEngine::new();
+        let structural_matcher = StructuralMatcher::new();
+        let automata_engine = AutomataMatchEngine::new();
         let constraint_checker = ConstraintChecker::new();
+        let semantic_validator = SemanticValidator::new();
+        let confidence_calculator = ConfidenceCalculator::new();
+        let risk_assessor = RiskAssessor::new();
         
         Ok(Self {
             config,
@@ -85,6 +91,9 @@ impl AnalyzerEngine {
             structural_matcher,
             automata_engine,
             constraint_checker,
+            semantic_validator,
+            confidence_calculator,
+            risk_assessor,
             performance_metrics: PerformanceMetrics::default(),
         })
     }
@@ -239,14 +248,38 @@ impl AnalyzerEngine {
         candidates: &[PatternCandidate], 
         bundle: &Bundle
     ) -> Vec<PatternCandidate> {
-        // Apply semantic validation to candidates
+        // Apply semantic validation and confidence scoring to candidates
         candidates.iter()
-            .filter(|candidate| {
-                // Check if the pattern's preconditions are satisfied
-                // For now, accept all candidates that made it this far
-                candidate.confidence_score > 0.5
+            .map(|candidate| {
+                // Apply semantic validation
+                let validation_result = self.semantic_validator.validate(bundle, candidate);
+                
+                // Update confidence based on validation result
+                match &validation_result {
+                    AnalysisResult::FullMatch { safety_guarantees, .. } => {
+                        let enhanced_candidate = self.confidence_calculator.enhance_pattern_candidate(
+                            candidate.clone(),
+                            true, // theorem verified
+                            safety_guarantees.clone(),
+                        );
+                        Some(enhanced_candidate)
+                    }
+                    AnalysisResult::PartialMatch { validated_properties, .. } => {
+                        let enhanced_candidate = self.confidence_calculator.enhance_pattern_candidate(
+                            candidate.clone(),
+                            false, // partial match only
+                            validated_properties.clone(),
+                        );
+                        Some(enhanced_candidate)
+                    }
+                    _ => {
+                        // For heuristic or reject results, filter out the candidate
+                        None
+                    }
+                }
             })
-            .cloned()
+            .filter_map(|c| c)
+            .filter(|candidate| candidate.confidence_score >= self.config.min_confidence_threshold)
             .collect()
     }
 
@@ -272,8 +305,15 @@ impl AnalyzerEngine {
                 execution_plan: format!("Execute pattern: {}", best_match.pattern.pattern_id),
             }
         } else if self.config.enable_heuristic_fallback {
-            // Fall back to heuristic analysis
-            self.create_heuristic_result(bundle_analysis)
+            // Fall back to heuristic analysis with risk assessment
+            let risk_profile = self.risk_assessor.assess_bundle_risk(bundle);
+            let pattern_similarity = self.calculate_pattern_similarity(bundle);
+            let risk_confidence = self.confidence_calculator.calculate_risk_based_confidence(
+                &risk_profile,
+                pattern_similarity,
+            );
+            
+            self.create_heuristic_result_with_risk(bundle_analysis, risk_profile, risk_confidence)
         } else {
             // Reject - no pattern found
             self.create_rejection_result(bundle_analysis)
@@ -444,6 +484,32 @@ impl AnalyzerEngine {
             vec!["Manual review recommended".to_string()],
             true,
         )
+    }
+    
+    fn create_heuristic_result_with_risk(
+        &self, 
+        _bundle_analysis: &BundleAnalysis,
+        risk_profile: RiskProfile,
+        confidence: f64
+    ) -> AnalysisResult {
+        AnalysisResult::heuristic(
+            risk_profile,
+            confidence,
+            vec!["Pattern analyzed using risk assessment".to_string()],
+            vec!["Review risk factors before execution".to_string()],
+            confidence < 0.3, // Require manual review for very low confidence
+        )
+    }
+    
+    fn calculate_pattern_similarity(&self, bundle: &Bundle) -> f64 {
+        // Get known pattern signatures from the pattern library
+        let known_patterns: Vec<String> = self.pattern_library.get_all_patterns()
+            .iter()
+            .map(|p| p.pattern_id.clone())
+            .collect();
+        
+        // Use risk assessor to calculate similarity
+        self.risk_assessor.calculate_pattern_similarity(bundle, &known_patterns)
     }
 
     fn create_rejection_result(&self, bundle_analysis: &BundleAnalysis) -> AnalysisResult {
